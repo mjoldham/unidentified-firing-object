@@ -408,8 +408,13 @@ MonoBehaviour:
   FastSpeed: 8
   ShotLimit: 20
   ShotFrameDelay: 0
+  BombLimit: 5
+  PowerLimit: 5
   ScreenHalfWidth: 3.5
   ScreenHalfHeight: 3.5
+  IsShielded: 0
+  BombCount: 0
+  PowerCount: 0
 --- !u!1 &1068270315
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,6 +472,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 791334dba9340ee4387861c4f7d4b060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EnemyShotPrefab: {fileID: 8790723755849681078, guid: 9d228a6b5ddbdb345817dc41cccf779a, type: 3}
+  EnemyShotPoolSize: 100
+  ScreenHalfWidth: 3.5
+  ScreenHalfHeight: 3.5
 --- !u!1 &1745277963
 GameObject:
   m_ObjectHideFlags: 0
