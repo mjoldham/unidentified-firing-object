@@ -301,115 +301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 903f3849aa2b59c489908f5a4c267627, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LeftAction:
-    m_Name: Left
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 526f11a0-e47a-45e8-bc09-556c94a1194c
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 8da888ae-4a51-43ba-a5d9-d3d3f3ee0041
-      m_Path: <Keyboard>/leftArrow
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Left
-      m_Flags: 0
-    m_Flags: 0
-  RightAction:
-    m_Name: Right
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 8df627e6-532e-4b96-956f-98cd1a9b4ed4
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: f39b155c-bcf4-430b-8bbc-e3f2c4d20fd5
-      m_Path: <Keyboard>/rightArrow
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Right
-      m_Flags: 0
-    m_Flags: 0
-  UpAction:
-    m_Name: Up
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 09055bad-718b-45b9-8c33-505dc0512331
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 28b9ae84-6108-42de-8028-876c5f79e7af
-      m_Path: <Keyboard>/upArrow
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Up
-      m_Flags: 0
-    m_Flags: 0
-  DownAction:
-    m_Name: Down
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 325d625c-0aa0-4b2b-95be-82337135241e
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: dbf3b9c5-721e-4c9c-afd4-057febb2ed6a
-      m_Path: <Keyboard>/downArrow
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Down
-      m_Flags: 0
-    m_Flags: 0
-  FireAction:
-    m_Name: Fire
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 30ca7247-e59f-4f5b-9a58-9534b8396691
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 0bbdc1a7-04b8-425b-ba4e-b3917d52d5aa
-      m_Path: <Keyboard>/z
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Fire
-      m_Flags: 0
-    m_Flags: 0
-  BombAction:
-    m_Name: Bomb
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: ca345471-1f21-465f-94d8-92bcbc24ec2d
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 3e20947b-625a-4efd-a40b-8f7da9f33eca
-      m_Path: <Keyboard>/x
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Bomb
-      m_Flags: 0
-    m_Flags: 0
-  ShotPrefab: {fileID: 7618851937051392580, guid: aac9972aa12c42d44ae7f2f87507f6bc, type: 3}
-  SlowSpeed: 4
-  FastSpeed: 8
-  ShotLimit: 20
-  ShotFrameDelay: 0
-  BombLimit: 5
-  PowerLimit: 5
+  Settings: {fileID: 11400000, guid: 2c1e8eeb92ecd9249a13438b51b3f96f, type: 2}
   ScreenHalfWidth: 3.5
   ScreenHalfHeight: 3.5
   IsShielded: 0
@@ -460,6 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82eaa172024ecc1499dbdf7195eddd24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultAudioAssets: {fileID: 11400000, guid: 6a002bb6057e45d4da5264331b295fdd, type: 2}
 --- !u!114 &1068270318
 MonoBehaviour:
   m_ObjectHideFlags: 0
