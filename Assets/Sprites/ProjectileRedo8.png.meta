@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: cb8cccc886179f1449a42cf6ec73a06a
+guid: 9da3a8cba0a7f5b419e65fd431bdf75f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1357660569125567300
-    second: UFOState1_0
+      213: 742874677842002353
+    second: ProjectileRedo8_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,15 +46,15 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
-  alphaUsage: 0
+  alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
   textureType: 8
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: UFOState1_0
+      name: ProjectileRedo8_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 34
-        height: 35
+        x: 4
+        y: 5
+        width: 14
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cb447b3d7ee982de0800000000000000
-      internalID: -1357660569125567300
+      spriteID: 1b1c76565983f4a00800000000000000
+      internalID: 742874677842002353
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      UFOState1_0: -1357660569125567300
+      ProjectileRedo8_0: 742874677842002353
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
