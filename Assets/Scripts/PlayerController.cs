@@ -7,23 +7,10 @@ namespace UFO
 {
     public class PlayerController : MonoBehaviour
     {
-        public InputAction LeftAction, RightAction, UpAction, DownAction, FireAction, BombAction;
+        public PlayerSettings Settings;
 
-        public PlayerShot ShotPrefab;
-
-        public float SlowSpeed = 4.0f; // TODO: put params in ScriptableObject.
-        public float FastSpeed = 6.0f;
-
-        public int ShotLimit = 10;
-        public int ShotFrameDelay = 4;
-
-        public int BombLimit = 5;
-        public int PowerLimit = 5;
-
-        public float ScreenHalfWidth = 3.5f;
-        public float ScreenHalfHeight = 3.5f;
-
-        public static Action OnSpawn, OnDeath, OnFire, OnBomb;
+        public static Action OnSpawn, OnDeath, OnFire, OnBombUse;
+        public static Action<Vector2, bool> OnMove;
 
         public bool IsShielded;
         public int BombCount;
@@ -35,9 +22,9 @@ namespace UFO
 
         private void Start()
         {
-            for (int i = 0; i < ShotLimit; i++)
+            for (int i = 0; i < Settings.ShotLimit; i++)
             {
-                PlayerShot shot = Instantiate(ShotPrefab);
+                PlayerShot shot = Instantiate(Settings.ShotPrefab);
                 shot.gameObject.SetActive(false);
                 _inactiveShots.Enqueue(shot);
             }
@@ -54,7 +41,7 @@ namespace UFO
                 Vector3 move = Quaternion.AngleAxis(shot.Angle, Vector3.back) * Vector3.down;
                 shot.transform.position += shot.Speed * Time.fixedDeltaTime * move;
 
-                if (shot.transform.position.y > ScreenHalfHeight)
+                if (shot.transform.position.y > GameManager.ScreenHalfHeight + 1.0f)
                 {
                     shot.gameObject.SetActive(false);
                     _inactiveShots.Enqueue(shot);
@@ -93,11 +80,13 @@ namespace UFO
 
         private void Fire()
         {
-            Debug.Log("Fire!");
-
-            if (_shotFrame++ < ShotFrameDelay || _activeShots.Count >= ShotLimit)
+            // Makes it so the player has hyper-firerate when up close.
+            if (_activeShots.Count > 0)
             {
-                return;
+                if (_shotFrame++ < Settings.ShotFrameDelay || _activeShots.Count >= Settings.ShotLimit)
+                {
+                    return; // TODO: change shot delay based on active shot count.
+                }
             }
 
             _shotFrame = 0;
@@ -114,34 +103,38 @@ namespace UFO
 
         private void Bomb()
         {
-            Debug.Log("Bomb!");
             // TODO: clear all projectiles.
             // TODO: damage enemies based on distance.
 
-            OnBomb?.Invoke();
+            OnBombUse?.Invoke();
         }
 
         private void FixedUpdate()
         {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
+
             UpdateShots();
 
             Vector2 move = Vector2.zero;
-            if (LeftAction.IsPressed())
+            if (Settings.LeftAction.IsPressed())
             {
                 move.x -= 1.0f;
             }
 
-            if (RightAction.IsPressed())
+            if (Settings.RightAction.IsPressed())
             {
                 move.x += 1.0f;
             }
 
-            if (UpAction.IsPressed())
+            if (Settings.UpAction.IsPressed())
             {
                 move.y += 1.0f;
             }
 
-            if (DownAction.IsPressed())
+            if (Settings.DownAction.IsPressed())
             {
                 move.y -= 1.0f;
             }
@@ -149,21 +142,25 @@ namespace UFO
             move.Normalize();
             move *= Time.fixedDeltaTime;
 
-            if (FireAction.IsPressed())
+            bool isFiring = Settings.FireAction.IsPressed();
+            if (isFiring)
             {
                 Fire();
-                move *= SlowSpeed;
+                move *= Settings.SlowSpeed;
             }
             else
             {
-                move *= FastSpeed;
+                move *= Settings.FastSpeed;
             }
 
+            Vector3 oldPos = transform.position;
             transform.position += (Vector3)move;
-            transform.position = new Vector2(Mathf.Clamp(transform.position.x, -ScreenHalfWidth, ScreenHalfWidth),
-                Mathf.Clamp(transform.position.y, -ScreenHalfHeight, ScreenHalfHeight));
+            transform.position = new Vector2(Mathf.Clamp(transform.position.x, -GameManager.ScreenHalfWidth, GameManager.ScreenHalfWidth),
+                Mathf.Clamp(transform.position.y, -GameManager.ScreenHalfHeight, GameManager.ScreenHalfHeight));
 
-            if (BombAction.WasPerformedThisFrame())
+            OnMove?.Invoke(transform.position - oldPos, isFiring);
+
+            if (Settings.BombAction.WasPerformedThisFrame())
             {
                 Bomb();
             }
@@ -171,22 +168,22 @@ namespace UFO
 
         private void OnEnable()
         {
-            LeftAction.Enable();
-            RightAction.Enable();
-            UpAction.Enable();
-            DownAction.Enable();
-            FireAction.Enable();
-            BombAction.Enable();
+            Settings.LeftAction.Enable();
+            Settings.RightAction.Enable();
+            Settings.UpAction.Enable();
+            Settings.DownAction.Enable();
+            Settings.FireAction.Enable();
+            Settings.BombAction.Enable();
         }
 
         private void OnDisable()
         {
-            LeftAction.Disable();
-            RightAction.Disable();
-            UpAction.Disable();
-            DownAction.Disable();
-            FireAction.Disable();
-            BombAction.Disable();
+            Settings.LeftAction.Disable();
+            Settings.RightAction.Disable();
+            Settings.UpAction.Disable();
+            Settings.DownAction.Disable();
+            Settings.FireAction.Disable();
+            Settings.BombAction.Disable();
         }
     }
 }
