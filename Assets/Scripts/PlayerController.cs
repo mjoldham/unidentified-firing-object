@@ -88,7 +88,7 @@ namespace UFO
             {
                 if (_shotFrame++ < Settings.ShotFrameDelay || _activeShots.Count >= Settings.ShotLimit)
                 {
-                    return;
+                    return; // TODO: change shot delay based on active shot count.
                 }
             }
 

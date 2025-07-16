@@ -115,8 +115,8 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   ShotPrefab: {fileID: 7618851937051392580, guid: aac9972aa12c42d44ae7f2f87507f6bc, type: 3}
-  SlowSpeed: 4
-  FastSpeed: 8
+  SlowSpeed: 3
+  FastSpeed: 6
   ShotLimit: 6
   ShotFrameDelay: 3
   BombLimit: 5
