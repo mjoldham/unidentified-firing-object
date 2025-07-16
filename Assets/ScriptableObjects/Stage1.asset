@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd248dce06bb34b41873d20dca48add2, type: 3}
+  m_Name: Stage1
+  m_EditorClassIdentifier: 
+  MusicTrack: {fileID: 8300000, guid: 2bdc4566ea1432d40950ad4e24ec652e, type: 3}
+  BPM: 180
+  Spawns:
+  - Bar: 4
+    Beat: 0
+    Lane: 0
+    Enemy: {fileID: 4830755838349112751, guid: 9cd2ad55608505a49abcd210df9c371c, type: 3}
+  - Bar: 5
+    Beat: 0
+    Lane: -2
+    Enemy: {fileID: 4830755838349112751, guid: 9cd2ad55608505a49abcd210df9c371c, type: 3}
+  - Bar: 5
+    Beat: 1
+    Lane: -1
+    Enemy: {fileID: 4830755838349112751, guid: 9cd2ad55608505a49abcd210df9c371c, type: 3}
+  - Bar: 5
+    Beat: 2
+    Lane: 1
+    Enemy: {fileID: 4830755838349112751, guid: 9cd2ad55608505a49abcd210df9c371c, type: 3}
+  - Bar: 5
+    Beat: 3
+    Lane: 2
+    Enemy: {fileID: 4830755838349112751, guid: 9cd2ad55608505a49abcd210df9c371c, type: 3}

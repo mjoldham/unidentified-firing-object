@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,14 +9,9 @@ namespace UFO
     {
         public AudioAssets DefaultAudioAssets;
 
-        [HideInInspector]
-        public int TrackNumber;
-
         private AudioSource _musicSource;
-        private AudioSource _playerFastSource, _playerFireSource;
+        private AudioSource _playerFireSource;
         private AudioSource _explosionSource;
-
-        private Vector2 _oldMove;
 
         private List<AudioSource> _syncSources = new List<AudioSource>();
 
@@ -41,9 +37,6 @@ namespace UFO
             _musicSource = gameObject.AddComponent<AudioSource>();
             InitOneShotSource(_musicSource, DefaultAudioAssets.MusicVolume);
             
-            _playerFastSource = gameObject.AddComponent<AudioSource>();
-            InitLoopingSource(_playerFastSource, DefaultAudioAssets.PlayerFast);
-
             _playerFireSource = gameObject.AddComponent<AudioSource>();
             InitOneShotSource(_playerFireSource);
 
@@ -66,39 +59,10 @@ namespace UFO
             }
         }
 
-        private void FixedUpdate()
+        public void Play(AudioClip track, double atTime)
         {
-            if (!_musicSource.isPlaying)
-            {
-                if (TrackNumber == DefaultAudioAssets.TrackList.Length)
-                {
-                    TrackNumber = 0;
-                }
-
-                _musicSource.PlayOneShot(DefaultAudioAssets.TrackList[TrackNumber++]);
-            }
-        }
-
-        private void OnPlayerMove(Vector2 move, bool isFiring)
-        {
-            //if (isFiring || move.sqrMagnitude == 0.0f)
-            //{
-            //    _playerFastSource.volume = 0.0f;
-            //}
-            //else if (_oldMove.sqrMagnitude == 0.0f)
-            //{
-            //    _playerFastSource.volume = 1.0f;
-            //}
-            //else if (_playerFastSource.volume > DefaultAudioAssets.PlayerFastMin)
-            //{
-            //    _playerFastSource.volume *= DefaultAudioAssets.PlayerFastDecay;
-            //}
-            //else
-            //{
-            //    _playerFastSource.volume = DefaultAudioAssets.PlayerFastMin;
-            //}
-
-            //_oldMove = move;
+            _musicSource.clip = track;
+            _musicSource.PlayScheduled(atTime);
         }
 
         private void OnPlayerFire()
@@ -114,14 +78,12 @@ namespace UFO
         private void OnEnable()
         {
             PlayerController.OnFire += OnPlayerFire;
-            PlayerController.OnMove += OnPlayerMove;
             PlayerController.OnBombUse += OnBombUse;
         }
 
         private void OnDisable()
         {
             PlayerController.OnFire -= OnPlayerFire;
-            PlayerController.OnMove -= OnPlayerMove;
             PlayerController.OnBombUse -= OnBombUse;
         }
     }

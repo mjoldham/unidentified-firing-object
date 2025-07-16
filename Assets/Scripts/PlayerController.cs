@@ -9,9 +9,6 @@ namespace UFO
     {
         public PlayerSettings Settings;
 
-        public float ScreenHalfWidth = 3.5f;
-        public float ScreenHalfHeight = 3.5f;
-
         public static Action OnSpawn, OnDeath, OnFire, OnBombUse;
         public static Action<Vector2, bool> OnMove;
 
@@ -44,7 +41,7 @@ namespace UFO
                 Vector3 move = Quaternion.AngleAxis(shot.Angle, Vector3.back) * Vector3.down;
                 shot.transform.position += shot.Speed * Time.fixedDeltaTime * move;
 
-                if (shot.transform.position.y > ScreenHalfHeight + 1.0f)
+                if (shot.transform.position.y > GameManager.ScreenHalfHeight + 1.0f)
                 {
                     shot.gameObject.SetActive(false);
                     _inactiveShots.Enqueue(shot);
@@ -114,6 +111,11 @@ namespace UFO
 
         private void FixedUpdate()
         {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
+
             UpdateShots();
 
             Vector2 move = Vector2.zero;
@@ -153,8 +155,8 @@ namespace UFO
 
             Vector3 oldPos = transform.position;
             transform.position += (Vector3)move;
-            transform.position = new Vector2(Mathf.Clamp(transform.position.x, -ScreenHalfWidth, ScreenHalfWidth),
-                Mathf.Clamp(transform.position.y, -ScreenHalfHeight, ScreenHalfHeight));
+            transform.position = new Vector2(Mathf.Clamp(transform.position.x, -GameManager.ScreenHalfWidth, GameManager.ScreenHalfWidth),
+                Mathf.Clamp(transform.position.y, -GameManager.ScreenHalfHeight, GameManager.ScreenHalfHeight));
 
             OnMove?.Invoke(transform.position - oldPos, isFiring);
 
