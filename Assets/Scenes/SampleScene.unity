@@ -422,10 +422,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.24774775
-    y: 0.24774775
-    width: 0.5045045
-    height: 0.5045045
+    x: 0.17910448
+    y: 0.029850746
+    width: 0.83582085
+    height: 0.83582085
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
@@ -821,6 +821,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 602c1a97b9b2e2847955474f825881da, type: 2}
   EnemyShotPrefab: {fileID: 8790723755849681078, guid: 9d228a6b5ddbdb345817dc41cccf779a, type: 3}
   EnemyShotPoolSize: 100
+  Player: {fileID: 566122621}
 --- !u!1 &1745277963
 GameObject:
   m_ObjectHideFlags: 0
