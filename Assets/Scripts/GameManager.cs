@@ -11,6 +11,9 @@ namespace UFO
         private Queue<EnemyShot> _inactiveEnemyShots = new Queue<EnemyShot>();
         private Queue<EnemyShot> _activeEnemyShots = new Queue<EnemyShot>();
 
+        public Transform Player;
+        private List<EnemyBase> _activeEnemies = new List<EnemyBase>();
+
         public float ScreenHalfWidth = 3.5f;
         public float ScreenHalfHeight = 3.5f;
 
@@ -35,6 +38,13 @@ namespace UFO
 
         void FixedUpdate()
         {
+            Vector3 playerPos = Player.position;
+
+            foreach (var enemy in _activeEnemies)
+            {
+                enemy.Tick(playerPos, Time.fixedDeltaTime);
+            }
+
             int count = _activeEnemyShots.Count;
 
             for (int i = 0; i < count; i++)
@@ -53,6 +63,11 @@ namespace UFO
                     _activeEnemyShots.Enqueue(shot);
                 }
             }
+        }
+
+        public void RegisterEnemy(EnemyBase e)
+        {
+            _activeEnemies.Add(e);
         }
 
 
