@@ -5,6 +5,7 @@ namespace UFO
 {
     public class GameManager : MonoBehaviour
     {
+        public static GameManager Instance { get; private set; }
         private AudioManager _audio;
 
         public const int BeatsPerBar = 4;
@@ -25,10 +26,22 @@ namespace UFO
 
         private int _currentStage = -1, _currentBar, _currentBeat;
 
-        private double _beatLen, _barLen;
+        public double BeatLength { get; private set; }
+        public double BarLength { get; private set; }
         private double _nextStageTime, _nextBarTime, _nextBeatTime;
 
         private int _currentLoop = 1;
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Destroy(this);
+                return;
+            }
+
+            Instance = this;
+        }
 
         private void InitTimelines()
         {
@@ -78,8 +91,8 @@ namespace UFO
             _nextStageTime = CalculateNextStageTime(startTime, stage.MusicTrack);
             _nextBeatTime = _nextBarTime = startTime;
 
-            _beatLen = 60.0 / stage.BPM;
-            _barLen = BeatsPerBar * _beatLen;
+            BeatLength = 60.0 / stage.BPM;
+            BarLength = BeatsPerBar * BeatLength;
         }
 
         private void TrySpawning(StageSettings stage, int bar, int beat)
@@ -111,9 +124,9 @@ namespace UFO
 
             TrySpawning(Stages[_currentStage], ++_currentBar, _currentBeat = 0);
 
-            _nextBeatTime += _beatLen;
-            _nextBarTime += _barLen;
-            Debug.DrawRay(Vector3.zero, Vector3.up, Color.magenta, 0.5f * (float)_beatLen);
+            _nextBeatTime += BeatLength;
+            _nextBarTime += BarLength;
+            Debug.DrawRay(Vector3.zero, Vector3.up, Color.magenta, 0.5f * (float)BeatLength);
         }
 
         private void StartNextBeat()
@@ -125,11 +138,11 @@ namespace UFO
 
             TrySpawning(Stages[_currentStage], _currentBar, ++_currentBeat);
 
-            _nextBeatTime += _beatLen;
-            Debug.DrawRay(Vector3.zero, Vector3.up, Color.white, 0.5f * (float)_beatLen);
+            _nextBeatTime += BeatLength;
+            Debug.DrawRay(Vector3.zero, Vector3.up, Color.white, 0.5f * (float)BeatLength);
         }
 
-        public void SpawnEnemyShot(Vector3 position, float angle, float speed)
+        public void SpawnEnemyShot(Vector3 position, int angle, float speed)
         {
             if (_inactiveEnemyShots.Count == 0) return;
 
@@ -142,15 +155,15 @@ namespace UFO
         {
             // Manages timeline.
             double time = AudioSettings.dspTime;
-            if (time > _nextStageTime)
+            if (time >= _nextStageTime)
             {
                 StartNextStage();
             }
-            else if (time > _nextBarTime)
+            else if (time >= _nextBarTime)
             {
                 StartNextBar();
             }
-            else if (time > _nextBeatTime)
+            else if (time >= _nextBeatTime)
             {
                 StartNextBeat();
             }
@@ -190,8 +203,5 @@ namespace UFO
 
 
         // TODO: spawn player
-        // TODO: set track and params
-        // TODO: beat system
-        // TODO: spawn enemies
     }
 }

@@ -38,7 +38,7 @@ namespace UFO
             {
                 PlayerShot shot = _activeShots.Dequeue();
 
-                Vector3 move = Quaternion.AngleAxis(shot.Angle, Vector3.back) * Vector3.down;
+                Vector3 move = Quaternion.Euler(0, 0, shot.Angle) * Vector3.down;
                 shot.transform.position += shot.Speed * Time.fixedDeltaTime * move;
 
                 if (shot.transform.position.y > GameManager.ScreenHalfHeight + 1.0f)

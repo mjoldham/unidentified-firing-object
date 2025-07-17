@@ -5,7 +5,6 @@ namespace UFO
 {
     public abstract class ShotBase : MonoBehaviour
     {
-        [Serializable]
         public enum ShotType
         {
             Aimed,
@@ -15,8 +14,6 @@ namespace UFO
 
         public ShotType Type = ShotType.Aimed;
         public float Speed = 5.0f;
-        public float Angle = 0.0f;
-
-        // TODO: Probably want a ShotPattern class too?
+        public int Angle = 0;
     }
 }

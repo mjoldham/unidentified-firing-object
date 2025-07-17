@@ -4,7 +4,7 @@ namespace UFO
 {
     public class EnemyShot : ShotBase
     {
-        public void ResetShot(Vector3 position, float angle, float speed)
+        public void ResetShot(Vector3 position, int angle, float speed)
         {
             transform.position = position;
             Angle = angle;

@@ -5,8 +5,11 @@ using UnityEngine;
 namespace UFO
 {
     [Serializable]
-    public struct SpawnInfo // TODO: log bars and beats for ease of use.
+    public struct SpawnInfo
     {
+        // If true, no enemies must be present for this to spawn.
+        public bool CheckForEnemies;
+
         public int Bar;
         [Range(0, GameManager.BeatsPerBar - 1)]
         public int Beat;
