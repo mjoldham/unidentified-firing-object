@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,52 +14,63 @@ namespace UFO
         public static Action<Vector2, bool> OnMove;
 
         public bool IsShielded;
+
+        [Range(0, 5)]
         public int BombCount;
+
+        [Range(0, 4)]
         public int PowerCount;
 
-        private Queue<PlayerShot> _inactiveShots = new Queue<PlayerShot>();
-        private Queue<PlayerShot> _activeShots = new Queue<PlayerShot>();
+        private List<ShotEmitter>[] _emitters;
+
         private int _shotFrame;
+        private float _shotTimeFrames;
+
+        private bool _isFiring;
 
         private void Start()
         {
-            for (int i = 0; i < Settings.ShotLimit; i++)
+            Transform child = transform.GetChild(0);
+            _emitters = new List<ShotEmitter>[child.childCount];
+            for (int i = 0; i < child.childCount; i++)
             {
-                PlayerShot shot = Instantiate(Settings.ShotPrefab);
-                shot.gameObject.SetActive(false);
-                _inactiveShots.Enqueue(shot);
+                _emitters[i] = child.GetChild(i).GetComponentsInChildren<ShotEmitter>().ToList();
             }
         }
 
-        private void UpdateShots()
+        private void HandleFiring()
         {
-            // TODO: Move shots and test for collisions. Despawn on collision or leaving screen.
-            int count = _activeShots.Count;
-            for (int i = 0; i < count; i++)
+            if (Settings.FireAction.IsPressed())
             {
-                PlayerShot shot = _activeShots.Dequeue();
+                _shotTimeFrames = Settings.ShotTimeBuffer;
+            }
 
-                Vector3 move = Quaternion.Euler(0, 0, shot.Angle) * Vector3.down;
-                shot.transform.position += shot.Speed * Time.fixedDeltaTime * move;
+            // TODO: could restart emitters early if all shots are despawned?
 
-                if (shot.transform.position.y > GameManager.ScreenHalfHeight + 1.0f)
+            _shotTimeFrames--;
+            if (_isFiring)
+            {
+                _isFiring = false;
+                foreach (ShotEmitter emitter in _emitters[PowerCount])
                 {
-                    shot.gameObject.SetActive(false);
-                    _inactiveShots.Enqueue(shot);
-                    continue;
+                    _isFiring |= emitter.Tick();
                 }
 
-                // TODO: test collision (premove & postmove).
-                //if (hit)
-                //{
-                //    // Apply damage and score.
+                if (_isFiring)
+                {
+                    return;
+                }
+            }
 
-                //    shot.gameObject.SetActive(false);
-                //    _inactiveShots.Enqueue(shot);
-                //    continue;
-                //}
+            if (_shotTimeFrames < 0)
+            {
+                return;
+            }
 
-                _activeShots.Enqueue(shot);
+            _isFiring = true;
+            foreach (ShotEmitter emitter in _emitters[PowerCount])
+            {
+                emitter.Restart();
             }
         }
 
@@ -78,46 +90,8 @@ namespace UFO
             OnDeath?.Invoke();
         }
 
-        private void Fire()
+        private void HandleMovement()
         {
-            // Makes it so the player has hyper-firerate when up close.
-            if (_activeShots.Count > 0)
-            {
-                if (_shotFrame++ < Settings.ShotFrameDelay || _activeShots.Count >= Settings.ShotLimit)
-                {
-                    return; // TODO: change shot delay based on active shot count.
-                }
-            }
-
-            _shotFrame = 0;
-            PlayerShot shot = _inactiveShots.Dequeue();
-            shot.transform.position = transform.position;
-            shot.gameObject.SetActive(true);
-
-            _activeShots.Enqueue(shot);
-
-            // TODO: change pattern based on power level.
-
-            OnFire?.Invoke();
-        }
-
-        private void Bomb()
-        {
-            // TODO: clear all projectiles.
-            // TODO: damage enemies based on distance.
-
-            OnBombUse?.Invoke();
-        }
-
-        private void FixedUpdate()
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                Application.Quit();
-            }
-
-            UpdateShots();
-
             Vector2 move = Vector2.zero;
             if (Settings.LeftAction.IsPressed())
             {
@@ -140,30 +114,38 @@ namespace UFO
             }
 
             move.Normalize();
-            move *= Time.fixedDeltaTime;
-
-            bool isFiring = Settings.FireAction.IsPressed();
-            if (isFiring)
-            {
-                Fire();
-                move *= Settings.SlowSpeed;
-            }
-            else
-            {
-                move *= Settings.FastSpeed;
-            }
+            move *= Time.fixedDeltaTime * (_isFiring ? Settings.SlowSpeed : Settings.FastSpeed);
 
             Vector3 oldPos = transform.position;
             transform.position += (Vector3)move;
             transform.position = new Vector2(Mathf.Clamp(transform.position.x, -GameManager.ScreenHalfWidth, GameManager.ScreenHalfWidth),
                 Mathf.Clamp(transform.position.y, -GameManager.ScreenHalfHeight, GameManager.ScreenHalfHeight));
 
-            OnMove?.Invoke(transform.position - oldPos, isFiring);
+            OnMove?.Invoke(transform.position - oldPos, _isFiring);
+        }
 
-            if (Settings.BombAction.WasPerformedThisFrame())
+        private void HandleBombing()
+        {
+            if (!Settings.BombAction.WasPerformedThisFrame())
             {
-                Bomb();
+                return;
             }
+            // TODO: clear all projectiles.
+            // TODO: damage enemies based on distance.
+
+            OnBombUse?.Invoke();
+        }
+
+        private void FixedUpdate()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
+
+            HandleMovement();
+            HandleFiring();
+            HandleBombing();
         }
 
         private void OnEnable()

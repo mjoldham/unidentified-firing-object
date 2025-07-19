@@ -7,21 +7,41 @@ namespace UFO
 {
     public class ShotEmitter : MonoBehaviour
     {
-        public ShotBase.ShotType CurrentShotType { get; private set; }
+        public string ShotPrefabName;
+
+        public enum ShotMode
+        {
+            Static,
+            Aimed,
+            Random
+        }
+
+        public ShotMode CurrentMode { get; private set; }
         public int CurrentOffset { get; private set; }
 
         private GameManager _gm;
 
-        private List<EmitterAction> _sequence = new List<EmitterAction>();
+        private EmitterAction[] _sequence;
         private int _currentIndex;
-        private LinkedList<(int, int)> _repeatSequences = new LinkedList<(int, int)>();
 
-        private double _waitTime;
+        public struct RepeatSequence
+        {
+            public int Start, End, Times;
 
-        // TODO: get rid of this and use GM object pooling instead.
-        private List<EnemyShot> _shots = new List<EnemyShot>();
+            public RepeatSequence(int start, int end, int times)
+            {
+                Start = start;
+                End = end;
+                Times = times;
+            }
+        }
+
+        private Stack<RepeatSequence> _repeatSequences = new Stack<RepeatSequence>();
+
+        private double _waitFrames;
 
         private int _lastAngle;
+        private bool _isMirrored;
 
         private int Wrap(int angle)
         {
@@ -38,21 +58,23 @@ namespace UFO
             return angle;
         }
 
-        private int AngleToPlayer()
+        // TODO: shots should have flags for what they damage, based off that change this function.
+        private int AngleToTarget()
         {
             Vector2 playerPosition = _gm.Player.position;
             Vector2 toPlayer = (playerPosition - (Vector2)transform.position).normalized;
             return (int)Vector2.SignedAngle(Vector2.down, toPlayer);
         }
 
-        public void SetShotType(ShotBase.ShotType shot)
+        public void SetMode(ShotMode mode)
         {
-            if (shot == CurrentShotType)
+            _currentIndex++;
+            if (mode == CurrentMode)
             {
                 return;
             }
 
-            if (CurrentShotType != ShotBase.ShotType.Static && shot == ShotBase.ShotType.Static)
+            if (CurrentMode != ShotMode.Static && mode == ShotMode.Static)
             {
                 CurrentOffset = _lastAngle;
             }
@@ -61,123 +83,150 @@ namespace UFO
                 CurrentOffset = 0;
             }
 
-            CurrentShotType = shot;
+            CurrentMode = mode;
+        }
+
+        public void SetPrefab(string name)
+        {
+            _currentIndex++;
+            ShotPrefabName = name;
         }
 
         public void Fire()
         {
-            // TODO: could request bullet type from GM? Then GM handles bullet ticks etc.
-            EnemyShot shot = Instantiate(_gm.EnemyShotPrefab, transform.position, Quaternion.identity);
-            _shots.Add(shot);
-            if (CurrentShotType == ShotBase.ShotType.Static)
+            _currentIndex++;
+            if (CurrentMode == ShotMode.Static)
             {
-                _lastAngle = shot.Angle = CurrentOffset;
+                _lastAngle = CurrentOffset;
+                _gm.SpawnShot(ShotPrefabName, transform.position, _lastAngle);
                 return;
             }
 
-            shot.Angle = AngleToPlayer();
-            if (CurrentShotType == ShotBase.ShotType.Aimed)
+            _lastAngle = AngleToTarget();
+            if (CurrentMode == ShotMode.Aimed)
             {
-                shot.Angle += CurrentOffset;
+                _lastAngle += CurrentOffset;
             }
-            else if (CurrentShotType == ShotBase.ShotType.Random)
+            else if (CurrentMode == ShotMode.Random)
             {
-                shot.Angle += UnityEngine.Random.Range(-CurrentOffset, CurrentOffset + 1);
+                _lastAngle += UnityEngine.Random.Range(-CurrentOffset, CurrentOffset + 1);
             }
 
-            _lastAngle = shot.Angle = Wrap(shot.Angle);
+            _lastAngle = Wrap(_lastAngle);
+            _gm.SpawnShot(ShotPrefabName, transform.position, _lastAngle);
+        }
+
+        public void ResetAngle()
+        {
+            _currentIndex++;
+            CurrentOffset = 0;
         }
 
         // Offsets current angle.
         public void OffsetAngle(int degrees)
         {
-            CurrentOffset = Wrap(CurrentOffset + degrees);
+            _currentIndex++;
+            CurrentOffset = Wrap(CurrentOffset + (_isMirrored ? -degrees : degrees));
         }
 
-        public void Wait(double beats)
+        public void Wait(int frames)
         {
-            _waitTime = AudioSettings.dspTime + beats * _gm.BeatLength;
+            _currentIndex++;
+            _waitFrames = frames;
         }
 
         // Signals start of repeat sequence.
         public void RepeatStart(int times)
         {
-            _repeatSequences.AddLast((_currentIndex + 1, times));
+            int start = ++_currentIndex;
+            while (start < _sequence.Length && _sequence[start] is EmitterRepeatStart)
+            {
+                start++;
+            }
+
+            if (start == _sequence.Length)
+            {
+                return;
+            }
+
+            // Don't know where end is yet, set to zero for now.
+            _repeatSequences.Push(new RepeatSequence(start, 0, times));
         }
 
-        // Signals end of repeat sequence. Pops sequence from list if count is exhausted.
-        public bool RepeatEnd(bool isImplicit = false)
+        // Signals end of repeat sequence.
+        public bool RepeatEnd()
         {
             if (_repeatSequences.Count == 0)
             {
+                _currentIndex++;
                 return false;
             }
 
-            (int index, int count) = _repeatSequences.Last.Value;
-            if (--count == 0)
+            RepeatSequence repeat = _repeatSequences.Pop();
+            if (repeat.End == 0)
             {
-                _repeatSequences.RemoveLast();
-                if (!isImplicit)
-                {
-                    _sequence.RemoveAt(_currentIndex);
-                }
+                repeat.End = _currentIndex;
             }
-            else
+            else if (repeat.End != _currentIndex)
             {
-                _repeatSequences.Last.Value = (index, count);
+                _currentIndex++;
+                _repeatSequences.Push(repeat);
+                return false;
             }
 
-            _currentIndex = index;
+            if (--repeat.Times > 0)
+            {
+                _repeatSequences.Push(repeat);
+            }
+
+            _currentIndex = repeat.Start;
             return true;
+        }
+
+        public void Mirror()
+        {
+            _currentIndex++; // TODO: refactor so it's clear these functions must incr index!
+            _isMirrored = !_isMirrored;
         }
 
         private void Start()
         {
             _gm = GameManager.Instance;
-            _sequence = GetComponents<EmitterAction>().ToList();
+
+            _sequence = GetComponents<EmitterAction>();
             foreach (EmitterAction action in _sequence)
             {
                 action.Emitter = this;
             }
         }
 
-        private void FixedUpdate()
+        public void Restart()
         {
-            // TODO: strictly for testing, GM should handle this.
+            CurrentOffset = _currentIndex = _lastAngle = 0;
             Tick();
-            foreach (EnemyShot shot in _shots)
-            {
-                shot.Tick(Time.fixedDeltaTime);
-            }
         }
 
-        public void Tick()
+        // Returns true so long as the sequence isn't finished.
+        public bool Tick()
         {
+            if (--_waitFrames > 0)
+            {
+                return true;
+            }
+
             bool next;
             do
             {
-                if (_sequence.Count == 0)
+                if (_currentIndex >= _sequence.Length && !RepeatEnd())
                 {
-                    return;
-                }
-
-                if (_currentIndex == _sequence.Count && !RepeatEnd(true))
-                {
-                    // TODO: figure out repeat sequence behaviour.
-                    _currentIndex = 0;
-                    CurrentOffset = 0;
-                    return;
-                }
-
-                if (AudioSettings.dspTime < _waitTime)
-                {
-                    return;
+                    return false;
                 }
 
                 next = _sequence[_currentIndex].Execute();
-                _currentIndex++;
             }
             while (next);
+
+            return true;
         }
     }
 }

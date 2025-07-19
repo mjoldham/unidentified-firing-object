@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace UFO
 {
-    public class EmitterShotType : EmitterAction
+    public class EmitterSetMode : EmitterAction
     {
-        public ShotBase.ShotType NewShotType;
+        public ShotEmitter.ShotMode NewMode;
 
         public override bool Execute()
         {
-            Emitter.SetShotType(NewShotType);
+            Emitter.SetMode(NewMode);
             return true;
         }
     }

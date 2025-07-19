@@ -15,6 +15,7 @@ namespace UFO
 
         public int ShotLimit = 20;
         public int ShotFrameDelay = 5;
+        public int ShotTimeBuffer = 20;
 
         public int BombLimit = 5;
         public int PowerLimit = 5;

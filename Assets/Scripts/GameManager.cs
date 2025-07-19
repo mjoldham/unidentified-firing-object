@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace UFO
 {
@@ -15,11 +16,69 @@ namespace UFO
 
         public StageSettings[] Stages;
 
-        public EnemyShot EnemyShotPrefab;
-        public int EnemyShotPoolSize = 100;
+        [Serializable]
+        public struct ShotPool
+        {
+            public ShotBase Prefab;
+            public int MaxCount;
 
-        private Queue<EnemyShot> _inactiveEnemyShots = new Queue<EnemyShot>();
-        private Queue<EnemyShot> _activeEnemyShots = new Queue<EnemyShot>();
+            private Queue<ShotBase> _inactiveShots;
+            private Queue<ShotBase> _activeShots;
+
+            public ShotPool Init(Transform parent)
+            {
+                _inactiveShots = new Queue<ShotBase>();
+                _activeShots = new Queue<ShotBase>();
+                for (int i = 0; i < MaxCount; i++)
+                {
+                    ShotBase shot = Instantiate(Prefab, parent);
+                    shot.gameObject.SetActive(false);
+                    _inactiveShots.Enqueue(shot);
+                }
+
+                return this;
+            }
+
+            public bool Spawn(Vector3 position, int angle)
+            {
+                if (_inactiveShots.Count == 0)
+                {
+                    return false;
+                }
+
+                ShotBase shot = _inactiveShots.Dequeue();
+                shot.ResetShot(position, angle);
+                _activeShots.Enqueue(shot);
+
+                return true;
+            }
+
+            public void Tick(float deltaTime)
+            {
+                // TODO: Test for collisions, despawn on hit.
+                int count = _activeShots.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    ShotBase shot = _activeShots.Dequeue();
+                    shot.Tick(deltaTime);
+
+                    if (Mathf.Abs(shot.transform.position.x) > ScreenHalfWidth + 1.0f ||
+                        Mathf.Abs(shot.transform.position.y) > ScreenHalfHeight + 1.0f)
+                    {
+                        shot.gameObject.SetActive(false);
+                        _inactiveShots.Enqueue(shot);
+                    }
+                    else
+                    {
+                        _activeShots.Enqueue(shot);
+                    }
+                }
+            }
+        }
+
+        public ShotPool[] ShotPools;
+
+        private Dictionary<string, ShotPool> _shotPoolDict = new Dictionary<string, ShotPool>();
 
         public Transform Player;
         private List<EnemyBase> _activeEnemies = new List<EnemyBase>();
@@ -58,11 +117,9 @@ namespace UFO
         void Start()
         {
             _audio = GetComponent<AudioManager>();
-            for (int i = 0; i < EnemyShotPoolSize; i++)
+            foreach (ShotPool pool in ShotPools)
             {
-                EnemyShot shot = Instantiate(EnemyShotPrefab);
-                shot.gameObject.SetActive(false);
-                _inactiveEnemyShots.Enqueue(shot);
+                _shotPoolDict[pool.Prefab.gameObject.name] = pool.Init(transform);
             }
 
             InitTimelines();
@@ -142,13 +199,15 @@ namespace UFO
             Debug.DrawRay(Vector3.zero, Vector3.up, Color.white, 0.5f * (float)BeatLength);
         }
 
-        public void SpawnEnemyShot(Vector3 position, int angle, float speed)
+        public bool SpawnShot(string shotName, Vector3 position, int angle)
         {
-            if (_inactiveEnemyShots.Count == 0) return;
+            if (!_shotPoolDict.TryGetValue(shotName, out ShotPool pool))
+            {
+                Debug.LogError($"{shotName} was not found in {nameof(_shotPoolDict)}.");
+                return false;
+            }
 
-            EnemyShot shot = _inactiveEnemyShots.Dequeue();
-            shot.ResetShot(position, angle, speed);
-            _activeEnemyShots.Enqueue(shot);
+            return pool.Spawn(position, angle);
         }
 
         void FixedUpdate()
@@ -176,23 +235,10 @@ namespace UFO
                 enemy.Tick(playerPos, Time.fixedDeltaTime);
             }
 
-            int count = _activeEnemyShots.Count;
-
-            for (int i = 0; i < count; i++)
+            // Manages shots.
+            foreach (ShotPool pool in _shotPoolDict.Values)
             {
-                EnemyShot shot = _activeEnemyShots.Dequeue();
-                shot.Tick(Time.fixedDeltaTime);
-
-                if (Mathf.Abs(shot.transform.position.x) > ScreenHalfWidth ||
-                    Mathf.Abs(shot.transform.position.y) > ScreenHalfHeight)
-                {
-                    shot.gameObject.SetActive(false);
-                    _inactiveEnemyShots.Enqueue(shot);
-                }
-                else
-                {
-                    _activeEnemyShots.Enqueue(shot);
-                }
+                pool.Tick(Time.fixedDeltaTime);
             }
         }
 

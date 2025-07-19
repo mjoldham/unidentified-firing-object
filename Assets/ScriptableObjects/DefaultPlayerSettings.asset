@@ -119,5 +119,6 @@ MonoBehaviour:
   FastSpeed: 6
   ShotLimit: 6
   ShotFrameDelay: 3
+  ShotTimeBuffer: 10
   BombLimit: 5
   PowerLimit: 5

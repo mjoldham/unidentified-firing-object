@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 7719420103179326384}
   - component: {fileID: 7175579171258069856}
   - component: {fileID: 7230199643476362669}
+  - component: {fileID: 6109736637055990392}
   - component: {fileID: 8788792459528728577}
   - component: {fileID: 1761322980055722661}
   m_Layer: 0
@@ -135,6 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShotPrefabName: EnemyShot
 --- !u!114 &7230199643476362669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,8 +150,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  NewShotType: 2
-  AngleOffset: 20
+  NewMode: 0
+--- !u!114 &6109736637055990392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2963670815662389487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d69ce9395ba4842a9d70d4eeec438a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Emitter: {fileID: 0}
+  Degrees: 15
 --- !u!114 &8788792459528728577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,5 +191,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  BeatType: 8
-  BeatsToWait: 1
+  FramesToWait: 1

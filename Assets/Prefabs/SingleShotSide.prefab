@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2393313859511478180}
   - component: {fileID: 7618851937051392580}
   m_Layer: 0
-  m_Name: PlayerShot
+  m_Name: SingleShotSide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,8 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ec4474171dd0534687b69e41f8e9eb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Type: 1
-  Speed: 15
+  Speed: 12
   Angle: 180
 --- !u!1 &9191110128092854245
 GameObject:
@@ -123,11 +122,11 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_Sprite: {fileID: 4416235018371112904, guid: 2b02df31af607f746a3df8ca62b6b542, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
-  m_FlipY: 0
+  m_FlipY: 1
   m_DrawMode: 0
   m_Size: {x: 0.1875, y: 0.375}
   m_AdaptiveModeThreshold: 0.5

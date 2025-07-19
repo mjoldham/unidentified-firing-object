@@ -51,6 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShotPrefabName: EnemyShot
 --- !u!114 &2025301779527385395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,8 +65,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  BeatType: 2
-  BeatsToWait: 1
+  FramesToWait: 1
 --- !u!114 &2539724693561000642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,7 +79,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  NewShotType: 0
+  NewMode: 0
 --- !u!114 &6677116483676117871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,8 +120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  BeatType: 8
-  BeatsToWait: 1
+  FramesToWait: 1
 --- !u!114 &2242029342404591837
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,7 +134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  NewShotType: 1
+  NewMode: 0
 --- !u!1 &6533792001965905225
 GameObject:
   m_ObjectHideFlags: 0
