@@ -15,6 +15,8 @@ namespace UFO
 
         private List<AudioSource> _syncSources = new List<AudioSource>();
 
+        private Coroutine _duckingMusic = null;
+
         private void InitLoopingSource(AudioSource source, AudioClip clip)
         {
             source.playOnAwake = false;
@@ -70,9 +72,22 @@ namespace UFO
             _playerFireSource.PlayOneShot(DefaultAudioAssets.PlayerFire);
         }
 
+        private IEnumerator DuckMusic(float volumeScale, float duration)
+        {
+            _musicSource.volume = DefaultAudioAssets.MusicVolume * volumeScale;
+            yield return new WaitForSeconds(duration);
+            _musicSource.volume = DefaultAudioAssets.MusicVolume;
+        }
+
         private void OnBombUse()
         {
             _explosionSource.PlayOneShot(DefaultAudioAssets.BombUse);
+            if (_duckingMusic != null)
+            {
+                StopCoroutine(_duckingMusic);
+            }
+
+            _duckingMusic = StartCoroutine(DuckMusic(0.5f, 0.5f));
         }
 
         private void OnEnable()

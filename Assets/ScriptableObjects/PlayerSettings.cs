@@ -19,5 +19,7 @@ namespace UFO
 
         public int BombLimit = 5;
         public int PowerLimit = 5;
+
+        public float BombSaveDuration = 0.2f;
     }
 }

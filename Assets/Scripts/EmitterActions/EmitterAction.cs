@@ -10,6 +10,6 @@ namespace UFO
         public ShotEmitter Emitter;
 
         // Returns true if next step in sequence should be performed in same frame.
-        public abstract bool Execute();
+        public abstract bool Execute(ref int index);
     }
 }

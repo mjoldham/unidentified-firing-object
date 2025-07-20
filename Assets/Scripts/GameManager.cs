@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using static UFO.ShotEmitter;
 
 namespace UFO
 {
@@ -8,6 +9,7 @@ namespace UFO
     {
         public static GameManager Instance { get; private set; }
         private AudioManager _audio;
+        private PlayerController _player;
 
         public const int BeatsPerBar = 4;
         public const int NumLanes = 5;
@@ -47,7 +49,7 @@ namespace UFO
                 }
 
                 ShotBase shot = _inactiveShots.Dequeue();
-                shot.ResetShot(position, angle);
+                shot.Spawn(position, angle);
                 _activeShots.Enqueue(shot);
 
                 return true;
@@ -55,23 +57,29 @@ namespace UFO
 
             public void Tick(float deltaTime)
             {
-                // TODO: Test for collisions, despawn on hit.
                 int count = _activeShots.Count;
                 for (int i = 0; i < count; i++)
                 {
                     ShotBase shot = _activeShots.Dequeue();
-                    shot.Tick(deltaTime);
-
-                    if (Mathf.Abs(shot.transform.position.x) > ScreenHalfWidth + 1.0f ||
-                        Mathf.Abs(shot.transform.position.y) > ScreenHalfHeight + 1.0f)
-                    {
-                        shot.gameObject.SetActive(false);
-                        _inactiveShots.Enqueue(shot);
-                    }
-                    else
+                    if (shot.Tick(deltaTime))
                     {
                         _activeShots.Enqueue(shot);
                     }
+                    else
+                    {
+                        _inactiveShots.Enqueue(shot);
+                    }
+                }
+            }
+
+            public void Clear()
+            {
+                int count = _activeShots.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    ShotBase shot = _activeShots.Dequeue();
+                    shot.gameObject.SetActive(false);
+                    _inactiveShots.Enqueue(shot);
                 }
             }
         }
@@ -80,7 +88,6 @@ namespace UFO
 
         private Dictionary<string, ShotPool> _shotPoolDict = new Dictionary<string, ShotPool>();
 
-        public Transform Player;
         private List<EnemyBase> _activeEnemies = new List<EnemyBase>();
 
         private int _currentStage = -1, _currentBar, _currentBeat;
@@ -117,6 +124,8 @@ namespace UFO
         void Start()
         {
             _audio = GetComponent<AudioManager>();
+            _player = PlayerController.Instance;
+
             foreach (ShotPool pool in ShotPools)
             {
                 _shotPoolDict[pool.Prefab.gameObject.name] = pool.Init(transform);
@@ -166,8 +175,8 @@ namespace UFO
                 return;
             }
 
-            Vector3 pos = new Vector3(lane, ScreenHalfHeight + 1.0f, -1.0f);
-            Instantiate(enemy, pos, Quaternion.identity); // TODO: switch to an object pooling scheme per stage.
+            Vector3 pos = new Vector3(lane, ScreenHalfHeight + 1.0f, 0.0f);
+            _activeEnemies.Add(Instantiate(enemy, pos, Quaternion.identity)); // TODO: switch to an object pooling scheme per stage.
 
             Debug.Log($"Bar: {bar},\tBeat: {beat},\tLane: {lane}");
         }
@@ -199,7 +208,18 @@ namespace UFO
             Debug.DrawRay(Vector3.zero, Vector3.up, Color.white, 0.5f * (float)BeatLength);
         }
 
-        public bool SpawnShot(string shotName, Vector3 position, int angle)
+        private int AngleToTarget(ShotBase.TargetType target, Vector3 position)
+        {
+            if (target == ShotBase.TargetType.Enemy)
+            {
+                Debug.LogError("The player can't have an aimed shot!");
+                return 0;
+            }
+
+            return (int)Vector2.SignedAngle(Vector2.down, (_player.transform.position - position).normalized);
+        }
+
+        public bool SpawnShot(ShotMode mode, string shotName, Vector3 position, ref int angle)
         {
             if (!_shotPoolDict.TryGetValue(shotName, out ShotPool pool))
             {
@@ -207,7 +227,45 @@ namespace UFO
                 return false;
             }
 
+            if (mode == ShotMode.Static)
+            {
+                return pool.Spawn(position, angle);
+            }
+            
+            if (mode == ShotMode.Random)
+            {
+                angle = UnityEngine.Random.Range(-angle, angle + 1);
+            }
+
+            angle = Wrap(angle + AngleToTarget(pool.Prefab.Target, position));
             return pool.Spawn(position, angle);
+        }
+
+        private void OnPlayerDeath()
+        {
+            // TODO: Trigger explosion. If zero extends left then gameover -> hiscore screen. Else respawn the player.
+            _player.BombCount = 3;
+            _player.PowerCount = 0;
+
+            if (_player.ExtendCount == 0)
+            {
+                _player.ExtendCount = 2;
+                return;
+            }
+
+            _player.ExtendCount--;
+            _player.Spawn();
+        }
+
+        private void OnBombUse()
+        {
+            // Clears all active shots.
+            foreach (ShotPool pool in _shotPoolDict.Values)
+            {
+                pool.Clear();
+            }
+
+            // TODO: damage enemies based on distance.
         }
 
         void FixedUpdate()
@@ -228,9 +286,8 @@ namespace UFO
             }
 
             // Manages enemies.
-            Vector3 playerPos = Player.position;
-
-            foreach (var enemy in _activeEnemies)
+            Vector3 playerPos = _player.transform.position;
+            foreach (EnemyBase enemy in _activeEnemies)
             {
                 enemy.Tick(playerPos, Time.fixedDeltaTime);
             }
@@ -242,12 +299,16 @@ namespace UFO
             }
         }
 
-        public void RegisterEnemy(EnemyBase e)
+        private void OnEnable()
         {
-            _activeEnemies.Add(e);
+            PlayerController.OnDeath += OnPlayerDeath;
+            PlayerController.OnBombUse += OnBombUse;
         }
 
-
-        // TODO: spawn player
+        private void OnDisable()
+        {
+            PlayerController.OnDeath -= OnPlayerDeath;
+            PlayerController.OnBombUse -= OnBombUse;
+        }
     }
 }

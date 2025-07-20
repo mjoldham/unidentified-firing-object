@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,6 +9,8 @@ namespace UFO
 {
     public class PlayerController : MonoBehaviour
     {
+        public static PlayerController Instance { get; private set; }
+
         public PlayerSettings Settings;
 
         public static Action OnSpawn, OnDeath, OnFire, OnBombUse;
@@ -15,8 +18,11 @@ namespace UFO
 
         public bool IsShielded;
 
+        [Min(0)]
+        public int ExtendCount = 2;
+
         [Range(0, 5)]
-        public int BombCount;
+        public int BombCount = 3;
 
         [Range(0, 4)]
         public int PowerCount;
@@ -27,6 +33,19 @@ namespace UFO
         private float _shotTimeFrames;
 
         private bool _isFiring;
+
+        private Coroutine _dyingCoroutine;
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Destroy(this);
+                return;
+            }
+
+            Instance = this;
+        }
 
         private void Start()
         {
@@ -77,17 +96,19 @@ namespace UFO
         public void Spawn()
         {
             Debug.Log("Spawn");
-            // TODO: Player takes ~4s to drift from bottom offscreen to top of no-fire zone.
 
             OnSpawn?.Invoke();
         }
 
+        private IEnumerator Dying()
+        {
+            yield return new WaitForSeconds(Settings.BombSaveDuration);
+            OnDeath?.Invoke();
+        }
+
         public void Die()
         {
-            Debug.Log("Die");
-            // TODO: Trigger explosion, reset any multipliers/powerups.
-
-            OnDeath?.Invoke();
+            StartCoroutine(Dying());
         }
 
         private void HandleMovement()
@@ -126,13 +147,22 @@ namespace UFO
 
         private void HandleBombing()
         {
+            if (BombCount == 0)
+            {
+                return;
+            }
+
             if (!Settings.BombAction.WasPerformedThisFrame())
             {
                 return;
             }
-            // TODO: clear all projectiles.
-            // TODO: damage enemies based on distance.
 
+            if (_dyingCoroutine != null)
+            {
+                StopCoroutine(_dyingCoroutine);
+            }
+
+            BombCount--;
             OnBombUse?.Invoke();
         }
 

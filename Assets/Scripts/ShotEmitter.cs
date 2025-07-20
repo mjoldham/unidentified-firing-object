@@ -16,8 +16,49 @@ namespace UFO
             Random
         }
 
-        public ShotMode CurrentMode { get; private set; }
-        public int CurrentOffset { get; private set; }
+
+        private ShotMode _currentMode;
+        public ShotMode CurrentMode
+        {
+            get => _currentMode;
+            set
+            {
+                if (value == _currentMode)
+                {
+                    return;
+                }
+
+                if (_currentMode != ShotMode.Static && value == ShotMode.Static)
+                {
+                    CurrentOffset = _lastAngle;
+                }
+                else
+                {
+                    CurrentOffset = 0;
+                }
+
+                _currentMode = value;
+            }
+        }
+
+        private int _currentOffset;
+        public int CurrentOffset
+        {
+            get => _currentOffset;
+            set
+            {
+                if (value >= -180 && value <= 180)
+                {
+                    _currentOffset = value;
+                    return;
+                }
+
+                _currentOffset = Wrap(value);
+            }
+        }
+
+        [HideInInspector]
+        public bool IsMirrored;
 
         private GameManager _gm;
 
@@ -38,12 +79,12 @@ namespace UFO
 
         private Stack<RepeatSequence> _repeatSequences = new Stack<RepeatSequence>();
 
-        private double _waitFrames;
+        [HideInInspector]
+        public int WaitFrames;
 
         private int _lastAngle;
-        private bool _isMirrored;
 
-        private int Wrap(int angle)
+        public static int Wrap(int angle)
         {
             if (angle < -180)
             {
@@ -58,87 +99,16 @@ namespace UFO
             return angle;
         }
 
-        // TODO: shots should have flags for what they damage, based off that change this function.
-        private int AngleToTarget()
-        {
-            Vector2 playerPosition = _gm.Player.position;
-            Vector2 toPlayer = (playerPosition - (Vector2)transform.position).normalized;
-            return (int)Vector2.SignedAngle(Vector2.down, toPlayer);
-        }
-
-        public void SetMode(ShotMode mode)
-        {
-            _currentIndex++;
-            if (mode == CurrentMode)
-            {
-                return;
-            }
-
-            if (CurrentMode != ShotMode.Static && mode == ShotMode.Static)
-            {
-                CurrentOffset = _lastAngle;
-            }
-            else
-            {
-                CurrentOffset = 0;
-            }
-
-            CurrentMode = mode;
-        }
-
-        public void SetPrefab(string name)
-        {
-            _currentIndex++;
-            ShotPrefabName = name;
-        }
-
         public void Fire()
         {
-            _currentIndex++;
-            if (CurrentMode == ShotMode.Static)
-            {
-                _lastAngle = CurrentOffset;
-                _gm.SpawnShot(ShotPrefabName, transform.position, _lastAngle);
-                return;
-            }
-
-            _lastAngle = AngleToTarget();
-            if (CurrentMode == ShotMode.Aimed)
-            {
-                _lastAngle += CurrentOffset;
-            }
-            else if (CurrentMode == ShotMode.Random)
-            {
-                _lastAngle += UnityEngine.Random.Range(-CurrentOffset, CurrentOffset + 1);
-            }
-
-            _lastAngle = Wrap(_lastAngle);
-            _gm.SpawnShot(ShotPrefabName, transform.position, _lastAngle);
-        }
-
-        public void ResetAngle()
-        {
-            _currentIndex++;
-            CurrentOffset = 0;
-        }
-
-        // Offsets current angle.
-        public void OffsetAngle(int degrees)
-        {
-            _currentIndex++;
-            CurrentOffset = Wrap(CurrentOffset + (_isMirrored ? -degrees : degrees));
-        }
-
-        public void Wait(int frames)
-        {
-            _currentIndex++;
-            _waitFrames = frames;
+            _lastAngle = CurrentOffset;
+            _gm.SpawnShot(CurrentMode, ShotPrefabName, transform.position, ref _lastAngle);
         }
 
         // Signals start of repeat sequence.
-        public void RepeatStart(int times)
+        public void RepeatStart(ref int index, int times)
         {
-            int start = ++_currentIndex;
+            int start = ++index;
             while (start < _sequence.Length && _sequence[start] is EmitterRepeatStart)
             {
                 start++;
@@ -154,22 +124,22 @@ namespace UFO
         }
 
         // Signals end of repeat sequence.
-        public bool RepeatEnd()
+        public bool RepeatEnd(ref int index)
         {
             if (_repeatSequences.Count == 0)
             {
-                _currentIndex++;
+                index++;
                 return false;
             }
 
             RepeatSequence repeat = _repeatSequences.Pop();
             if (repeat.End == 0)
             {
-                repeat.End = _currentIndex;
+                repeat.End = index;
             }
-            else if (repeat.End != _currentIndex)
+            else if (repeat.End != index)
             {
-                _currentIndex++;
+                index++;
                 _repeatSequences.Push(repeat);
                 return false;
             }
@@ -179,14 +149,8 @@ namespace UFO
                 _repeatSequences.Push(repeat);
             }
 
-            _currentIndex = repeat.Start;
+            index = repeat.Start;
             return true;
-        }
-
-        public void Mirror()
-        {
-            _currentIndex++; // TODO: refactor so it's clear these functions must incr index!
-            _isMirrored = !_isMirrored;
         }
 
         private void Start()
@@ -209,7 +173,7 @@ namespace UFO
         // Returns true so long as the sequence isn't finished.
         public bool Tick()
         {
-            if (--_waitFrames > 0)
+            if (--WaitFrames > 0)
             {
                 return true;
             }
@@ -217,12 +181,12 @@ namespace UFO
             bool next;
             do
             {
-                if (_currentIndex >= _sequence.Length && !RepeatEnd())
+                if (_currentIndex >= _sequence.Length && !RepeatEnd(ref _currentIndex))
                 {
                     return false;
                 }
 
-                next = _sequence[_currentIndex].Execute();
+                next = _sequence[_currentIndex].Execute(ref _currentIndex);
             }
             while (next);
 

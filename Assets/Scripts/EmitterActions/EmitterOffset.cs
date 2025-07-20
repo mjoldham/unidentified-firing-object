@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UFO.ShotEmitter;
 
 namespace UFO
 {
@@ -7,9 +8,10 @@ namespace UFO
         [Range(-180, 180)]
         public int Degrees;
 
-        public override bool Execute()
+        public override bool Execute(ref int index)
         {
-            Emitter.OffsetAngle(Degrees);
+            index++;
+            Emitter.CurrentOffset += Emitter.IsMirrored ? -Degrees : Degrees;
             return true;
         }
     }

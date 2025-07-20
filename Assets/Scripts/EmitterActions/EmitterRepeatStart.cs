@@ -7,9 +7,9 @@ namespace UFO
         [Min(1)]
         public int Times = 1;
 
-        public override bool Execute()
+        public override bool Execute(ref int index)
         {
-            Emitter.RepeatStart(Times);
+            Emitter.RepeatStart(ref index, Times);
             return true;
         }
     }

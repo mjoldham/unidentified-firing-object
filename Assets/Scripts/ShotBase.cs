@@ -5,23 +5,42 @@ namespace UFO
 {
     public abstract class ShotBase : MonoBehaviour
     {
+        public enum TargetType
+        {
+            Player,
+            Enemy,
+            Both
+        }
+
+        public TargetType Target;
         public float Speed = 5.0f;
 
         [HideInInspector]
         public int Angle = 0;
 
-        public void ResetShot(Vector3 position, int angle)
+        private Vector3 _velocity;
+
+        public void Spawn(Vector3 position, int angle)
         {
-            transform.SetPositionAndRotation(position, Quaternion.AngleAxis(angle, Vector3.forward));
-            Angle = angle;
+            Quaternion rot = Quaternion.Euler(0.0f, 0.0f, Angle = angle);
+            transform.SetPositionAndRotation(position, rot);
+            _velocity = rot * (Speed * Vector3.down);
+
             gameObject.SetActive(true);
         }
 
-        public virtual void Tick(float deltaTime)
+        public virtual bool Tick(float deltaTime)
         {
-            Vector3 move = Quaternion.Euler(0.0f, 0.0f, Angle) * Vector3.down;
-            transform.position += Speed * deltaTime * move;
-            // TODO: put out-of-bounds/collision logic for each shot type here.
+            // TODO: Test for collisions.
+            transform.position += deltaTime * _velocity;
+            if (Mathf.Abs(transform.position.x) > GameManager.ScreenHalfWidth + 1.0f ||
+                Mathf.Abs(transform.position.y) > GameManager.ScreenHalfHeight + 1.0f)
+            {
+                gameObject.SetActive(false);
+                return false;
+            }
+
+            return true;
         }
     }
 }

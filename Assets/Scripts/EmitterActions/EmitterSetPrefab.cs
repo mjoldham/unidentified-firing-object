@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace UFO
@@ -6,9 +7,10 @@ namespace UFO
     {
         public string ShotPrefabName;
 
-        public override bool Execute()
+        public override bool Execute(ref int index)
         {
-            Emitter.SetPrefab(ShotPrefabName);
+            index++;
+            Emitter.ShotPrefabName = ShotPrefabName;
             return true;
         }
     }

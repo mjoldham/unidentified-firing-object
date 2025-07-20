@@ -4,9 +4,10 @@ namespace UFO
 {
     public class EmitterResetAngle : EmitterAction
     {
-        public override bool Execute()
+        public override bool Execute(ref int index)
         {
-            Emitter.ResetAngle();
+            index++;
+            Emitter.CurrentOffset = 0;
             return true;
         }
     }

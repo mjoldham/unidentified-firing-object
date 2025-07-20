@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static UFO.ShotEmitter;
 
 namespace UFO
 {
@@ -7,9 +8,10 @@ namespace UFO
     {
         public ShotEmitter.ShotMode NewMode;
 
-        public override bool Execute()
+        public override bool Execute(ref int index)
         {
-            Emitter.SetMode(NewMode);
+            index++;
+            Emitter.CurrentMode = NewMode;
             return true;
         }
     }

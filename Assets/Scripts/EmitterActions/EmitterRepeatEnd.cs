@@ -4,9 +4,9 @@ namespace UFO
 {
     public class EmitterRepeatEnd : EmitterAction
     {
-        public override bool Execute()
+        public override bool Execute(ref int index)
         {
-            Emitter.RepeatEnd();
+            Emitter.RepeatEnd(ref index);
             return true;
         }
     }

@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 namespace UFO
 {
@@ -7,9 +9,10 @@ namespace UFO
         [Min(1)]
         public int FramesToWait = 1;
 
-        public override bool Execute()
+        public override bool Execute(ref int index)
         {
-            Emitter.Wait(FramesToWait);
+            index++;
+            Emitter.WaitFrames = FramesToWait;
             return false;
         }
     }
