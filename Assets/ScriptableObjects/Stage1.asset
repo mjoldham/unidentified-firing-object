@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MusicTrack: {fileID: 8300000, guid: 2bdc4566ea1432d40950ad4e24ec652e, type: 3}
   BPM: 180
+  Background: {fileID: -7592039380097122887, guid: b3cada443b92c34498e0699f077dd662, type: 3}
+  ScrollSpeed: 1
   Spawns:
   - CheckForEnemies: 0
     Bar: 3

@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: EnemyShot
+  Parameters: {fileID: 11400000, guid: e802992de201217459e8f302dfd6e92b, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!114 &2448049877778751740

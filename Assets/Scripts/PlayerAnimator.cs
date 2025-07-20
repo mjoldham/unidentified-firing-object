@@ -94,7 +94,7 @@ namespace UFO
             _firingScale = 0.0f;
         }
 
-        private void FixedUpdate()
+        private void Tick()
         {
             Vector3 offset = _firingScale * _pixelSize * Mathf.Sin(2.0f * Mathf.PI * 10.0f * Time.time) * Vector3.up;
             ThrusterLeft.localPosition = _thrusterLeftPos + offset;
@@ -103,6 +103,7 @@ namespace UFO
 
         private void OnEnable()
         {
+            PlayerController.OnTick += Tick;
             PlayerController.OnMove += OnMove;
             PlayerController.OnFireStart += OnFireStart;
             PlayerController.OnFireEnd += OnFireEnd;
@@ -110,6 +111,7 @@ namespace UFO
 
         private void OnDisable()
         {
+            PlayerController.OnTick -= Tick;
             PlayerController.OnMove -= OnMove;
             PlayerController.OnFireStart -= OnFireStart;
             PlayerController.OnFireEnd -= OnFireEnd;

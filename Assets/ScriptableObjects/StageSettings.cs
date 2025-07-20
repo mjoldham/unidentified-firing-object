@@ -24,6 +24,10 @@ namespace UFO
     {
         public AudioClip MusicTrack;
         public int BPM = 180;
+
+        public Sprite Background;
+        public float ScrollSpeed;
+
         public SpawnInfo[] Spawns;
 
         [HideInInspector]

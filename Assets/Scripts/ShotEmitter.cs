@@ -7,7 +7,7 @@ namespace UFO
 {
     public class ShotEmitter : MonoBehaviour
     {
-        public string ShotPrefabName;
+        public ShotParams Parameters;
 
         public enum ShotMode
         {
@@ -135,7 +135,10 @@ namespace UFO
         public void Fire()
         {
             _lastAngle = CurrentOffset;
-            _gm.SpawnShot(CurrentMode, ShotPrefabName, transform.position, ref _lastAngle);
+            if (!_gm.SpawnShot(CurrentMode, Parameters, transform.position, ref _lastAngle))
+            {
+                Debug.Log($"{gameObject.name} has stalled!");
+            }
         }
 
         // Signals start of repeat sequence.

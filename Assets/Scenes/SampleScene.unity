@@ -183,7 +183,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &79073751
 SpriteRenderer:
@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!114 &185244720
@@ -425,7 +425,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &309704318
 SpriteRenderer:
@@ -716,7 +716,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &366172373
 SpriteRenderer:
@@ -883,7 +883,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!114 &371550783
@@ -899,7 +899,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
 --- !u!114 &371550784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -954,7 +954,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: DoubleShotSide
+  Parameters: {fileID: 11400000, guid: aeca5de81da740c43b4c153b8ac02b56, type: 2}
 --- !u!114 &371550788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1012,7 +1012,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &395109660
 SpriteRenderer:
@@ -1104,6 +1104,48 @@ Transform:
   - {fileID: 1788110184}
   - {fileID: 1711403496}
   m_Father: {fileID: 797393510}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &505524912
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 505524913}
+  m_Layer: 0
+  m_Name: Asteroids
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &505524913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 505524912}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 366172372}
+  - {fileID: 707452349}
+  - {fileID: 1386819759}
+  - {fileID: 587048415}
+  - {fileID: 309704317}
+  - {fileID: 844715084}
+  - {fileID: 395109659}
+  - {fileID: 79073750}
+  - {fileID: 1724438661}
+  - {fileID: 1538247668}
+  - {fileID: 1011219845}
+  m_Father: {fileID: 1955779026}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
@@ -1204,10 +1246,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.24774775
-    y: 0.24774775
-    width: 0.5045045
-    height: 0.5045045
+    x: 0.08974359
+    y: 0.08974359
+    width: 0.82051283
+    height: 0.82051283
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
@@ -1365,7 +1407,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &587048416
 SpriteRenderer:
@@ -1710,7 +1752,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
 --- !u!114 &701289200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1765,7 +1807,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: DoubleShotSide
+  Parameters: {fileID: 11400000, guid: aeca5de81da740c43b4c153b8ac02b56, type: 2}
 --- !u!114 &701289204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1847,7 +1889,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &707452348
@@ -1880,7 +1922,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &707452350
 SpriteRenderer:
@@ -2109,7 +2151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!114 &764073768
@@ -2218,7 +2260,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &844715085
 SpriteRenderer:
@@ -2335,7 +2377,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: cfe2f4e1c9e303540a4094198057879b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -2430,7 +2472,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
 --- !u!114 &976370250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2485,7 +2527,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: DoubleShotSide
+  Parameters: {fileID: 11400000, guid: aeca5de81da740c43b4c153b8ac02b56, type: 2}
 --- !u!114 &976370254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2553,7 +2595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1008198396
@@ -2688,7 +2730,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: DoubleShotSide
+  Parameters: {fileID: 11400000, guid: aeca5de81da740c43b4c153b8ac02b56, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1011219844
@@ -2721,7 +2763,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1011219846
 SpriteRenderer:
@@ -2855,7 +2897,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82eaa172024ecc1499dbdf7195eddd24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultAudioAssets: {fileID: 11400000, guid: 6a002bb6057e45d4da5264331b295fdd, type: 2}
+  Settings: {fileID: 11400000, guid: 6a002bb6057e45d4da5264331b295fdd, type: 2}
 --- !u!114 &1068270318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2868,6 +2910,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 791334dba9340ee4387861c4f7d4b060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BackgroundRenderer: {fileID: 1523567844}
   Stages:
   - {fileID: 11400000, guid: bf66478c7df080e4c8adf9ced9aaf038, type: 2}
   - {fileID: 11400000, guid: 3bdd9e9154f04fd47b77760ea1332564, type: 2}
@@ -2875,17 +2918,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 758c9d37a6490c74aa85f6380bd39646, type: 2}
   - {fileID: 11400000, guid: 7274d4b25ccb5a14aac36d3970658120, type: 2}
   - {fileID: 11400000, guid: 602c1a97b9b2e2847955474f825881da, type: 2}
-  ShotPools:
-  - Prefab: {fileID: 7618851937051392580, guid: aac9972aa12c42d44ae7f2f87507f6bc, type: 3}
-    MaxCount: 16
-  - Prefab: {fileID: 7618851937051392580, guid: 645603d5673986749abc158078e07e2b, type: 3}
+  BaseShotPrefab: {fileID: -2493970710727147230, guid: 2f17d140ce539b54190f22964689b355, type: 3}
+  PlayerShotPool:
     MaxCount: 32
-  - Prefab: {fileID: 7618851937051392580, guid: 57970e4e0801dd94c81b27f6603e11b3, type: 3}
-    MaxCount: 16
-  - Prefab: {fileID: 7618851937051392580, guid: 374eaf961c2b5d241a38ebcb353104aa, type: 3}
-    MaxCount: 32
-  - Prefab: {fileID: 8790723755849681078, guid: 9d228a6b5ddbdb345817dc41cccf779a, type: 3}
-    MaxCount: 100
+  EnemyShotPool:
+    MaxCount: 256
 --- !u!1 &1163879723
 GameObject:
   m_ObjectHideFlags: 0
@@ -2989,7 +3026,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: DoubleShot
+  Parameters: {fileID: 11400000, guid: ca667c9c1eaf6d14891943dc95930ba6, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1168984198
@@ -3076,7 +3113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
 --- !u!114 &1168984203
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3131,7 +3168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: DoubleShotSide
+  Parameters: {fileID: 11400000, guid: aeca5de81da740c43b4c153b8ac02b56, type: 2}
 --- !u!114 &1168984207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3213,7 +3250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1224935582
@@ -3335,7 +3372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!114 &1224935591
@@ -3487,7 +3524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!114 &1247640977
@@ -3592,7 +3629,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1386819760
 SpriteRenderer:
@@ -3781,7 +3818,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: DoubleShotSide
+  Parameters: {fileID: 11400000, guid: aeca5de81da740c43b4c153b8ac02b56, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1441833552
@@ -3887,7 +3924,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: DoubleShot
+  Parameters: {fileID: 11400000, guid: ca667c9c1eaf6d14891943dc95930ba6, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1443635061
@@ -3958,7 +3995,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
 --- !u!114 &1443635065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4013,7 +4050,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: DoubleShotSide
+  Parameters: {fileID: 11400000, guid: aeca5de81da740c43b4c153b8ac02b56, type: 2}
 --- !u!114 &1443635069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4081,7 +4118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1474751277
@@ -4203,7 +4240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!114 &1474751286
@@ -4230,7 +4267,7 @@ GameObject:
   - component: {fileID: 1523567843}
   - component: {fileID: 1523567844}
   m_Layer: 0
-  m_Name: Untitled_Artwork 9_0
+  m_Name: Planet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4274,7 +4311,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: -876546973899608171, guid: 52e87b1baee41d743a21deb7b2ceb921, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4295,7 +4332,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -100
-  m_Sprite: {fileID: -7592039380097122887, guid: b3cada443b92c34498e0699f077dd662, type: 3}
+  m_Sprite: {fileID: 1352956480140249199, guid: 663d8a5da0e5e974986ff8a490b6a7c4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4336,7 +4373,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1538247669
 SpriteRenderer:
@@ -4532,7 +4569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: DoubleShot
+  Parameters: {fileID: 11400000, guid: ca667c9c1eaf6d14891943dc95930ba6, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1617546626
@@ -4591,7 +4628,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
 --- !u!114 &1617546629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4646,7 +4683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  ShotPrefabName: DoubleShotSide
+  Parameters: {fileID: 11400000, guid: aeca5de81da740c43b4c153b8ac02b56, type: 2}
 --- !u!114 &1617546633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4714,7 +4751,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!114 &1617546639
@@ -4820,7 +4857,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShotSide
+  Parameters: {fileID: 11400000, guid: 849b80c517c4f09488ceeca04509a1db, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!114 &1664795772
@@ -5041,7 +5078,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: DoubleShotSide
+  Parameters: {fileID: 11400000, guid: aeca5de81da740c43b4c153b8ac02b56, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1724438660
@@ -5074,7 +5111,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1955779026}
+  m_Father: {fileID: 505524913}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1724438662
 SpriteRenderer:
@@ -5346,7 +5383,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShot
+  Parameters: {fileID: 11400000, guid: 7b033b90a56eec048ab977b61c952ef0, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1788110183
@@ -5525,7 +5562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: DoubleShotSide
+  Parameters: {fileID: 11400000, guid: aeca5de81da740c43b4c153b8ac02b56, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!1 &1955779025
@@ -5558,17 +5595,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1523567843}
-  - {fileID: 366172372}
-  - {fileID: 707452349}
-  - {fileID: 1386819759}
-  - {fileID: 587048415}
-  - {fileID: 309704317}
-  - {fileID: 844715084}
-  - {fileID: 395109659}
-  - {fileID: 79073750}
-  - {fileID: 1724438661}
-  - {fileID: 1538247668}
-  - {fileID: 1011219845}
+  - {fileID: 505524913}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3565263638519545680
@@ -5631,7 +5658,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShotPrefabName: SingleShot
+  Parameters: {fileID: 11400000, guid: 7b033b90a56eec048ab977b61c952ef0, type: 2}
   IsMirrored: 0
   WaitFrames: 0
 --- !u!114 &6992711937781162322

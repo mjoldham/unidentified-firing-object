@@ -7,13 +7,13 @@ namespace UFO
 {
     public class AudioManager : MonoBehaviour
     {
-        public AudioAssets DefaultAudioAssets;
+        public AudioSettings Settings;
 
         private AudioSource _musicSource;
         private AudioSource _playerFireSource;
         private AudioSource _explosionSource;
 
-        private List<AudioSource> _syncSources = new List<AudioSource>();
+        private Dictionary<AudioSource, Coroutine> _loopSources = new Dictionary<AudioSource, Coroutine>();
 
         private Coroutine _duckingMusic = null;
 
@@ -24,7 +24,7 @@ namespace UFO
             source.loop = true;
             source.volume = 0.0f;
 
-            _syncSources.Add(source);
+            _loopSources[source] = null;
         }
 
         private void InitOneShotSource(AudioSource source, float volume = 1.0f)
@@ -37,10 +37,10 @@ namespace UFO
         private void Awake()
         {
             _musicSource = gameObject.AddComponent<AudioSource>();
-            InitOneShotSource(_musicSource, DefaultAudioAssets.MusicVolume);
+            InitOneShotSource(_musicSource, Settings.MusicVolume);
             
             _playerFireSource = gameObject.AddComponent<AudioSource>();
-            InitOneShotSource(_playerFireSource);
+            InitLoopingSource(_playerFireSource, Settings.PlayerFire);
 
             _explosionSource = gameObject.AddComponent<AudioSource>();
             InitOneShotSource (_explosionSource);
@@ -48,14 +48,7 @@ namespace UFO
 
         private void Start()
         {
-            StartCoroutine(SyncingLoops());
-        }
-
-        private IEnumerator SyncingLoops()
-        {
-            yield return null;
-
-            foreach (AudioSource source in _syncSources)
+            foreach (AudioSource source in _loopSources.Keys)
             {
                 source.Play();
             }
@@ -67,38 +60,77 @@ namespace UFO
             _musicSource.PlayScheduled(atTime);
         }
 
-        private void OnPlayerFire()
+        IEnumerator Fading(AudioSource source, float targetVol, float duration)
         {
-            _playerFireSource.PlayOneShot(DefaultAudioAssets.PlayerFire);
+            float startVol = source.volume;
+            float endTime = Time.time + duration;
+            while (Time.time < endTime)
+            {
+                source.volume = Mathf.Lerp(targetVol, startVol, (endTime - Time.time) / duration);
+                yield return null;
+            }
+
+            source.volume = targetVol;
+        }
+
+        private void StartFading(AudioSource source, float targetVol, float duration)
+        {
+            if (!_loopSources.TryGetValue(source, out Coroutine fading))
+            {
+                Debug.LogError($"{nameof(source)} was not found in looping sources dictionary.");
+                return;
+            }
+
+            if (fading != null)
+            {
+                StopCoroutine(fading);
+            }
+
+            fading = StartCoroutine(Fading(source, targetVol, duration));
+        }
+
+        private void OnPlayerFireStart()
+        {
+            StartFading(_playerFireSource, 1.0f, 0.1f);
+        }
+
+        private void OnPlayerFireEnd()
+        {
+            StartFading(_playerFireSource, 0.0f, 0.1f);
         }
 
         private IEnumerator DuckMusic(float volumeScale, float duration)
         {
-            _musicSource.volume = DefaultAudioAssets.MusicVolume * volumeScale;
-            yield return new WaitForSeconds(duration);
-            _musicSource.volume = DefaultAudioAssets.MusicVolume;
+            float transition = 0.1f;
+            yield return Fading(_musicSource, volumeScale * Settings.MusicVolume, transition);
+
+            yield return new WaitForSeconds(duration - 2.0f * transition);
+
+            yield return Fading(_musicSource, Settings.MusicVolume, transition);
         }
 
         private void OnBombUse()
         {
-            _explosionSource.PlayOneShot(DefaultAudioAssets.BombUse);
+            _explosionSource.PlayOneShot(Settings.BombUse);
             if (_duckingMusic != null)
             {
                 StopCoroutine(_duckingMusic);
             }
 
-            _duckingMusic = StartCoroutine(DuckMusic(0.5f, 0.5f));
+            _duckingMusic = StartCoroutine(DuckMusic(Settings.MusicDuckScale, 0.8f * Settings.BombUse.length));
         }
 
         private void OnEnable()
         {
-            PlayerController.OnFireStart += OnPlayerFire;
+            PlayerController.OnFireStart += OnPlayerFireStart;
+            PlayerController.OnFireEnd += OnPlayerFireEnd;
             PlayerController.OnBombUse += OnBombUse;
         }
 
         private void OnDisable()
         {
-            PlayerController.OnFireStart -= OnPlayerFire;
+            PlayerController.OnFireStart -= OnPlayerFireStart;
+            PlayerController.OnFireEnd -= OnPlayerFireEnd;
             PlayerController.OnBombUse -= OnBombUse;
         }
     }

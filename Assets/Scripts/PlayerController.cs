@@ -15,7 +15,9 @@ namespace UFO
 
         public Transform PowerLevels;
 
-        public static Action OnSpawn, OnDeath, OnFireStart, OnFireEnd, OnBombUse;
+        public static Action OnTick;
+        public static Action OnSpawn, OnGameOver, OnFireStart, OnFireEnd, OnBombUse;
+        public static Action OnGetShield, OnGetBomb, OnGetPower, OnGetExtend, OnItemScore;
         public static Action<Vector2, bool> OnMove;
 
         public bool IsShielded;
@@ -55,9 +57,12 @@ namespace UFO
             }
         }
 
-        public void Spawn()
+        public void Spawn(int extends)
         {
-            Debug.Log("Spawn");
+            // TODO: figure out spawning player. should take ~4s to float from offscreen to bottom half, plus a few more seconds of invincibility.
+            ExtendCount = extends;
+            BombCount = 3;
+            PowerCount = 0;
 
             OnSpawn?.Invoke();
         }
@@ -65,7 +70,15 @@ namespace UFO
         private IEnumerator Dying()
         {
             yield return new WaitForSeconds(Settings.BombSaveDuration);
-            OnDeath?.Invoke();
+
+            // TODO: figure out player death. already sorted bomb saves, need death explosion then either spawn or gameover. GM should handle gameover.
+            if (ExtendCount == 0)
+            {
+                OnGameOver?.Invoke();
+                yield break;
+            }
+
+            Spawn(ExtendCount - 1);
         }
 
         public void Die()
@@ -73,7 +86,50 @@ namespace UFO
             StartCoroutine(Dying());
         }
 
-        private void HandleMovement()
+        public void GetShield()
+        {
+            if (IsShielded)
+            {
+                // TODO: score points when exceeding item limits.
+                OnItemScore?.Invoke();
+                return;
+            }
+
+            IsShielded = true;
+            OnGetShield?.Invoke();
+        }
+
+        public void GetBomb()
+        {
+            if (BombCount == Settings.BombLimit)
+            {
+                OnItemScore?.Invoke();
+                return;
+            }
+
+            BombCount++;
+            OnGetBomb?.Invoke();
+        }
+
+        public void GetPower()
+        {
+            if (PowerCount == _emitters.Length - 1)
+            {
+                OnItemScore?.Invoke();
+                return;
+            }
+
+            PowerCount++;
+            OnGetPower?.Invoke();
+        }
+
+        public void GetExtend()
+        {
+            ExtendCount++;
+            OnGetExtend?.Invoke();
+        }
+
+        private void HandleMovement(float deltaTime)
         {
             Vector2 move = Vector2.zero;
             if (Settings.LeftAction.IsPressed())
@@ -97,7 +153,7 @@ namespace UFO
             }
 
             move.Normalize();
-            move *= Time.fixedDeltaTime * (_isFiring ? Settings.SlowSpeed : Settings.FastSpeed);
+            move *= deltaTime * (_isFiring ? Settings.SlowSpeed : Settings.FastSpeed);
 
             Vector3 oldPos = transform.position;
             transform.position += (Vector3)move;
@@ -114,7 +170,6 @@ namespace UFO
                 _shotTimeFrames = Settings.ShotTimeBuffer;
             }
 
-            // TODO: could restart emitters early if all shots are despawned?
             bool wasFiring = _isFiring;
             ShotEmitter.Tick(_emitters[PowerCount], ref _isFiring, ref _shotTimeFrames);
             if (_isFiring)
@@ -123,6 +178,8 @@ namespace UFO
                 {
                     OnFireStart?.Invoke();
                 }
+
+                // TODO: check muzzle flash hitbox against enemies and deal damage.
             }
             else if (wasFiring)
             {
@@ -151,16 +208,25 @@ namespace UFO
             OnBombUse?.Invoke();
         }
 
-        private void FixedUpdate()
+        public void Tick(float deltaTime)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Application.Quit();
             }
 
-            HandleMovement();
+            if (_dyingCoroutine != null)
+            {
+                HandleBombing();
+                OnTick?.Invoke();
+                return;
+            }
+
+            HandleMovement(deltaTime);
             HandleFiring();
             HandleBombing();
+
+            OnTick?.Invoke();
         }
 
         private void OnEnable()
