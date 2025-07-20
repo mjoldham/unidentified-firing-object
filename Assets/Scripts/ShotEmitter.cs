@@ -16,7 +16,6 @@ namespace UFO
             Random
         }
 
-
         private ShotMode _currentMode;
         public ShotMode CurrentMode
         {
@@ -97,6 +96,40 @@ namespace UFO
             }
 
             return angle;
+        }
+
+        public static void Tick(IEnumerable<ShotEmitter> emitters, ref bool isFiring, ref int fireFrames)
+        {
+            if (emitters == null)
+            {
+                return;
+            }
+
+            fireFrames--;
+            if (isFiring)
+            {
+                isFiring = false;
+                foreach (ShotEmitter emitter in emitters)
+                {
+                    isFiring |= emitter.Tick();
+                }
+
+                if (isFiring)
+                {
+                    return;
+                }
+            }
+
+            if (fireFrames < 0)
+            {
+                return;
+            }
+
+            isFiring = true;
+            foreach (ShotEmitter emitter in emitters)
+            {
+                emitter.Restart();
+            }
         }
 
         public void Fire()

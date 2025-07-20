@@ -15,23 +15,28 @@ MonoBehaviour:
   MusicTrack: {fileID: 8300000, guid: 2bdc4566ea1432d40950ad4e24ec652e, type: 3}
   BPM: 180
   Spawns:
-  - Bar: 4
+  - CheckForEnemies: 0
+    Bar: 3
     Beat: 0
     Lane: 0
     Enemy: {fileID: 4830755838349112751, guid: 9cd2ad55608505a49abcd210df9c371c, type: 3}
-  - Bar: 5
+  - CheckForEnemies: 0
+    Bar: 4
     Beat: 0
     Lane: -2
     Enemy: {fileID: 4830755838349112751, guid: 9cd2ad55608505a49abcd210df9c371c, type: 3}
-  - Bar: 5
+  - CheckForEnemies: 0
+    Bar: 4
     Beat: 1
     Lane: -1
     Enemy: {fileID: 4830755838349112751, guid: 9cd2ad55608505a49abcd210df9c371c, type: 3}
-  - Bar: 5
+  - CheckForEnemies: 0
+    Bar: 4
     Beat: 2
     Lane: 1
     Enemy: {fileID: 4830755838349112751, guid: 9cd2ad55608505a49abcd210df9c371c, type: 3}
-  - Bar: 5
+  - CheckForEnemies: 0
+    Bar: 4
     Beat: 3
     Lane: 2
     Enemy: {fileID: 4830755838349112751, guid: 9cd2ad55608505a49abcd210df9c371c, type: 3}

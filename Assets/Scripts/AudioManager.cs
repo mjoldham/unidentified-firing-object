@@ -92,13 +92,13 @@ namespace UFO
 
         private void OnEnable()
         {
-            PlayerController.OnFire += OnPlayerFire;
+            PlayerController.OnFireStart += OnPlayerFire;
             PlayerController.OnBombUse += OnBombUse;
         }
 
         private void OnDisable()
         {
-            PlayerController.OnFire -= OnPlayerFire;
+            PlayerController.OnFireStart -= OnPlayerFire;
             PlayerController.OnBombUse -= OnBombUse;
         }
     }

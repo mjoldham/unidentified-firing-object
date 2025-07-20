@@ -88,7 +88,7 @@ namespace UFO
 
         private Dictionary<string, ShotPool> _shotPoolDict = new Dictionary<string, ShotPool>();
 
-        private List<EnemyBase> _activeEnemies = new List<EnemyBase>();
+        private Queue<EnemyBase> _activeEnemies = new Queue<EnemyBase>();
 
         private int _currentStage = -1, _currentBar, _currentBeat;
 
@@ -176,7 +176,7 @@ namespace UFO
             }
 
             Vector3 pos = new Vector3(lane, ScreenHalfHeight + 1.0f, 0.0f);
-            _activeEnemies.Add(Instantiate(enemy, pos, Quaternion.identity)); // TODO: switch to an object pooling scheme per stage.
+            _activeEnemies.Enqueue(Instantiate(enemy, pos, Quaternion.identity)); // TODO: switch to an object pooling scheme per stage.
 
             Debug.Log($"Bar: {bar},\tBeat: {beat},\tLane: {lane}");
         }
@@ -287,9 +287,17 @@ namespace UFO
 
             // Manages enemies.
             Vector3 playerPos = _player.transform.position;
-            foreach (EnemyBase enemy in _activeEnemies)
+            int count = _activeEnemies.Count;
+            for (int i = 0; i < count; i++)
             {
+                EnemyBase enemy = _activeEnemies.Dequeue();
+                if (enemy == null)
+                {
+                    continue;
+                }
+
                 enemy.Tick(playerPos, Time.fixedDeltaTime);
+                _activeEnemies.Enqueue(enemy);
             }
 
             // Manages shots.

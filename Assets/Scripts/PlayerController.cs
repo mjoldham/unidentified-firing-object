@@ -13,7 +13,9 @@ namespace UFO
 
         public PlayerSettings Settings;
 
-        public static Action OnSpawn, OnDeath, OnFire, OnBombUse;
+        public Transform PowerLevels;
+
+        public static Action OnSpawn, OnDeath, OnFireStart, OnFireEnd, OnBombUse;
         public static Action<Vector2, bool> OnMove;
 
         public bool IsShielded;
@@ -28,11 +30,8 @@ namespace UFO
         public int PowerCount;
 
         private List<ShotEmitter>[] _emitters;
-
-        private int _shotFrame;
-        private float _shotTimeFrames;
-
         private bool _isFiring;
+        private int _shotTimeFrames;
 
         private Coroutine _dyingCoroutine;
 
@@ -49,47 +48,10 @@ namespace UFO
 
         private void Start()
         {
-            Transform child = transform.GetChild(0);
-            _emitters = new List<ShotEmitter>[child.childCount];
-            for (int i = 0; i < child.childCount; i++)
+            _emitters = new List<ShotEmitter>[PowerLevels.childCount];
+            for (int i = 0; i < PowerLevels.childCount; i++)
             {
-                _emitters[i] = child.GetChild(i).GetComponentsInChildren<ShotEmitter>().ToList();
-            }
-        }
-
-        private void HandleFiring()
-        {
-            if (Settings.FireAction.IsPressed())
-            {
-                _shotTimeFrames = Settings.ShotTimeBuffer;
-            }
-
-            // TODO: could restart emitters early if all shots are despawned?
-
-            _shotTimeFrames--;
-            if (_isFiring)
-            {
-                _isFiring = false;
-                foreach (ShotEmitter emitter in _emitters[PowerCount])
-                {
-                    _isFiring |= emitter.Tick();
-                }
-
-                if (_isFiring)
-                {
-                    return;
-                }
-            }
-
-            if (_shotTimeFrames < 0)
-            {
-                return;
-            }
-
-            _isFiring = true;
-            foreach (ShotEmitter emitter in _emitters[PowerCount])
-            {
-                emitter.Restart();
+                _emitters[i] = PowerLevels.GetChild(i).GetComponentsInChildren<ShotEmitter>().ToList();
             }
         }
 
@@ -143,6 +105,29 @@ namespace UFO
                 Mathf.Clamp(transform.position.y, -GameManager.ScreenHalfHeight, GameManager.ScreenHalfHeight));
 
             OnMove?.Invoke(transform.position - oldPos, _isFiring);
+        }
+
+        private void HandleFiring()
+        {
+            if (Settings.FireAction.IsPressed())
+            {
+                _shotTimeFrames = Settings.ShotTimeBuffer;
+            }
+
+            // TODO: could restart emitters early if all shots are despawned?
+            bool wasFiring = _isFiring;
+            ShotEmitter.Tick(_emitters[PowerCount], ref _isFiring, ref _shotTimeFrames);
+            if (_isFiring)
+            {
+                if (!wasFiring)
+                {
+                    OnFireStart?.Invoke();
+                }
+            }
+            else if (wasFiring)
+            {
+                OnFireEnd?.Invoke();
+            }
         }
 
         private void HandleBombing()
