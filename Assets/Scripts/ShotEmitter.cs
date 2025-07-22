@@ -79,7 +79,7 @@ namespace UFO
         private Stack<RepeatSequence> _repeatSequences = new Stack<RepeatSequence>();
 
         [HideInInspector]
-        public int WaitFrames;
+        public int WaitFrames, WaitBeats;
 
         private int _lastAngle;
 
@@ -130,6 +130,23 @@ namespace UFO
             {
                 emitter.Restart();
             }
+        }
+
+        // Returns true if still firing.
+        public static bool Tick(IEnumerable<ShotEmitter> emitters)
+        {
+            if (emitters == null)
+            {
+                return false;
+            }
+
+            bool stillFiring = false;
+            foreach (ShotEmitter emitter in emitters)
+            {
+                stillFiring |= emitter.Tick();
+            }
+
+            return stillFiring;
         }
 
         public void Fire()
@@ -189,7 +206,7 @@ namespace UFO
             return true;
         }
 
-        private void Start()
+        public void Init()
         {
             _gm = GameManager.Instance;
 
@@ -209,7 +226,7 @@ namespace UFO
         // Returns true so long as the sequence isn't finished.
         public bool Tick()
         {
-            if (--WaitFrames > 0)
+            if (WaitBeats > 0 || --WaitFrames > 0)
             {
                 return true;
             }
@@ -227,6 +244,21 @@ namespace UFO
             while (next);
 
             return true;
+        }
+
+        private void OnBeat()
+        {
+            WaitBeats--;
+        }
+
+        private void OnEnable()
+        {
+            GameManager.OnBeat += OnBeat;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnBeat -= OnBeat;
         }
     }
 }

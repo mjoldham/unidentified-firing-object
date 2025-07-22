@@ -1246,10 +1246,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.08974359
-    y: 0.08974359
-    width: 0.82051283
-    height: 0.82051283
+    x: 0.06420233
+    y: 0.06420233
+    width: 0.8715953
+    height: 0.8715953
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
@@ -2919,10 +2919,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7274d4b25ccb5a14aac36d3970658120, type: 2}
   - {fileID: 11400000, guid: 602c1a97b9b2e2847955474f825881da, type: 2}
   BaseShotPrefab: {fileID: -2493970710727147230, guid: 2f17d140ce539b54190f22964689b355, type: 3}
-  PlayerShotPool:
-    MaxCount: 32
-  EnemyShotPool:
-    MaxCount: 256
+  PlayerShotMaxCount: 32
+  EnemyShotMaxCount: 256
+  EnemyPools:
+  - MaxCount: 8
+    EnemyPrefab: {fileID: 5932211203276947195, guid: b0254e08b6a125344933a8bf14c592db, type: 3}
 --- !u!1 &1163879723
 GameObject:
   m_ObjectHideFlags: 0

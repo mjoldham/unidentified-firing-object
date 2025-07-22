@@ -10,12 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 134260525024429505}
   - component: {fileID: 5462992312852837972}
-  - component: {fileID: 2025301779527385395}
+  - component: {fileID: 9161167212995994950}
+  - component: {fileID: 5611673820985058169}
   - component: {fileID: 2539724693561000642}
   - component: {fileID: 6677116483676117871}
   - component: {fileID: 8201110135491200285}
   - component: {fileID: 1649952261040545670}
   - component: {fileID: 2242029342404591837}
+  - component: {fileID: 5403438491641620793}
   m_Layer: 0
   m_Name: SemiAuto
   m_TagString: Untagged
@@ -53,7 +55,8 @@ MonoBehaviour:
   Parameters: {fileID: 11400000, guid: e802992de201217459e8f302dfd6e92b, type: 2}
   IsMirrored: 0
   WaitFrames: 0
---- !u!114 &2025301779527385395
+  WaitBeats: 0
+--- !u!114 &9161167212995994950
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -62,11 +65,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 2135945752982680602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c54a51139ec9474abc07047d33664cf, type: 3}
+  m_Script: {fileID: 11500000, guid: cf4840951bf88ed4e989c4d2ea85ac77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  FramesToWait: 100
+  Times: 4
+--- !u!114 &5611673820985058169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2135945752982680602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6730237c6ae045149bd464d111b7cbeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Emitter: {fileID: 0}
+  BeatsToWait: 2
 --- !u!114 &2539724693561000642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94,7 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  Times: 7
+  Times: 5
 --- !u!114 &8201110135491200285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  FramesToWait: 8
+  FramesToWait: 4
 --- !u!114 &2242029342404591837
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,3 +153,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
   NewMode: 0
+--- !u!114 &5403438491641620793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2135945752982680602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0aa2d43455a72a84797dd065305d57d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Emitter: {fileID: 0}

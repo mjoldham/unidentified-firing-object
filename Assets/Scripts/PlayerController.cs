@@ -10,6 +10,7 @@ namespace UFO
     public class PlayerController : MonoBehaviour
     {
         public static PlayerController Instance { get; private set; }
+        private GameManager _gm;
 
         public PlayerSettings Settings;
 
@@ -31,7 +32,7 @@ namespace UFO
         [Range(0, 4)]
         public int PowerCount;
 
-        private List<ShotEmitter>[] _emitters;
+        private ShotEmitter[][] _emitters;
         private bool _isFiring;
         private int _shotTimeFrames;
 
@@ -50,10 +51,15 @@ namespace UFO
 
         private void Start()
         {
-            _emitters = new List<ShotEmitter>[PowerLevels.childCount];
+            _gm = GameManager.Instance;
+            _emitters = new ShotEmitter[PowerLevels.childCount][];
             for (int i = 0; i < PowerLevels.childCount; i++)
             {
-                _emitters[i] = PowerLevels.GetChild(i).GetComponentsInChildren<ShotEmitter>().ToList();
+                _emitters[i] = PowerLevels.GetChild(i).GetComponentsInChildren<ShotEmitter>();
+                foreach (ShotEmitter emitter in _emitters[i])
+                {
+                    emitter.Init();
+                }
             }
         }
 
@@ -208,11 +214,22 @@ namespace UFO
             OnBombUse?.Invoke();
         }
 
+        public bool CheckPause()
+        {
+            return Settings.PauseAction.WasPerformedThisFrame();
+        }
+
+        public bool CheckRestart()
+        {
+            return Settings.RestartAction.WasPerformedThisFrame();
+        }
+
         public void Tick(float deltaTime)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Application.Quit();
+                return;
             }
 
             if (_dyingCoroutine != null)
@@ -237,6 +254,9 @@ namespace UFO
             Settings.DownAction.Enable();
             Settings.FireAction.Enable();
             Settings.BombAction.Enable();
+
+            Settings.PauseAction.Enable();
+            Settings.RestartAction.Enable();
         }
 
         private void OnDisable()
@@ -247,6 +267,9 @@ namespace UFO
             Settings.DownAction.Disable();
             Settings.FireAction.Disable();
             Settings.BombAction.Disable();
+
+            Settings.PauseAction.Disable();
+            Settings.RestartAction.Disable();
         }
     }
 }

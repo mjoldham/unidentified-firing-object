@@ -33,9 +33,11 @@ namespace UFO
             _overrideController = new AnimatorOverrideController(_animator.runtimeAnimatorController);
             _animator.runtimeAnimatorController = _overrideController;
             _overrideClip = _overrideController.animationClips[0];
+
+            gameObject.SetActive(false);
         }
 
-        public void Spawn(ShotParams shotParams, Vector3 position, int angle)
+        public void Spawn(ShotParams shotParams, Vector2 position, int angle)
         {
             _overrideController[_overrideClip] = shotParams.Clip;
             Target = shotParams.Target;

@@ -4,11 +4,26 @@ using UnityEngine;
 
 namespace UFO
 {
+    public struct RoutePoint
+    {
+        public Vector2 Destination;
+        public int BeatsToComplete;
+
+        public RoutePoint(Transform t)
+        {
+            Destination = t.position;
+            BeatsToComplete = (int)t.position.z;
+        }
+    }
+
     [Serializable]
     public struct SpawnInfo
     {
         // If true, no enemies must be present for this to spawn.
         public bool CheckForEnemies;
+
+        // Whether to mirror the enemy's movements.
+        public bool IsMirrored;
 
         public int Bar;
         [Range(0, GameManager.BeatsPerBar - 1)]
@@ -16,7 +31,8 @@ namespace UFO
         [Range(-(GameManager.NumLanes - 1) / 2, (GameManager.NumLanes - 1) / 2)]
         public int Lane;
 
-        public EnemyBase Enemy;
+        public EnemyController EnemyPrefab;
+        public Transform RoutePrefab;
     }
 
     [CreateAssetMenu(fileName = "StageSettings", menuName = "Scriptable Objects/StageSettings")]
@@ -25,12 +41,9 @@ namespace UFO
         public AudioClip MusicTrack;
         public int BPM = 180;
 
-        public Sprite Background;
+        public Sprite Background; // TODO: either pack bgs into one texture ourselves or use sprite atlas to avoid hitching.
         public float ScrollSpeed;
 
         public SpawnInfo[] Spawns;
-
-        [HideInInspector]
-        public Dictionary<(int, int), (int, EnemyBase)> Timeline = new Dictionary<(int, int), (int, EnemyBase)>();
     }
 }

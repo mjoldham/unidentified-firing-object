@@ -7,6 +7,7 @@ namespace UFO
     public class PlayerSettings : ScriptableObject
     {
         public InputAction LeftAction, RightAction, UpAction, DownAction, FireAction, BombAction;
+        public InputAction PauseAction, RestartAction;
 
         public float SlowSpeed = 4.0f;
         public float FastSpeed = 8.0f;

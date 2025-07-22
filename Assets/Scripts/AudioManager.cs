@@ -14,6 +14,7 @@ namespace UFO
         private AudioSource _explosionSource;
 
         private Dictionary<AudioSource, Coroutine> _loopSources = new Dictionary<AudioSource, Coroutine>();
+        private List<AudioSource> _oneshotSources = new List<AudioSource>();
 
         private Coroutine _duckingMusic = null;
 
@@ -32,6 +33,8 @@ namespace UFO
             source.playOnAwake = false;
             source.loop = false;
             source.volume = volume;
+
+            _oneshotSources.Add(source);
         }
 
         private void Awake()
@@ -56,6 +59,7 @@ namespace UFO
 
         public void Play(AudioClip track, double atTime)
         {
+            _musicSource.Stop();
             _musicSource.clip = track;
             _musicSource.PlayScheduled(atTime);
         }
@@ -120,11 +124,35 @@ namespace UFO
             _duckingMusic = StartCoroutine(DuckMusic(Settings.MusicDuckScale, 0.8f * Settings.BombUse.length));
         }
 
+        private void OnPause()
+        {
+            foreach (AudioSource source in _loopSources.Keys)
+            {
+                source.Pause();
+            }
+
+            _oneshotSources.ForEach(source => source.Pause());
+            
+        }
+
+        private void OnUnpause(double lostTime)
+        {
+            foreach (AudioSource source in _loopSources.Keys)
+            {
+                source.UnPause();
+            }
+
+            _oneshotSources.ForEach(source => source.UnPause());
+        }
+
         private void OnEnable()
         {
             PlayerController.OnFireStart += OnPlayerFireStart;
             PlayerController.OnFireEnd += OnPlayerFireEnd;
             PlayerController.OnBombUse += OnBombUse;
+
+            GameManager.OnPause += OnPause;
+            GameManager.OnUnpause += OnUnpause;
         }
 
         private void OnDisable()
@@ -132,6 +160,9 @@ namespace UFO
             PlayerController.OnFireStart -= OnPlayerFireStart;
             PlayerController.OnFireEnd -= OnPlayerFireEnd;
             PlayerController.OnBombUse -= OnBombUse;
+
+            GameManager.OnPause -= OnPause;
+            GameManager.OnUnpause -= OnUnpause;
         }
     }
 }

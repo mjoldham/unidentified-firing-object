@@ -114,11 +114,42 @@ MonoBehaviour:
       m_Action: Bomb
       m_Flags: 0
     m_Flags: 0
-  ShotPrefab: {fileID: 7618851937051392580, guid: aac9972aa12c42d44ae7f2f87507f6bc, type: 3}
+  PauseAction:
+    m_Name: Pause
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 3f368b69-a1e9-4da4-b4d6-ee5d0d355d66
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: b3889e0b-138f-47fe-a27b-7f1ec33358a8
+      m_Path: <Keyboard>/enter
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Pause
+      m_Flags: 0
+    m_Flags: 0
+  RestartAction:
+    m_Name: Restart
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 177e8a23-f563-442d-95c3-68bf828672c5
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 1a791b8e-60ca-4c7f-b0b0-861c87dbc3ca
+      m_Path: <Keyboard>/r
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Restart
+      m_Flags: 0
+    m_Flags: 0
   SlowSpeed: 3
   FastSpeed: 6
-  ShotLimit: 6
-  ShotFrameDelay: 3
   ShotTimeBuffer: 10
   BombLimit: 5
-  PowerLimit: 5
+  BombSaveDuration: 0.2

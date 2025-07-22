@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using static UFO.ShotEmitter;
+using UnityEngine.InputSystem;
+using static UnityEngine.Timeline.DirectorControlPlayable;
 
 namespace UFO
 {
@@ -15,40 +17,40 @@ namespace UFO
         public const int NumLanes = 5;
         public const float ScreenHalfWidth = 3.5f;
         public const float ScreenHalfHeight = 3.5f;
+        public const float CutoffHeight = -ScreenHalfHeight + 1.0f;
+
+        public static Action OnBeat, OnPause;
+        public static Action<double> OnUnpause;
 
         public SpriteRenderer BackgroundRenderer;
 
         public StageSettings[] Stages;
+        private int _spawnIndex;
 
         private Material _bgMaterial;
         private int _scrollID = Shader.PropertyToID(string.Concat("_", nameof(StageSettings.ScrollSpeed)));
 
-        public ShotController BaseShotPrefab;
-
-        [Serializable]
         public struct ShotPool
         {
-            public int MaxCount;
+            public int MaxCount { get; private set; }
 
             private Queue<ShotController> _inactiveShots;
             private Queue<ShotController> _activeShots;
 
-            public ShotPool Init(ShotController baseShot, Transform parent)
+            public ShotPool(int maxCount, ShotController baseShot, Transform parent)
             {
+                MaxCount = maxCount;
                 _inactiveShots = new Queue<ShotController>();
                 _activeShots = new Queue<ShotController>();
                 for (int i = 0; i < MaxCount; i++)
                 {
                     ShotController shot = Instantiate(baseShot, parent);
                     shot.Init();
-                    shot.gameObject.SetActive(false);
                     _inactiveShots.Enqueue(shot);
                 }
-
-                return this;
             }
 
-            public bool Spawn(ShotParams shotParams, Vector3 position, int angle)
+            public bool Spawn(ShotParams shotParams, Vector2 position, int angle)
             {
                 if (_inactiveShots.Count == 0)
                 {
@@ -91,9 +93,78 @@ namespace UFO
             }
         }
 
-        public ShotPool PlayerShotPool, EnemyShotPool;
+        public ShotController BaseShotPrefab;
+        public int PlayerShotMaxCount = 32, EnemyShotMaxCount = 256;
+        private ShotPool _playerShotPool, _enemyShotPool;
 
-        private Queue<EnemyBase> _activeEnemies = new Queue<EnemyBase>();
+        [Serializable]
+        public class EnemyPool
+        {
+            public int MaxCount;
+            public EnemyController EnemyPrefab;
+
+            private Queue<EnemyController> _inactiveEnemies;
+            private Queue<EnemyController> _activeEnemies;
+
+            public int Count { get => _activeEnemies.Count; }
+
+            public void Init(Transform parent)
+            {
+                _inactiveEnemies = new Queue<EnemyController>();
+                _activeEnemies = new Queue<EnemyController>();
+                for (int i = 0; i < MaxCount; i++)
+                {
+                    EnemyController enemy = Instantiate(EnemyPrefab, parent);
+                    enemy.Init();
+                    _inactiveEnemies.Enqueue(enemy);
+                }
+            }
+
+            public bool Spawn(SpawnInfo spawnInfo)
+            {
+                if (_inactiveEnemies.Count == 0)
+                {
+                    return false;
+                }
+
+                EnemyController enemy = _inactiveEnemies.Dequeue();
+                enemy.Spawn(spawnInfo);
+                _activeEnemies.Enqueue(enemy);
+
+                return true;
+            }
+
+            public void Tick(float deltaTime)
+            {
+                int count = _activeEnemies.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    EnemyController enemy = _activeEnemies.Dequeue();
+                    if (enemy.Tick(deltaTime))
+                    {
+                        _activeEnemies.Enqueue(enemy);
+                    }
+                    else
+                    {
+                        _inactiveEnemies.Enqueue(enemy);
+                    }
+                }
+            }
+
+            public void Clear()
+            {
+                int count = _activeEnemies.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    EnemyController enemy = _activeEnemies.Dequeue();
+                    enemy.gameObject.SetActive(false);
+                    _inactiveEnemies.Enqueue(enemy);
+                }
+            }
+        }
+
+        public EnemyPool[] EnemyPools;
+        private Dictionary<string, EnemyPool> _enemyPoolDict = new Dictionary<string, EnemyPool>();
 
         private int _currentStage = -1, _currentBar, _currentBeat;
 
@@ -102,6 +173,8 @@ namespace UFO
         private double _nextStageTime, _nextBarTime, _nextBeatTime;
 
         private int _currentLoop = 1;
+        private bool _isPaused;
+        private double _pauseStart;
 
         private void Awake()
         {
@@ -114,14 +187,28 @@ namespace UFO
             Instance = this;
         }
 
-        private void InitTimelines()
+        private void VerifySpawnsAndEnemyPools()
         {
             foreach (StageSettings stage in Stages)
             {
-                foreach (SpawnInfo spawn in stage.Spawns)
+                int bar = 0, beat = 0;
+                for (int i = 0; i < stage.Spawns.Length; i++)
                 {
-                    // This means only one enemy can be spawned at a time, which is good for flow!
-                    stage.Timeline[(spawn.Bar, spawn.Beat)] = (spawn.Lane, spawn.Enemy);
+                    SpawnInfo spawnInfo = stage.Spawns[i];
+                    if (spawnInfo.Bar < bar || (spawnInfo.Bar == bar && spawnInfo.Beat < beat))
+                    {
+                        Debug.LogError($"{stage.name}'s Spawns[{i}] is out of order, needs to be placed earlier in list.", stage);
+                        return;
+                    }
+                    
+                    if (!_enemyPoolDict.ContainsKey(spawnInfo.EnemyPrefab.gameObject.name))
+                    {
+                        Debug.LogError($"{spawnInfo.EnemyPrefab.gameObject.name} has not been included in the GameManagers list of EnemyPools.");
+                        return;
+                    }
+
+                    bar = spawnInfo.Bar;
+                    beat = spawnInfo.Beat;
                 }
             }
         }
@@ -132,10 +219,16 @@ namespace UFO
             _player = PlayerController.Instance;
             _bgMaterial = BackgroundRenderer.material;
 
-            PlayerShotPool.Init(BaseShotPrefab, transform);
-            EnemyShotPool.Init(BaseShotPrefab, transform);
+            _playerShotPool = new ShotPool(PlayerShotMaxCount, BaseShotPrefab, transform);
+            _enemyShotPool = new ShotPool(EnemyShotMaxCount, BaseShotPrefab, transform);
 
-            InitTimelines();
+            foreach (EnemyPool pool in EnemyPools)
+            {
+                pool.Init(transform);
+                _enemyPoolDict[pool.EnemyPrefab.gameObject.name] = pool;
+            }
+
+            VerifySpawnsAndEnemyPools();
             _nextStageTime = UnityEngine.AudioSettings.dspTime + 1.0;
         }
 
@@ -152,6 +245,7 @@ namespace UFO
                 _currentLoop++;
             }
 
+            _spawnIndex = 0;
             StageSettings stage = Stages[_currentStage];
             double startTime = UnityEngine.AudioSettings.dspTime + 1.0;
             _audio.Play(stage.MusicTrack, startTime);
@@ -168,26 +262,50 @@ namespace UFO
             _bgMaterial.SetFloat(_scrollID, stage.ScrollSpeed);
         }
 
-        private void TrySpawning(StageSettings stage, int bar, int beat)
+        private void ClearScreen()
         {
-            if (!stage.Timeline.TryGetValue((bar, beat), out (int, EnemyBase) result))
+            _playerShotPool.Clear();
+            _enemyShotPool.Clear();
+            foreach (EnemyPool pool in EnemyPools)
             {
-                Debug.Log($"Bar: {bar},\tBeat: {beat}");
+                pool.Clear();
+            }
+        }
+
+        public void RestartStage()
+        {
+            ClearScreen();
+            _currentStage--;
+            StartNextStage();
+        }
+
+        private void TrySpawningEnemies(SpawnInfo[] spawns)
+        {
+            Debug.Log($"Bar: {_currentBar},\tBeat: {_currentBeat}");
+            if (_spawnIndex == spawns.Length)
+            {
                 return;
             }
 
-            (int lane, EnemyBase enemy) = result;
-            if (enemy == null)
+            SpawnInfo spawnInfo = spawns[_spawnIndex];
+            while (spawnInfo.Bar == _currentBar && spawnInfo.Beat == _currentBeat)
             {
-                return;
+                EnemyPool pool = _enemyPoolDict[spawnInfo.EnemyPrefab.gameObject.name];
+                if (!spawnInfo.CheckForEnemies || pool.Count == 0)
+                {
+                    if (!pool.Spawn(spawnInfo))
+                    {
+                        Debug.Log($"Too many {spawnInfo.EnemyPrefab.gameObject.name} active to spawn more!");
+                    }
+                }
+
+                if (++_spawnIndex == spawns.Length)
+                {
+                    break;
+                }
+
+                spawnInfo = spawns[_spawnIndex];
             }
-
-            // TODO: implement object pools for each enemy type that behave like ShotPool.
-            //       makes sense to separate by type so max count can be used for difficulty balancing.
-            Vector3 pos = new Vector3(lane, ScreenHalfHeight + 1.0f, 0.0f);
-            _activeEnemies.Enqueue(Instantiate(enemy, pos, Quaternion.identity));
-
-            Debug.Log($"Bar: {bar},\tBeat: {beat},\tLane: {lane}");
         }
 
         private void StartNextBar()
@@ -197,11 +315,11 @@ namespace UFO
                 return;
             }
 
-            TrySpawning(Stages[_currentStage], ++_currentBar, _currentBeat = 0);
-
-            _nextBeatTime += BeatLength;
+            _currentBar++;
+            _currentBeat = -1;
             _nextBarTime += BarLength;
-            Debug.DrawRay(Vector3.zero, Vector3.up, Color.magenta, 0.5f * (float)BeatLength);
+
+            StartNextBeat();
         }
 
         private void StartNextBeat()
@@ -211,13 +329,14 @@ namespace UFO
                 return;
             }
 
-            TrySpawning(Stages[_currentStage], _currentBar, ++_currentBeat);
-
+            _currentBeat++;
             _nextBeatTime += BeatLength;
-            Debug.DrawRay(Vector3.zero, Vector3.up, Color.white, 0.5f * (float)BeatLength);
+            TrySpawningEnemies(Stages[_currentStage].Spawns);
+
+            OnBeat?.Invoke();
         }
 
-        private int AngleToTarget(ShotController.TargetType target, Vector3 position)
+        private int AngleToTarget(ShotController.TargetType target, Vector2 position)
         {
             if (target == ShotController.TargetType.Enemy)
             {
@@ -225,12 +344,12 @@ namespace UFO
                 return 0;
             }
 
-            return (int)Vector2.SignedAngle(Vector2.down, (_player.transform.position - position).normalized);
+            return (int)Vector2.SignedAngle(Vector2.down, ((Vector2)_player.transform.position - position).normalized);
         }
 
-        public bool SpawnShot(ShotMode mode, ShotParams shotParams, Vector3 position, ref int angle)
+        public bool SpawnShot(ShotMode mode, ShotParams shotParams, Vector2 position, ref int angle)
         {
-            ShotPool pool = shotParams.Target == ShotController.TargetType.Enemy ? PlayerShotPool : EnemyShotPool;
+            ShotPool pool = shotParams.Target == ShotController.TargetType.Enemy ? _playerShotPool : _enemyShotPool;
             if (mode == ShotMode.Static)
             {
                 return pool.Spawn(shotParams, position, angle);
@@ -247,9 +366,7 @@ namespace UFO
 
         private void OnBombUse()
         {
-            // Clears all active shots.
-            PlayerShotPool.Clear();
-            EnemyShotPool.Clear();
+            ClearScreen();
 
             // TODO: damage enemies based on distance.
         }
@@ -257,10 +374,49 @@ namespace UFO
         private void OnGameOver()
         {
             // TODO: gameover!
+            RestartStage();
+        }
+
+        private void Unpause()
+        {
+            _isPaused = false;
+
+            double lostTime = UnityEngine.AudioSettings.dspTime - _pauseStart;
+            _pauseStart = 0.0;
+
+            _nextStageTime += lostTime;
+            _nextBarTime += lostTime;
+            _nextBeatTime += lostTime;
+
+            OnUnpause?.Invoke(lostTime);
         }
 
         void FixedUpdate()
         {
+            if (_player.CheckRestart())
+            {
+                Unpause();
+                RestartStage();
+                return;
+            }
+
+            _isPaused = _isPaused ? !_player.CheckPause() : _player.CheckPause();
+            if (_isPaused)
+            {
+                if (_pauseStart == 0.0)
+                {
+                    _pauseStart = UnityEngine.AudioSettings.dspTime;
+                    OnPause?.Invoke();
+                }
+
+                return;
+            }
+
+            if (_pauseStart > 0.0)
+            {
+                Unpause();
+            }
+
             // Manages timeline.
             double time = UnityEngine.AudioSettings.dspTime;
             if (time >= _nextStageTime)
@@ -277,26 +433,17 @@ namespace UFO
             }
 
             // Updates enemy movement and firing.
-            Vector3 playerPos = _player.transform.position;
-            int count = _activeEnemies.Count;
-            for (int i = 0; i < count; i++)
+            foreach (EnemyPool pool in EnemyPools)
             {
-                EnemyBase enemy = _activeEnemies.Dequeue();
-                if (enemy == null)
-                {
-                    continue;
-                }
-
-                enemy.Tick(playerPos, Time.fixedDeltaTime);
-                _activeEnemies.Enqueue(enemy);
+                pool.Tick(Time.fixedDeltaTime);
             }
 
             // Updates player movement and firing.
             _player.Tick(Time.fixedDeltaTime);
 
             // Moves shots and checks for collisions.
-            PlayerShotPool.Tick(Time.fixedDeltaTime);
-            EnemyShotPool.Tick(Time.fixedDeltaTime);
+            _playerShotPool.Tick(Time.fixedDeltaTime);
+            _enemyShotPool.Tick(Time.fixedDeltaTime);
 
             // TODO: check player-enemy collisions here.
         }
