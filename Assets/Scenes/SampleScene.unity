@@ -1316,10 +1316,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: -0.18711656
-    y: -0.18711656
-    width: 1.3742331
-    height: 1.3742331
+    x: 0.10124334
+    y: 0.10124334
+    width: 0.79573715
+    height: 0.79573715
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
@@ -2571,7 +2571,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &944468703
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3172,8 +3172,22 @@ MonoBehaviour:
   PlayerShotMaxCount: 32
   EnemyShotMaxCount: 256
   EnemyPools:
+  - MaxCount: 16
+    EnemyPrefab: {fileID: 5932211203276947195, guid: c6bb4fea90afc8746a8cf3320c349479, type: 3}
+  - MaxCount: 8
+    EnemyPrefab: {fileID: 5932211203276947195, guid: 3632587e2ec0bd84e8c3ceeecf38d1d7, type: 3}
   - MaxCount: 8
     EnemyPrefab: {fileID: 5932211203276947195, guid: b0254e08b6a125344933a8bf14c592db, type: 3}
+  - MaxCount: 8
+    EnemyPrefab: {fileID: 5932211203276947195, guid: 5085e681fc3e2914ea11cd7a50486e85, type: 3}
+  - MaxCount: 8
+    EnemyPrefab: {fileID: 5932211203276947195, guid: b1b372bb89d9b6a4682f57b48c682be0, type: 3}
+  - MaxCount: 8
+    EnemyPrefab: {fileID: 5932211203276947195, guid: ebebf08cfb184c04892b1eeefeb27e7c, type: 3}
+  - MaxCount: 8
+    EnemyPrefab: {fileID: 5932211203276947195, guid: 05fc3b12d4c52e94f89db0c1d01bf355, type: 3}
+  - MaxCount: 8
+    EnemyPrefab: {fileID: 5932211203276947195, guid: 34a9bef9858723543b145e0a1c352cf8, type: 3}
 --- !u!1 &1163879723
 GameObject:
   m_ObjectHideFlags: 0
@@ -4599,7 +4613,7 @@ SpriteRenderer:
   m_Size: {x: 7.5, y: 17.765625}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1538247667

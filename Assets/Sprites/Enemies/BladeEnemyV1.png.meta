@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: a0085960b1b19f34c95207daf5f64726
+guid: fa73661e5542a914083fcdc328bca12c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2377791150436056798
-    second: ShieldEnemyV1_0
+      213: -8609459236010197848
+    second: BladeEnemyV1_0
+  - first:
+      213: 6360189929835310464
+    second: BladeEnemyV1_1
+  - first:
+      213: -999945721907752315
+    second: BladeEnemyV1_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +52,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -113,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ShieldEnemyV1_0
+      name: BladeEnemyV1_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 48
-        height: 32
+        x: 10
+        y: 10
+        width: 34
+        height: 34
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +134,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: edefec7047c9ff020800000000000000
-      internalID: 2377791150436056798
+      spriteID: 8acf761907e058880800000000000000
+      internalID: -8609459236010197848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BladeEnemyV1_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 32
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08da9df1b0fe34850800000000000000
+      internalID: 6360189929835310464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BladeEnemyV1_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5825403f9aa7f12f0800000000000000
+      internalID: -999945721907752315
       vertices: []
       indices: 
       edges: []
@@ -138,7 +188,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +198,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ShieldEnemyV1_0: 2377791150436056798
+      BladeEnemyV1_0: -8609459236010197848
+      BladeEnemyV1_1: 6360189929835310464
+      BladeEnemyV1_2: -999945721907752315
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

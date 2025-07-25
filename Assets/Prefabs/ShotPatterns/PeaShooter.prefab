@@ -50,6 +50,7 @@ MonoBehaviour:
   Parameters: {fileID: 11400000, guid: e802992de201217459e8f302dfd6e92b, type: 2}
   IsMirrored: 0
   WaitFrames: 0
+  WaitBeats: 0
 --- !u!114 &2448049877778751740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,7 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  FramesToWait: 100
+  FramesToWait: 30
 --- !u!114 &2448122452208466943
 MonoBehaviour:
   m_ObjectHideFlags: 0

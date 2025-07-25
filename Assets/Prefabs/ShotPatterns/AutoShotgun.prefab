@@ -13,8 +13,6 @@ GameObject:
   - component: {fileID: -3202958629797354616}
   - component: {fileID: 1579805200032570409}
   - component: {fileID: 2773360926176458862}
-  - component: {fileID: 952437576919800245}
-  - component: {fileID: 4404140992591541743}
   - component: {fileID: 4379654195760732693}
   - component: {fileID: -3446996585260314871}
   - component: {fileID: 2972280431971854667}
@@ -55,6 +53,7 @@ MonoBehaviour:
   Parameters: {fileID: 11400000, guid: e802992de201217459e8f302dfd6e92b, type: 2}
   IsMirrored: 0
   WaitFrames: 0
+  WaitBeats: 0
 --- !u!114 &-3202958629797354616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,7 +81,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  FramesToWait: 100
+  FramesToWait: 50
 --- !u!114 &2773360926176458862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,34 +96,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
   Degrees: 10
---- !u!114 &952437576919800245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 658642471517282451}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf4840951bf88ed4e989c4d2ea85ac77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Emitter: {fileID: 0}
-  Times: 3
---- !u!114 &4404140992591541743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 658642471517282451}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c54a51139ec9474abc07047d33664cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Emitter: {fileID: 0}
-  FramesToWait: 75
 --- !u!114 &4379654195760732693
 MonoBehaviour:
   m_ObjectHideFlags: 0

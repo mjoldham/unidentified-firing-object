@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7175579171258069856}
   - component: {fileID: 7230199643476362669}
   - component: {fileID: 6109736637055990392}
+  - component: {fileID: 8921032974583243122}
   - component: {fileID: 8788792459528728577}
   - component: {fileID: 1761322980055722661}
   m_Layer: 0
@@ -51,6 +52,7 @@ MonoBehaviour:
   Parameters: {fileID: 11400000, guid: e802992de201217459e8f302dfd6e92b, type: 2}
   IsMirrored: 0
   WaitFrames: 0
+  WaitBeats: 0
 --- !u!114 &7230199643476362669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,7 +80,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  Degrees: 15
+  Degrees: 10
+--- !u!114 &8921032974583243122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2963670815662389487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf4840951bf88ed4e989c4d2ea85ac77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Emitter: {fileID: 0}
+  Times: 5
 --- !u!114 &8788792459528728577
 MonoBehaviour:
   m_ObjectHideFlags: 0
