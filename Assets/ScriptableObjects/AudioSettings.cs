@@ -5,7 +5,8 @@ namespace UFO
     [CreateAssetMenu(fileName = "AudioAssets", menuName = "Scriptable Objects/AudioAssets")]
     public class AudioSettings : ScriptableObject
     {
-        public AudioClip PlayerFire, PlayerDie;
+        public AudioClip PlayerFire, PlayerStartDie, PlayerDeath;
+        public AudioClip HitHurt, HitShield, Kill;
         public AudioClip BombGet, BombUse;
 
         public float MusicVolume = 0.7f;

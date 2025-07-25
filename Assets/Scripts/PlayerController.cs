@@ -13,7 +13,7 @@ namespace UFO
         public Transform PowerLevels;
 
         public static Action OnTick;
-        public static Action OnSpawn, OnGameOver, OnFireStart, OnFireEnd, OnBombUse;
+        public static Action OnSpawn, OnStartDie, OnDeath, OnGameOver, OnFireStart, OnFireEnd, OnBombUse;
         public static Action OnGetShield, OnGetBomb, OnGetPower, OnGetExtend, OnItemScore;
         public static Action<Vector2, bool> OnMove;
 
@@ -123,10 +123,13 @@ namespace UFO
         
         private IEnumerator Dying()
         {
+            OnStartDie?.Invoke();
+
             _isDying = true;
             yield return new WaitForSeconds(Settings.BombSaveDuration);
             _isDying = false;
 
+            OnDeath?.Invoke();
             if (ExtendCount == 0)
             {
                 ExtendCount = 3;
@@ -175,7 +178,7 @@ namespace UFO
                     continue;
                 }
 
-                GameManager.OnHit?.Invoke(results[i].ClosestPoint(Hitbox.transform.position));
+                GameManager.OnHitShield?.Invoke(results[i].ClosestPoint(Hitbox.transform.position));
                 return false;
             }
 
@@ -188,7 +191,7 @@ namespace UFO
                     continue;
                 }
 
-                GameManager.OnHit?.Invoke(results[i].ClosestPoint(Hitbox.transform.position));
+                GameManager.OnHitHurt?.Invoke(results[i].ClosestPoint(Hitbox.transform.position));
                 return enemy.TryDie(Settings.HitboxDamage);
             }
 
@@ -337,6 +340,7 @@ namespace UFO
             if (_isSpawning)
             {
                 HandleFiring();
+                OnTick?.Invoke();
                 return;
             }
 

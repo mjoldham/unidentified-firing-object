@@ -12,17 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f21af998ca44f34b9b96862554ea790, type: 3}
   m_Name: DefaultAudioSettings
   m_EditorClassIdentifier: 
-  TrackList:
-  - {fileID: 8300000, guid: 2bdc4566ea1432d40950ad4e24ec652e, type: 3}
-  - {fileID: 8300000, guid: d52d6df45921118458b36a0b48bef306, type: 3}
-  - {fileID: 8300000, guid: c503a1eb19dd9354fb56c160c1d02c3d, type: 3}
-  - {fileID: 8300000, guid: 890208c0e91378c4d84685a4b932efd5, type: 3}
-  - {fileID: 8300000, guid: ad204eb6e41d5ca4ca087553b39fcc7b, type: 3}
-  - {fileID: 8300000, guid: a7d2641ac53bdc642ad99d9e25902004, type: 3}
   PlayerFire: {fileID: 8300000, guid: 08b0de6b8ca2bd544a91466453e22cb6, type: 3}
-  PlayerFast: {fileID: 8300000, guid: 6b3fc006973e87243827ac81b5100dae, type: 3}
-  PlayerDie: {fileID: 0}
+  PlayerStartDie: {fileID: 8300000, guid: 9fc3f33f053bb7f4bbf97d0e62f2207f, type: 3}
+  PlayerDeath: {fileID: 8300000, guid: 96fb9cc9aef568f4e9a26cfb7509d784, type: 3}
+  HitHurt: {fileID: 8300000, guid: 20a86e36353b75a489ca02603023cb77, type: 3}
+  HitShield: {fileID: 8300000, guid: 9ad5edfb3b0cc5145b5fd6ad2328e3e6, type: 3}
+  Kill: {fileID: 8300000, guid: 7ae8cd196bf28674082b6d364514c273, type: 3}
   BombGet: {fileID: 0}
   BombUse: {fileID: 8300000, guid: 8949aeeeea21bdf43baa40aa65928af3, type: 3}
-  PlayerFastDecay: 0.93
-  PlayerFastMin: 0.2
+  MusicVolume: 0.7
+  MusicDuckScale: 0.4

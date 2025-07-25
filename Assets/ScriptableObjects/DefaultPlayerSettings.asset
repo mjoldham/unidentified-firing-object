@@ -148,8 +148,11 @@ MonoBehaviour:
       m_Action: Restart
       m_Flags: 0
     m_Flags: 0
+  SpawnBeats: 2
   SlowSpeed: 3
   FastSpeed: 6
   ShotTimeBuffer: 10
   BombLimit: 5
-  BombSaveDuration: 0.2
+  BombSaveDuration: 0.3
+  InvincibilityDuration: 2
+  HitboxDamage: 5

@@ -78,6 +78,7 @@ namespace UFO
                 }
 
                 gameObject.SetActive(false);
+                GameManager.OnHitShield?.Invoke(transform.position);
                 return true;
             }
 
@@ -92,6 +93,8 @@ namespace UFO
 
                 damage += Damage;
                 gameObject.SetActive(false);
+
+                GameManager.OnHitHurt?.Invoke(transform.position);
                 return true;
             }
 

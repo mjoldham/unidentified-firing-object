@@ -2,10 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using static UFO.ShotEmitter;
-using UnityEngine.InputSystem;
-using static UnityEngine.Timeline.DirectorControlPlayable;
 using static UFO.ShotController;
-using static UnityEngine.GraphicsBuffer;
 using System.Linq;
 
 namespace UFO
@@ -36,7 +33,7 @@ namespace UFO
 
         public static Action OnBeat, OnPause;
         public static Action<double> OnUnpause;
-        public static Action<Vector2> OnHit;
+        public static Action<Vector2> OnHitHurt, OnHitShield;
 
         public static bool IsOnBeat { get; private set; }
         public static double BeatLength { get; private set; }
@@ -50,6 +47,14 @@ namespace UFO
         private Material _bgMaterial;
         private int _scrollID = Shader.PropertyToID(string.Concat("_", nameof(StageSettings.ScrollSpeed)));
 
+        public Color ShotColour, ShotPlusColour;
+        public MeshRenderer BombEffect;
+        public int BombFrames = 50;
+        private int _bombFrames;
+
+        public static readonly int NormTimeID = Shader.PropertyToID("_NormalisedTime");
+        public static readonly int ColourID = Shader.PropertyToID("_Colour");
+
         public class EffectPool
         {
             public int MaxCount { get; private set; }
@@ -57,7 +62,6 @@ namespace UFO
 
             private Queue<MeshRenderer> _inactiveFX;
             private Queue<(MeshRenderer, int)> _activeFX;
-            private readonly int _normTimeID = Shader.PropertyToID("_NormalisedTime");
 
             public EffectPool(int maxCount, int frames, GameObject hitPrefab, Transform parent)
             {
@@ -89,7 +93,7 @@ namespace UFO
 
                 fx.gameObject.SetActive(true);
                 fx.transform.position = position;
-                fx.material.SetFloat(_normTimeID, 0.0f);
+                fx.material.SetFloat(NormTimeID, 0.0f);
 
                 _activeFX.Enqueue((fx, Frames));
             }
@@ -102,7 +106,7 @@ namespace UFO
                     (MeshRenderer fx, int frames) = _activeFX.Dequeue();
                     if (--frames > 0)
                     {
-                        fx.material.SetFloat(_normTimeID, (float)(Frames - frames) / Frames);
+                        fx.material.SetFloat(NormTimeID, (float)(Frames - frames) / Frames);
                         _activeFX.Enqueue((fx, frames));
                     }
                     else
@@ -126,9 +130,12 @@ namespace UFO
         }
 
         public GameObject HitEffectPrefab;
-        [Min(5)]
         public int HitEffectFrames = 50;
         private EffectPool _hitFXPool;
+
+        public GameObject KillEffectPrefab;
+        public int KillFrames = 25;
+        private EffectPool _killFXPool;
 
         public class ShotPool : IKillable
         {
@@ -196,8 +203,6 @@ namespace UFO
                     {
                         isHit = true;
                         _inactiveShots.Enqueue(shot);
-
-                        OnHit?.Invoke(shot.transform.position);
                     }
                     else
                     {
@@ -219,7 +224,7 @@ namespace UFO
                         _inactiveShots.Enqueue(shot);
                         player.TryDie();
 
-                        OnHit?.Invoke(shot.transform.position);
+                        OnHitHurt?.Invoke(shot.transform.position);
                     }
                     else
                     {
@@ -237,7 +242,7 @@ namespace UFO
                     shot.gameObject.SetActive(false);
                     _inactiveShots.Enqueue(shot);
 
-                    OnHit?.Invoke(shot.transform.position);
+                    OnHitHurt?.Invoke(shot.transform.position);
                 }
             }
         }
@@ -345,7 +350,13 @@ namespace UFO
                 for (int i = 0; i < count; i++)
                 {
                     EnemyController enemy = _activeEnemies.Dequeue();
-                    OnHit?.Invoke(enemy.transform.position);
+                    if (Mathf.Abs(enemy.transform.position.x) > ScreenHalfWidth || Mathf.Abs(enemy.transform.position.y) > ScreenHalfHeight)
+                    {
+                        _activeEnemies.Enqueue(enemy);
+                        continue;
+                    }
+
+                    OnHitHurt?.Invoke(enemy.transform.position);
 
                     int damage = (int)Mathf.Lerp(100, 1, (enemy.transform.position - source).sqrMagnitude / heightSqr);
                     if (!enemy.TryDie(damage))
@@ -422,10 +433,14 @@ namespace UFO
             HurtMask = LayerMask.GetMask(nameof(EnemyController.Hurtboxes));
             ShieldMask = LayerMask.GetMask(nameof(EnemyController.Shieldboxes));
 
-            _hitFXPool = new EffectPool(EnemyShotMaxCount, HitEffectFrames, HitEffectPrefab, transform);
+            BombEffect.gameObject.SetActive(false);
+
             _playerShotPool = new ShotPool(PlayerShotMaxCount, BaseShotPrefab, transform);
             _enemyFriendlyPool = new ShotPool(EnemyShotMaxCount, BaseShotPrefab, transform);
             _enemyShotPool = new ShotPool(EnemyShotMaxCount, BaseShotPrefab, transform);
+
+            _hitFXPool = new EffectPool(PlayerShotMaxCount, HitEffectFrames, HitEffectPrefab, transform);
+            _killFXPool = new EffectPool(PlayerShotMaxCount, KillFrames, KillEffectPrefab, transform);
 
             foreach (EnemyPool pool in EnemyPools)
             {
@@ -479,7 +494,9 @@ namespace UFO
             _playerShotPool.Clear();
             _enemyFriendlyPool.Clear();
             _enemyShotPool.Clear();
+
             _hitFXPool.Clear();
+            _killFXPool.Clear();
 
             foreach (EnemyPool pool in EnemyPools)
             {
@@ -602,12 +619,22 @@ namespace UFO
             _playerShotPool.Clear();
             _enemyFriendlyPool.Clear();
             _enemyShotPool.Clear();
+
             _hitFXPool.Clear();
+            _killFXPool.Clear();
 
             foreach (EnemyPool pool in EnemyPools)
             {
                 pool.ApplyBomb(_player.transform.position);
             }
+
+            _bombFrames = BombFrames;
+
+            BombEffect.transform.position = _player.transform.position;
+            BombEffect.material.SetFloat(NormTimeID, 0.0f);
+            BombEffect.material.SetColor(ColourID, ShotPlusColour);
+
+            BombEffect.gameObject.SetActive(true);
         }
 
         private void OnGameOver()
@@ -629,6 +656,26 @@ namespace UFO
             OnUnpause?.Invoke(lostTime);
         }
 
+        private void BombTick()
+        {
+            if (!BombEffect.gameObject.activeSelf)
+            {
+                return;
+            }
+
+            if (--_bombFrames <= 0)
+            {
+                BombEffect.gameObject.SetActive(false);
+                return;
+            }
+
+            float t = (float)(BombFrames - _bombFrames) / BombFrames;
+            BombEffect.material.SetFloat(NormTimeID, t);
+
+            float step = 3.0f;
+            BombEffect.material.SetColor(ColourID, Vector4.Lerp(ShotPlusColour, ShotColour, Mathf.Round(t * step) / step));
+        }
+
         void FixedUpdate()
         {
             if (!_playing)
@@ -638,6 +685,8 @@ namespace UFO
 
             // Get effects out of the way.
             _hitFXPool.Tick();
+            _killFXPool.Tick();
+            BombTick();
 
             if (_player.CheckRestart())
             {
@@ -715,18 +764,31 @@ namespace UFO
             _hitFXPool.Spawn(position);
         }
 
+        private void SpawnKillFX(Vector2 position)
+        {
+            _killFXPool.Spawn(position);
+        }
+
         private void OnEnable()
         {
-            OnHit += SpawnHitFX;
+            OnHitHurt += SpawnHitFX;
+            OnHitShield += SpawnHitFX;
+
             PlayerController.OnGameOver += OnGameOver;
             PlayerController.OnBombUse += OnBombUse;
+
+            EnemyController.OnKill += SpawnKillFX;
         }
 
         private void OnDisable()
         {
-            OnHit -= SpawnHitFX;
+            OnHitHurt -= SpawnHitFX;
+            OnHitShield -= SpawnHitFX;
+
             PlayerController.OnGameOver -= OnGameOver;
             PlayerController.OnBombUse -= OnBombUse;
+
+            EnemyController.OnKill -= SpawnKillFX;
         }
 
         public void StartGame()

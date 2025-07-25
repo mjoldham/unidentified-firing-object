@@ -1,4 +1,5 @@
 using UnityEngine;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 namespace UFO
 {
@@ -6,8 +7,11 @@ namespace UFO
     {
         public Animator BodyAnimator;
         public Transform ThrusterLeft, ThrusterRight;
+        public MeshRenderer[] MuzzleFlashes;
 
-        private Transform _thrusters;
+        public MeshRenderer DeathFlash;
+        public int DeathFrames = 25;
+        private int _deathFrames;
 
         public enum AnimState
         {
@@ -27,9 +31,16 @@ namespace UFO
 
         private void Start()
         {
-            _thrusters = ThrusterLeft.parent;
             _thrusterLeftPos = (Vector2)ThrusterLeft.localPosition;
             _thrusterRightPos = (Vector2)ThrusterRight.localPosition;
+
+            for (int i = 0; i < MuzzleFlashes.Length; i++)
+            {
+                MuzzleFlashes[i].gameObject.SetActive(false);
+            }
+
+            DeathFlash.transform.SetParent(null);
+            DeathFlash.gameObject.SetActive(false);
         }
 
         public static void SwitchToState(Animator animator, AnimState state)
@@ -87,18 +98,58 @@ namespace UFO
         private void OnFireStart()
         {
             _firingScale = 3.0f;
+            foreach (MeshRenderer flash in MuzzleFlashes)
+            {
+                flash.material.SetFloat(GameManager.NormTimeID, 0.0f);
+                flash.gameObject.SetActive(true);
+            }
         }
 
         private void OnFireEnd()
         {
             _firingScale = 0.0f;
+            foreach (MeshRenderer flash in MuzzleFlashes)
+            {
+                flash.gameObject.SetActive(false);
+            }
+        }
+
+        private void OnDeath()
+        {
+            _deathFrames = DeathFrames;
+            DeathFlash.material.SetFloat(GameManager.NormTimeID, 0.0f);
+            DeathFlash.transform.position = transform.position;
+            DeathFlash.gameObject.SetActive(true);
         }
 
         private void Tick()
         {
-            Vector3 offset = _firingScale * _pixelSize * Mathf.Sin(2.0f * Mathf.PI * 10.0f * Time.time) * Vector3.up;
+            float fireFreq = 10.0f;
+            Vector3 offset = _firingScale * _pixelSize * Mathf.Sin(2.0f * Mathf.PI * fireFreq * Time.time) * Vector3.up;
             ThrusterLeft.localPosition = _thrusterLeftPos + offset;
             ThrusterRight.localPosition = _thrusterRightPos + offset;
+
+            if (_firingScale > 0.0f)
+            {
+                for (int i = 0; i < MuzzleFlashes.Length; i++)
+                {
+                    MuzzleFlashes[i].material.SetFloat(GameManager.NormTimeID, 3.0f * fireFreq * Time.time);
+                }
+            }
+
+            if (_deathFrames == 0)
+            {
+                return;
+            }
+
+            if (--_deathFrames > 0)
+            {
+                DeathFlash.material.SetFloat(GameManager.NormTimeID, (float)(DeathFrames - _deathFrames) / DeathFrames);
+            }
+            else
+            {
+                DeathFlash.gameObject.SetActive(false);
+            }
         }
 
         private void OnEnable()
@@ -107,6 +158,7 @@ namespace UFO
             PlayerController.OnMove += OnMove;
             PlayerController.OnFireStart += OnFireStart;
             PlayerController.OnFireEnd += OnFireEnd;
+            PlayerController.OnDeath += OnDeath;
         }
 
         private void OnDisable()
@@ -115,6 +167,7 @@ namespace UFO
             PlayerController.OnMove -= OnMove;
             PlayerController.OnFireStart -= OnFireStart;
             PlayerController.OnFireEnd -= OnFireEnd;
+            PlayerController.OnDeath -= OnDeath;
         }
     }
 }
