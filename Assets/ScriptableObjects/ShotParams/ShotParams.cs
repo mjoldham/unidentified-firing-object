@@ -7,6 +7,9 @@ namespace UFO
     {
         public AnimationClip Clip;
         public ShotController.TargetType Target;
-        public float Speed;
+
+        [Min(0.1f)]
+        public float Speed = 0.1f;
+        public int Damage = 1;
     }
 }

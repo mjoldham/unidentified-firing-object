@@ -4,18 +4,6 @@ using UnityEngine;
 
 namespace UFO
 {
-    public struct RoutePoint
-    {
-        public Vector2 Destination;
-        public int BeatsToComplete;
-
-        public RoutePoint(Transform t)
-        {
-            Destination = t.position;
-            BeatsToComplete = (int)t.position.z;
-        }
-    }
-
     [Serializable]
     public struct SpawnInfo
     {
@@ -28,8 +16,6 @@ namespace UFO
         public int Bar;
         [Range(0, GameManager.BeatsPerBar - 1)]
         public int Beat;
-        [Range(-(GameManager.NumLanes - 1) / 2, (GameManager.NumLanes - 1) / 2)]
-        public int Lane;
 
         public EnemyController EnemyPrefab;
         public Transform RoutePrefab;

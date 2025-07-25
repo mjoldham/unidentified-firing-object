@@ -1,25 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UFO;
+using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    protected GameManager _gm;
+    protected PlayerController _player;
     protected Animator _animator;
 
-    public Collider2D[] HitBoxes, HurtBoxes, ShieldBoxes;
+    public float ShotSealingDistance = 1.0f; // Set this to zero for relentless enemies!
+    private float _sealingDistSqr;
 
-    public enum MoveMode
-    {
-        Static,
-        Relative
-    }
+    public Transform HitboxParent, HurtboxParent, ShieldboxParent;
 
-    public MoveMode CurrentMode;
-
-    public bool IsMirrored;
+    [HideInInspector]
+    public Collider2D[] Hitboxes, Hurtboxes, Shieldboxes;
 
     // How the enemy should move along the x-axis in normalised time (0 to 1).
     public AnimationCurve XCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
@@ -28,9 +26,13 @@ public class EnemyController : MonoBehaviour
     public AnimationCurve YCurve = AnimationCurve.Constant(0.0f, 1.0f, 0.0f);
 
     public int Health = 1;
+    private int _fullHealth;
 
-    private Queue<RoutePoint> _route;
-    private int _beatsToGo;
+    private Queue<RouteStep> _route;
+    private int _moveBeats, _fireCount;
+    private bool _waitToFire;
+
+    private bool _isMirrored;
 
     private ShotEmitter[] _emitters;
 
@@ -41,8 +43,22 @@ public class EnemyController : MonoBehaviour
 
     public void Init()
     {
-        _gm = GameManager.Instance;
+        _player = PlayerController.Instance;
         _animator = GetComponent<Animator>();
+
+        Hitboxes = HitboxParent.GetComponentsInChildren<Collider2D>();
+        Hurtboxes = HurtboxParent.GetComponentsInChildren<Collider2D>();
+        Shieldboxes = ShieldboxParent.GetComponentsInChildren<Collider2D>();
+
+        foreach (Collider2D hurt in Hurtboxes)
+        {
+            hurt.gameObject.layer = GameManager.HurtLayer;
+        }
+
+        foreach (Collider2D shield in Shieldboxes)
+        {
+            shield.gameObject.layer = GameManager.ShieldLayer;
+        }
 
         _emitters = GetComponentsInChildren<ShotEmitter>();
         foreach(ShotEmitter emitter in _emitters)
@@ -50,6 +66,8 @@ public class EnemyController : MonoBehaviour
             emitter.Init();
         }
 
+        _fullHealth = Health;
+        _sealingDistSqr = ShotSealingDistance * ShotSealingDistance;
         gameObject.SetActive(false);
     }
 
@@ -60,8 +78,8 @@ public class EnemyController : MonoBehaviour
             position.x = -position.x;
         }
 
-        _beatsToGo = beats;
-        if (_beatsToGo == 0)
+        _moveBeats = beats;
+        if (_moveBeats == 0)
         {
             transform.position = _destination = position;
             return;
@@ -70,42 +88,87 @@ public class EnemyController : MonoBehaviour
         _start = transform.position;
         _destination = position;
 
-        _destDuration = beats * _gm.BeatLength;
+        _destDuration = beats * GameManager.BeatLength;
         _destTime = UnityEngine.AudioSettings.dspTime + _destDuration;
     }
 
-    private void StartMove(RoutePoint rp)
+    private void StartMove(RouteStep step)
     {
-        StartMove(rp.Destination, rp.BeatsToComplete, IsMirrored);
+        _fireCount = step.NumBursts;
+        _waitToFire = step.WaitToFire;
+
+        if (_fireCount > 0)
+        {
+            foreach (ShotEmitter emitter in _emitters)
+            {
+                emitter.Restart();
+                emitter.IsMirrored = _isMirrored ? !emitter.IsMirrored : emitter.IsMirrored;
+            }
+        }
+
+        StartMove(step.transform.position, step.BeatsToComplete, _isMirrored);
     }
 
     public void Spawn(SpawnInfo spawnInfo)
     {
         _isExiting = false;
-        _beatsToGo = 0;
-        IsMirrored = spawnInfo.IsMirrored;
+        _moveBeats = 0;
+        _isMirrored = spawnInfo.IsMirrored;
+        Health = _fullHealth;
 
-        transform.position = _destination = new Vector2(spawnInfo.Lane, GameManager.ScreenHalfHeight + 1.0f);
         gameObject.SetActive(true);
 
-        if (spawnInfo.RoutePrefab == null || spawnInfo.RoutePrefab.childCount == 0)
+        if (spawnInfo.RoutePrefab == null)
         {
+            transform.position = _destination = new Vector2(0.0f, GameManager.ScreenHalfHeight + 1.0f);
             ExitStage();
             return;
         }
 
-        _route = new Queue<RoutePoint>(spawnInfo.RoutePrefab.childCount);
-        foreach (Transform t  in spawnInfo.RoutePrefab)
+        _route = new Queue<RouteStep>(spawnInfo.RoutePrefab.GetComponentsInChildren<RouteStep>());
+        if (!_route.TryDequeue(out RouteStep step))
         {
-            _route.Enqueue(new RoutePoint(t)); // TODO: attach fire points!
+            transform.position = _destination = new Vector2(0.0f, GameManager.ScreenHalfHeight + 1.0f);
+            ExitStage();
+            return;
         }
 
-        StartMove(_route.Dequeue());
+        int lane = Mathf.RoundToInt(step.transform.position.x);
+        lane = Mathf.Clamp(_isMirrored ? -lane : lane, -(GameManager.NumLanes - 1) / 2, (GameManager.NumLanes - 1) / 2);
+        transform.position = _destination = new Vector2(lane, GameManager.ScreenHalfHeight + 1.0f);
+        StartMove(step);
     }
 
-    public bool TryDie(int count)
+    public bool TryDie(int damage)
     {
-        return (Health -= count) <= 0;
+        if (damage == 0)
+        {
+            return false;
+        }
+
+        Health -= damage;
+        if (Health <= 0)
+        {
+            gameObject.SetActive(false);
+            return true;
+        }
+
+        return false;
+    }
+
+    public void TryDamage(PlayerController player)
+    {
+        if (player.IsInvincible)
+        {
+            return;
+        }
+
+        Vector2 position = player.transform.position;
+        if (Hitboxes.Any(hitbox => hitbox.enabled && hitbox.OverlapPoint(position)))
+        {
+            player.TryDie();
+            GameManager.OnHit?.Invoke(position);
+        }
     }
 
     // Returns false when enemy should be despawned after exiting the stage.
@@ -122,6 +185,11 @@ public class EnemyController : MonoBehaviour
             float x = Mathf.Lerp(_start.x, _destination.x, tx);
             float y = Mathf.Lerp(_start.y, _destination.y, ty);
             transform.position = new Vector2(x, y);
+
+            if (_waitToFire)
+            {
+                return true;
+            }
         }
         else
         {
@@ -133,13 +201,29 @@ public class EnemyController : MonoBehaviour
             }
         }
 
-        // While above the cutoff height, keeps ticking emitters.
-        if (transform.position.y < GameManager.CutoffHeight)
+        if (_fireCount == 0)
+        {
+            return true;
+        }
+
+        // While above the cutoff height or offscreen, keeps ticking emitters.
+        if (transform.position.y < GameManager.CutoffHeight || transform.position.y > GameManager.ScreenHalfHeight
+            || Mathf.Abs(transform.position.x) > GameManager.ScreenHalfWidth)
+        {
+            return true;
+        }
+
+        if ((_player.transform.position - transform.position).sqrMagnitude < _sealingDistSqr)
         {
             return true;
         }
 
         if (ShotEmitter.Tick(_emitters))
+        {
+            return true;
+        }
+
+        if (--_fireCount == 0)
         {
             return true;
         }
@@ -166,19 +250,20 @@ public class EnemyController : MonoBehaviour
             return;
         }
 
-        if (--_beatsToGo > 0)
+        // Don't start next step if still firing or moving.
+        if (_fireCount > 0 || --_moveBeats > 0)
         {
             return;
         }
 
         // If finished moving, exit the stage.
-        if (!_route.TryDequeue(out RoutePoint route))
+        if (!_route.TryDequeue(out RouteStep step))
         {
             ExitStage();
             return;
         }
 
-        StartMove(route);
+        StartMove(step);
     }
 
     private void OnPause()
