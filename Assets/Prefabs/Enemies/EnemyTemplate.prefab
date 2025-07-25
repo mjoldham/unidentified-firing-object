@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7280738695302344207}
   - component: {fileID: 5608769085949086522}
   m_Layer: 0
-  m_Name: HurtBox
+  m_Name: Hurtboxes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80,7 +80,7 @@ GameObject:
   - component: {fileID: 7610041437793647877}
   - component: {fileID: 838598292298961902}
   m_Layer: 0
-  m_Name: ShieldBox
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94,12 +94,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2424022105708843441}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.390625, z: 0}
   m_LocalScale: {x: 0.609375, y: 0.15627429, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3182242149051340594}
+  m_Father: {fileID: 4348478874354535481}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7610041437793647877
 SpriteRenderer:
@@ -232,8 +232,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7280738695302344207}
   - {fileID: 2564444344280621522}
+  - {fileID: 7280738695302344207}
   - {fileID: 6790688288783509937}
   m_Father: {fileID: 3182242149051340594}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -324,7 +324,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1900167406802399491}
-  - {fileID: 1690010580919450645}
+  - {fileID: 4348478874354535481}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &4134636135881689737
@@ -361,14 +361,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e45b2977bcad0ae4882a7c5ef2647c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HitBoxes:
-  - {fileID: 8850301695338786379}
-  HurtBoxes:
-  - {fileID: 5608769085949086522}
-  ShieldBoxes:
-  - {fileID: 838598292298961902}
-  CurrentMode: 0
-  IsMirrored: 0
+  ShotSealingDistance: 1
+  HitboxParent: {fileID: 2564444344280621522}
+  HurtboxParent: {fileID: 7280738695302344207}
+  ShieldboxParent: {fileID: 4348478874354535481}
+  Hitboxes: []
+  Hurtboxes: []
+  Shieldboxes: []
   XCurve:
     serializedVersion: 2
     m_Curve:
@@ -399,20 +398,29 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
+      inSlope: 4.632545
+      outSlope: 4.632545
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.04585153
+    - serializedVersion: 3
+      time: 0.3
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: -4.2196684
+      outSlope: -4.2196684
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.10043669
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -429,7 +437,7 @@ GameObject:
   - component: {fileID: 2564444344280621522}
   - component: {fileID: 8850301695338786379}
   m_Layer: 0
-  m_Name: HitBox
+  m_Name: Hitboxes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -486,6 +494,38 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.17
+--- !u!1 &7438857587619306394
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4348478874354535481}
+  m_Layer: 0
+  m_Name: Shieldboxes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4348478874354535481
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7438857587619306394}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1690010580919450645}
+  m_Father: {fileID: 3182242149051340594}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6908981670471855216
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -533,6 +573,10 @@ PrefabInstance:
     - target: {fileID: 134260525024429505, guid: bff0e919d75fe5340b85fc1036d2250d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1649952261040545670, guid: bff0e919d75fe5340b85fc1036d2250d, type: 3}
+      propertyPath: FramesToWait
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2135945752982680602, guid: bff0e919d75fe5340b85fc1036d2250d, type: 3}
       propertyPath: m_Name

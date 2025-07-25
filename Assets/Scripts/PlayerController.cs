@@ -1,16 +1,12 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace UFO
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviour, IKillable
     {
         public static PlayerController Instance { get; private set; }
-        private GameManager _gm;
 
         public PlayerSettings Settings;
 
@@ -21,10 +17,13 @@ namespace UFO
         public static Action OnGetShield, OnGetBomb, OnGetPower, OnGetExtend, OnItemScore;
         public static Action<Vector2, bool> OnMove;
 
+        [HideInInspector]
+        public Collider2D Hitbox;
+
         public bool IsShielded;
 
         [Min(0)]
-        public int ExtendCount = 2;
+        public int ExtendCount = 3; // NB: The initial spawn consumes an extend, so player is allowed 3 deaths before game over.
 
         [Range(0, 5)]
         public int BombCount = 3;
@@ -36,7 +35,12 @@ namespace UFO
         private bool _isFiring;
         private int _shotTimeFrames;
 
-        private Coroutine _dyingCoroutine;
+        private TrailRenderer[] _trails;
+
+        private Coroutine _dying;
+        private bool _isSpawning, _isInvincible, _isDying;
+
+        public bool IsInvincible { get => _isSpawning || _isInvincible || _isDying; }
 
         private void Awake()
         {
@@ -51,7 +55,6 @@ namespace UFO
 
         private void Start()
         {
-            _gm = GameManager.Instance;
             _emitters = new ShotEmitter[PowerLevels.childCount][];
             for (int i = 0; i < PowerLevels.childCount; i++)
             {
@@ -61,35 +64,135 @@ namespace UFO
                     emitter.Init();
                 }
             }
+
+            _trails = GetComponentsInChildren<TrailRenderer>();
+            Hitbox = GetComponentInChildren<Collider2D>();
+            gameObject.SetActive(false);
+        }
+
+        private IEnumerator Spawning()
+        {
+            _isSpawning = _isInvincible = true;
+
+            foreach (TrailRenderer trail in _trails)
+            {
+                trail.Clear();
+            }
+
+            Vector2 start = new Vector2(0.0f, -GameManager.ScreenHalfHeight - 1.0f);
+            Vector2 end = new Vector2(0.0f, GameManager.CutoffHeight);
+
+            double duration = Settings.SpawnBeats * GameManager.BeatLength;
+            double endTime = UnityEngine.AudioSettings.dspTime + duration;
+            for (double time = UnityEngine.AudioSettings.dspTime; time < endTime; time = UnityEngine.AudioSettings.dspTime)
+            {
+                transform.position = Vector2.Lerp(end, start, (float)((endTime - time) / duration));
+                yield return null;
+            }
+
+            transform.position = end;
+            _isSpawning = false;
+
+            StartCoroutine(ApplyingInvincibility());
         }
 
         public void Spawn(int extends)
         {
-            // TODO: figure out spawning player. should take ~4s to float from offscreen to bottom half, plus a few more seconds of invincibility.
+            gameObject.SetActive(true);
+
             ExtendCount = extends;
             BombCount = 3;
             PowerCount = 0;
 
+            StartCoroutine(Spawning());
+
             OnSpawn?.Invoke();
         }
 
+        public void Spawn()
+        {
+            Spawn(ExtendCount - 1);
+        }
+
+        private IEnumerator ApplyingInvincibility()
+        {
+            _isInvincible = true;
+            yield return new WaitForSeconds(Settings.InvincibilityDuration);
+            _isInvincible = false;
+        }
+        
         private IEnumerator Dying()
         {
+            _isDying = true;
             yield return new WaitForSeconds(Settings.BombSaveDuration);
+            _isDying = false;
 
-            // TODO: figure out player death. already sorted bomb saves, need death explosion then either spawn or gameover. GM should handle gameover.
             if (ExtendCount == 0)
             {
+                ExtendCount = 3;
+                gameObject.SetActive(false);
+
                 OnGameOver?.Invoke();
                 yield break;
             }
 
-            Spawn(ExtendCount - 1);
+            Spawn();
         }
 
-        public void Die()
+        public void TryDie()
         {
-            StartCoroutine(Dying());
+            if (_isInvincible || _isDying)
+            {
+                return;
+            }
+
+            if (IsShielded)
+            {
+                StartCoroutine(ApplyingInvincibility());
+                IsShielded = false;
+                return;
+            }
+
+            _dying = StartCoroutine(Dying());
+        }
+
+        public bool TryKill(EnemyController enemy)
+        {
+            if (!_isFiring)
+            {
+                return false;
+            }
+
+            Collider2D[] results = new Collider2D[16];
+            ContactFilter2D filter = new ContactFilter2D();
+
+            filter.SetLayerMask(GameManager.ShieldMask);
+            int count = Physics2D.OverlapCollider(Hitbox, filter, results);
+            for (int i = 0; i < count; i++)
+            {
+                if (results[i].GetComponentInParent<EnemyController>() != enemy)
+                {
+                    continue;
+                }
+
+                GameManager.OnHit?.Invoke(results[i].ClosestPoint(Hitbox.transform.position));
+                return false;
+            }
+
+            filter.SetLayerMask(GameManager.HurtMask);
+            count = Physics2D.OverlapCollider(Hitbox, filter, results);
+            for (int i = 0; i < count; i++)
+            {
+                if (results[i].GetComponentInParent<EnemyController>() != enemy)
+                {
+                    continue;
+                }
+
+                GameManager.OnHit?.Invoke(results[i].ClosestPoint(Hitbox.transform.position));
+                return enemy.TryDie(Settings.HitboxDamage);
+            }
+
+            return false;
         }
 
         public void GetShield()
@@ -184,8 +287,6 @@ namespace UFO
                 {
                     OnFireStart?.Invoke();
                 }
-
-                // TODO: check muzzle flash hitbox against enemies and deal damage.
             }
             else if (wasFiring)
             {
@@ -205,11 +306,12 @@ namespace UFO
                 return;
             }
 
-            if (_dyingCoroutine != null)
+            if (_dying != null)
             {
-                StopCoroutine(_dyingCoroutine);
+                StopCoroutine(_dying);
             }
 
+            _isDying = false;
             BombCount--;
             OnBombUse?.Invoke();
         }
@@ -232,7 +334,13 @@ namespace UFO
                 return;
             }
 
-            if (_dyingCoroutine != null)
+            if (_isSpawning)
+            {
+                HandleFiring();
+                return;
+            }
+
+            if (_isDying)
             {
                 HandleBombing();
                 OnTick?.Invoke();

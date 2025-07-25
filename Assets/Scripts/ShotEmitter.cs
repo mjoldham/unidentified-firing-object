@@ -220,7 +220,7 @@ namespace UFO
         public void Restart()
         {
             CurrentOffset = _currentIndex = _lastAngle = 0;
-            Tick();
+            //Tick();
         }
 
         // Returns true so long as the sequence isn't finished.

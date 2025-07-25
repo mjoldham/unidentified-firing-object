@@ -19,36 +19,37 @@ MonoBehaviour:
   Spawns:
   - CheckForEnemies: 0
     IsMirrored: 0
-    Bar: 3
-    Beat: 0
-    Lane: 2
+    Bar: 2
+    Beat: 2
     EnemyPrefab: {fileID: 5932211203276947195, guid: b0254e08b6a125344933a8bf14c592db, type: 3}
     RoutePrefab: {fileID: 3498591357935779819, guid: c7b5f0149ee1c2d41a3bd756ca97e4e9, type: 3}
   - CheckForEnemies: 0
     IsMirrored: 1
     Bar: 3
-    Beat: 2
-    Lane: -2
+    Beat: 0
     EnemyPrefab: {fileID: 5932211203276947195, guid: b0254e08b6a125344933a8bf14c592db, type: 3}
     RoutePrefab: {fileID: 3498591357935779819, guid: c7b5f0149ee1c2d41a3bd756ca97e4e9, type: 3}
   - CheckForEnemies: 0
     IsMirrored: 0
     Bar: 4
-    Beat: 0
-    Lane: 2
+    Beat: 2
     EnemyPrefab: {fileID: 5932211203276947195, guid: b0254e08b6a125344933a8bf14c592db, type: 3}
     RoutePrefab: {fileID: 3498591357935779819, guid: c7b5f0149ee1c2d41a3bd756ca97e4e9, type: 3}
   - CheckForEnemies: 0
     IsMirrored: 1
-    Bar: 4
-    Beat: 2
-    Lane: -2
-    EnemyPrefab: {fileID: 5932211203276947195, guid: b0254e08b6a125344933a8bf14c592db, type: 3}
-    RoutePrefab: {fileID: 3498591357935779819, guid: c7b5f0149ee1c2d41a3bd756ca97e4e9, type: 3}
-  - CheckForEnemies: 1
-    IsMirrored: 0
     Bar: 5
     Beat: 0
-    Lane: 2
+    EnemyPrefab: {fileID: 5932211203276947195, guid: b0254e08b6a125344933a8bf14c592db, type: 3}
+    RoutePrefab: {fileID: 3498591357935779819, guid: c7b5f0149ee1c2d41a3bd756ca97e4e9, type: 3}
+  - CheckForEnemies: 0
+    IsMirrored: 0
+    Bar: 6
+    Beat: 2
+    EnemyPrefab: {fileID: 5932211203276947195, guid: b0254e08b6a125344933a8bf14c592db, type: 3}
+    RoutePrefab: {fileID: 3498591357935779819, guid: c7b5f0149ee1c2d41a3bd756ca97e4e9, type: 3}
+  - CheckForEnemies: 0
+    IsMirrored: 1
+    Bar: 7
+    Beat: 0
     EnemyPrefab: {fileID: 5932211203276947195, guid: b0254e08b6a125344933a8bf14c592db, type: 3}
     RoutePrefab: {fileID: 3498591357935779819, guid: c7b5f0149ee1c2d41a3bd756ca97e4e9, type: 3}

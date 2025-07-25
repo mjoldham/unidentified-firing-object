@@ -4,6 +4,9 @@ using System;
 using static UFO.ShotEmitter;
 using UnityEngine.InputSystem;
 using static UnityEngine.Timeline.DirectorControlPlayable;
+using static UFO.ShotController;
+using static UnityEngine.GraphicsBuffer;
+using System.Linq;
 
 namespace UFO
 {
@@ -19,8 +22,21 @@ namespace UFO
         public const float ScreenHalfHeight = 3.5f;
         public const float CutoffHeight = -ScreenHalfHeight + 1.0f;
 
+        public static int HitLayer { get; private set; }
+        public static int HurtLayer { get; private set; }
+        public static int ShieldLayer { get; private set; }
+
+        public static int HitMask { get; private set; }
+        public static int HurtMask { get; private set; }
+        public static int ShieldMask { get; private set; }
+
         public static Action OnBeat, OnPause;
         public static Action<double> OnUnpause;
+        public static Action<Vector2> OnHit;
+
+        public static bool IsOnBeat { get; private set; }
+        public static double BeatLength { get; private set; }
+        public static double BarLength { get; private set; }
 
         public SpriteRenderer BackgroundRenderer;
 
@@ -30,7 +46,87 @@ namespace UFO
         private Material _bgMaterial;
         private int _scrollID = Shader.PropertyToID(string.Concat("_", nameof(StageSettings.ScrollSpeed)));
 
-        public struct ShotPool
+        public class EffectPool
+        {
+            public int MaxCount { get; private set; }
+            public int Frames { get; private set; }
+
+            private Queue<MeshRenderer> _inactiveFX;
+            private Queue<(MeshRenderer, int)> _activeFX;
+            private readonly int _normTimeID = Shader.PropertyToID("_NormalisedTime");
+
+            public EffectPool(int maxCount, int frames, GameObject hitPrefab, Transform parent)
+            {
+                MaxCount = maxCount;
+                Frames = frames;
+
+                _inactiveFX = new Queue<MeshRenderer>();
+                _activeFX = new Queue<(MeshRenderer, int)>();
+
+                for (int i = 0; i < MaxCount; i++)
+                {
+                    MeshRenderer fx = Instantiate(hitPrefab, parent).GetComponent<MeshRenderer>();
+                    fx.gameObject.SetActive(false);
+                    _inactiveFX.Enqueue(fx);
+                }
+            }
+
+            public void Spawn(Vector2 position)
+            {
+                MeshRenderer fx;
+                if (_inactiveFX.Count == 0)
+                {
+                    fx = _activeFX.Dequeue().Item1;
+                }
+                else
+                {
+                    fx = _inactiveFX.Dequeue();
+                }
+
+                fx.gameObject.SetActive(true);
+                fx.transform.position = position;
+                fx.material.SetFloat(_normTimeID, 0.0f);
+
+                _activeFX.Enqueue((fx, Frames));
+            }
+
+            public void Tick()
+            {
+                int count = _activeFX.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    (MeshRenderer fx, int frames) = _activeFX.Dequeue();
+                    if (--frames > 0)
+                    {
+                        fx.material.SetFloat(_normTimeID, (float)(Frames - frames) / Frames);
+                        _activeFX.Enqueue((fx, frames));
+                    }
+                    else
+                    {
+                        fx.gameObject.SetActive(false);
+                        _inactiveFX.Enqueue(fx);
+                    }
+                }
+            }
+
+            public void Clear()
+            {
+                int count = _activeFX.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    (MeshRenderer fx, int _) = _activeFX.Dequeue();
+                    fx.gameObject.SetActive(false);
+                    _inactiveFX.Enqueue(fx);
+                }
+            }
+        }
+
+        public GameObject HitEffectPrefab;
+        [Min(5)]
+        public int HitEffectFrames = 50;
+        private EffectPool _hitFXPool;
+
+        public class ShotPool : IKillable
         {
             public int MaxCount { get; private set; }
 
@@ -40,8 +136,10 @@ namespace UFO
             public ShotPool(int maxCount, ShotController baseShot, Transform parent)
             {
                 MaxCount = maxCount;
+
                 _inactiveShots = new Queue<ShotController>();
                 _activeShots = new Queue<ShotController>();
+
                 for (int i = 0; i < MaxCount; i++)
                 {
                     ShotController shot = Instantiate(baseShot, parent);
@@ -81,6 +179,51 @@ namespace UFO
                 }
             }
 
+            // Returns true if enemy is dead or not.
+            public bool TryKill(EnemyController enemy)
+            {
+                bool isHit = false;
+                int damage = 0;
+                int count = _activeShots.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    ShotController shot = _activeShots.Dequeue();
+                    if (shot.TryDamage(enemy, ref damage))
+                    {
+                        isHit = true;
+                        _inactiveShots.Enqueue(shot);
+
+                        OnHit?.Invoke(shot.transform.position);
+                    }
+                    else
+                    {
+                        _activeShots.Enqueue(shot);
+                    }
+                }
+
+                return isHit && enemy.TryDie(damage);
+            }
+
+            public void TryKill(PlayerController player)
+            {
+                int count = _activeShots.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    ShotController shot = _activeShots.Dequeue();
+                    if (shot.TryDamage(player))
+                    {
+                        _inactiveShots.Enqueue(shot);
+                        player.TryDie();
+
+                        OnHit?.Invoke(shot.transform.position);
+                    }
+                    else
+                    {
+                        _activeShots.Enqueue(shot);
+                    }
+                }
+            }
+
             public void Clear()
             {
                 int count = _activeShots.Count;
@@ -89,13 +232,15 @@ namespace UFO
                     ShotController shot = _activeShots.Dequeue();
                     shot.gameObject.SetActive(false);
                     _inactiveShots.Enqueue(shot);
+
+                    OnHit?.Invoke(shot.transform.position);
                 }
             }
         }
 
         public ShotController BaseShotPrefab;
         public int PlayerShotMaxCount = 32, EnemyShotMaxCount = 256;
-        private ShotPool _playerShotPool, _enemyShotPool;
+        private ShotPool _playerShotPool, _enemyFriendlyPool, _enemyShotPool;
 
         [Serializable]
         public class EnemyPool
@@ -112,6 +257,7 @@ namespace UFO
             {
                 _inactiveEnemies = new Queue<EnemyController>();
                 _activeEnemies = new Queue<EnemyController>();
+
                 for (int i = 0; i < MaxCount; i++)
                 {
                     EnemyController enemy = Instantiate(EnemyPrefab, parent);
@@ -151,6 +297,32 @@ namespace UFO
                 }
             }
 
+            // Checks if any killers damage any enemies, and if any enemies damage the player.
+            public void CheckCollisions(params IKillable[] killers)
+            {
+                PlayerController player = killers.First(killer => killer is PlayerController) as PlayerController;
+
+                int count = _activeEnemies.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    EnemyController enemy = _activeEnemies.Dequeue();
+                    if (Mathf.Abs(enemy.transform.position.x) > ScreenHalfWidth || Mathf.Abs(enemy.transform.position.y) > ScreenHalfHeight)
+                    {
+                        _activeEnemies.Enqueue(enemy);
+                        continue;
+                    }
+
+                    if (killers.Any(killer => killer.TryKill(enemy)))
+                    {
+                        _inactiveEnemies.Enqueue(enemy);
+                        continue;
+                    }
+
+                    _activeEnemies.Enqueue(enemy);
+                    enemy.TryDamage(player);
+                }
+            }
+
             public void Clear()
             {
                 int count = _activeEnemies.Count;
@@ -161,6 +333,27 @@ namespace UFO
                     _inactiveEnemies.Enqueue(enemy);
                 }
             }
+
+            public void ApplyBomb(Vector3 source)
+            {
+                int count = _activeEnemies.Count;
+                float heightSqr = ScreenHalfHeight * ScreenHalfHeight;
+                for (int i = 0; i < count; i++)
+                {
+                    EnemyController enemy = _activeEnemies.Dequeue();
+                    OnHit?.Invoke(enemy.transform.position);
+
+                    int damage = (int)Mathf.Lerp(100, 1, (enemy.transform.position - source).sqrMagnitude / heightSqr);
+                    if (!enemy.TryDie(damage))
+                    {
+                        _activeEnemies.Enqueue(enemy);
+                    }
+                    else
+                    {
+                        _inactiveEnemies.Enqueue(enemy);
+                    }
+                }
+            }
         }
 
         public EnemyPool[] EnemyPools;
@@ -168,8 +361,6 @@ namespace UFO
 
         private int _currentStage = -1, _currentBar, _currentBeat;
 
-        public double BeatLength { get; private set; }
-        public double BarLength { get; private set; }
         private double _nextStageTime, _nextBarTime, _nextBeatTime;
 
         private int _currentLoop = 1;
@@ -219,7 +410,17 @@ namespace UFO
             _player = PlayerController.Instance;
             _bgMaterial = BackgroundRenderer.material;
 
+            HitLayer = LayerMask.NameToLayer(nameof(EnemyController.Hitboxes));
+            HurtLayer = LayerMask.NameToLayer(nameof(EnemyController.Hurtboxes));
+            ShieldLayer = LayerMask.NameToLayer(nameof(EnemyController.Shieldboxes));
+
+            HitMask = LayerMask.GetMask(nameof(EnemyController.Hitboxes));
+            HurtMask = LayerMask.GetMask(nameof(EnemyController.Hurtboxes));
+            ShieldMask = LayerMask.GetMask(nameof(EnemyController.Shieldboxes));
+
+            _hitFXPool = new EffectPool(EnemyShotMaxCount, HitEffectFrames, HitEffectPrefab, transform);
             _playerShotPool = new ShotPool(PlayerShotMaxCount, BaseShotPrefab, transform);
+            _enemyFriendlyPool = new ShotPool(EnemyShotMaxCount, BaseShotPrefab, transform);
             _enemyShotPool = new ShotPool(EnemyShotMaxCount, BaseShotPrefab, transform);
 
             foreach (EnemyPool pool in EnemyPools)
@@ -239,6 +440,7 @@ namespace UFO
 
         private void StartNextStage()
         {
+            IsOnBeat = false;
             if (++_currentStage == Stages.Length)
             {
                 _currentStage = 0;
@@ -246,8 +448,12 @@ namespace UFO
             }
 
             _spawnIndex = 0;
+
             StageSettings stage = Stages[_currentStage];
-            double startTime = UnityEngine.AudioSettings.dspTime + 1.0;
+            BeatLength = 60.0 / stage.BPM;
+            BarLength = BeatsPerBar * BeatLength;
+
+            double startTime = UnityEngine.AudioSettings.dspTime + _player.Settings.SpawnBeats * BeatLength;
             _audio.Play(stage.MusicTrack, startTime);
 
             _currentBar = -1;
@@ -255,17 +461,22 @@ namespace UFO
             _nextStageTime = CalculateNextStageTime(startTime, stage.MusicTrack);
             _nextBeatTime = _nextBarTime = startTime;
 
-            BeatLength = 60.0 / stage.BPM;
-            BarLength = BeatsPerBar * BeatLength;
-
             BackgroundRenderer.sprite = stage.Background;
             _bgMaterial.SetFloat(_scrollID, stage.ScrollSpeed);
+
+            if (!_player.gameObject.activeSelf)
+            {
+                _player.Spawn();
+            }
         }
 
         private void ClearScreen()
         {
             _playerShotPool.Clear();
+            _enemyFriendlyPool.Clear();
             _enemyShotPool.Clear();
+            _hitFXPool.Clear();
+
             foreach (EnemyPool pool in EnemyPools)
             {
                 pool.Clear();
@@ -276,6 +487,7 @@ namespace UFO
         {
             ClearScreen();
             _currentStage--;
+
             StartNextStage();
         }
 
@@ -333,6 +545,7 @@ namespace UFO
             _nextBeatTime += BeatLength;
             TrySpawningEnemies(Stages[_currentStage].Spawns);
 
+            IsOnBeat = true;
             OnBeat?.Invoke();
         }
 
@@ -349,7 +562,23 @@ namespace UFO
 
         public bool SpawnShot(ShotMode mode, ShotParams shotParams, Vector2 position, ref int angle)
         {
-            ShotPool pool = shotParams.Target == ShotController.TargetType.Enemy ? _playerShotPool : _enemyShotPool;
+            ShotPool pool;
+            switch (shotParams.Target)
+            {
+                case TargetType.Player:
+                    pool = _enemyShotPool;
+                    break;
+                case TargetType.Enemy:
+                    pool = _playerShotPool;
+                    break;
+                case TargetType.Both:
+                    pool = _enemyFriendlyPool;
+                    break;
+                default:
+                    Debug.LogError($"{shotParams.Target} not accounted for.");
+                    return false;
+            }
+
             if (mode == ShotMode.Static)
             {
                 return pool.Spawn(shotParams, position, angle);
@@ -366,14 +595,19 @@ namespace UFO
 
         private void OnBombUse()
         {
-            ClearScreen();
+            _playerShotPool.Clear();
+            _enemyFriendlyPool.Clear();
+            _enemyShotPool.Clear();
+            _hitFXPool.Clear();
 
-            // TODO: damage enemies based on distance.
+            foreach (EnemyPool pool in EnemyPools)
+            {
+                pool.ApplyBomb(_player.transform.position);
+            }
         }
 
         private void OnGameOver()
         {
-            // TODO: gameover!
             RestartStage();
         }
 
@@ -393,9 +627,15 @@ namespace UFO
 
         void FixedUpdate()
         {
+            // Get effects out of the way.
+            _hitFXPool.Tick();
+
             if (_player.CheckRestart())
             {
                 Unpause();
+
+                _player.ExtendCount = 3;
+                _player.gameObject.SetActive(false);
                 RestartStage();
                 return;
             }
@@ -431,6 +671,10 @@ namespace UFO
             {
                 StartNextBeat();
             }
+            else
+            {
+                IsOnBeat = false;
+            }
 
             // Updates enemy movement and firing.
             foreach (EnemyPool pool in EnemyPools)
@@ -441,23 +685,44 @@ namespace UFO
             // Updates player movement and firing.
             _player.Tick(Time.fixedDeltaTime);
 
-            // Moves shots and checks for collisions.
+            // Moves shots.
             _playerShotPool.Tick(Time.fixedDeltaTime);
+            _enemyFriendlyPool.Tick(Time.fixedDeltaTime);
             _enemyShotPool.Tick(Time.fixedDeltaTime);
 
-            // TODO: check player-enemy collisions here.
+            // Checks shot collisions and player hitbox against enemies first. If they survive then enemy hitboxes are checked against the player.
+            foreach (EnemyPool pool in EnemyPools)
+            {
+                pool.CheckCollisions(_enemyFriendlyPool, _playerShotPool, _player);
+            }
+
+            // Then checks shots against the player.
+            _enemyShotPool.TryKill(_player);
+            _enemyFriendlyPool.TryKill(_player);
+        }
+
+        private void SpawnHitFX(Vector2 position)
+        {
+            _hitFXPool.Spawn(position);
         }
 
         private void OnEnable()
         {
+            OnHit += SpawnHitFX;
             PlayerController.OnGameOver += OnGameOver;
             PlayerController.OnBombUse += OnBombUse;
         }
 
         private void OnDisable()
         {
+            OnHit -= SpawnHitFX;
             PlayerController.OnGameOver -= OnGameOver;
             PlayerController.OnBombUse -= OnBombUse;
         }
+    }
+
+    public interface IKillable
+    {
+        public bool TryKill(EnemyController enemy);
     }
 }
