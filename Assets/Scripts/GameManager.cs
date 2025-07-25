@@ -16,6 +16,10 @@ namespace UFO
         private AudioManager _audio;
         private PlayerController _player;
 
+        public GameObject _mainMenuUI;
+
+        public bool _playing = false;
+
         public const int BeatsPerBar = 4;
         public const int NumLanes = 5;
         public const float ScreenHalfWidth = 3.5f;
@@ -430,7 +434,7 @@ namespace UFO
             }
 
             VerifySpawnsAndEnemyPools();
-            _nextStageTime = UnityEngine.AudioSettings.dspTime + 1.0;
+            //_nextStageTime = UnityEngine.AudioSettings.dspTime + 1.0;
         }
 
         private double CalculateNextStageTime(double startTime, AudioClip currentClip)
@@ -627,6 +631,11 @@ namespace UFO
 
         void FixedUpdate()
         {
+            if (!_playing)
+            {
+                return;
+            }
+
             // Get effects out of the way.
             _hitFXPool.Tick();
 
@@ -718,6 +727,18 @@ namespace UFO
             OnHit -= SpawnHitFX;
             PlayerController.OnGameOver -= OnGameOver;
             PlayerController.OnBombUse -= OnBombUse;
+        }
+
+        public void StartGame()
+        {
+            if (_currentStage == -1)
+            {
+                if (_playing) return;
+                _playing = true;
+
+                double startTime = UnityEngine.AudioSettings.dspTime + 1.0;
+                _nextStageTime = startTime;
+            }
         }
     }
 
