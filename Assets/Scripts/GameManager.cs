@@ -223,8 +223,6 @@ namespace UFO
                     {
                         _inactiveShots.Enqueue(shot);
                         player.TryDie();
-
-                        OnHitHurt?.Invoke(shot.transform.position);
                     }
                     else
                     {
@@ -260,7 +258,7 @@ namespace UFO
             private Queue<EnemyController> _inactiveEnemies;
             private Queue<EnemyController> _activeEnemies;
 
-            public int Count { get => _activeEnemies.Count; }
+            public int CheckCount { get; private set; }
 
             public void Init(Transform parent)
             {
@@ -286,6 +284,11 @@ namespace UFO
                 enemy.Spawn(spawnInfo);
                 _activeEnemies.Enqueue(enemy);
 
+                if (!enemy.Parameters.ExemptFromCheck)
+                {
+                    CheckCount++;
+                }
+                
                 return true;
             }
 
@@ -302,6 +305,10 @@ namespace UFO
                     else
                     {
                         _inactiveEnemies.Enqueue(enemy);
+                        if (!enemy.Parameters.ExemptFromCheck)
+                        {
+                            CheckCount--;
+                        }
                     }
                 }
             }
@@ -324,6 +331,11 @@ namespace UFO
                     if (killers.Any(killer => killer.TryKill(enemy)))
                     {
                         _inactiveEnemies.Enqueue(enemy);
+                        if (!enemy.Parameters.ExemptFromCheck)
+                        {
+                            CheckCount--;
+                        }
+
                         continue;
                     }
 
@@ -341,6 +353,8 @@ namespace UFO
                     enemy.gameObject.SetActive(false);
                     _inactiveEnemies.Enqueue(enemy);
                 }
+
+                CheckCount = 0;
             }
 
             public void ApplyBomb(Vector3 source)
@@ -366,6 +380,10 @@ namespace UFO
                     else
                     {
                         _inactiveEnemies.Enqueue(enemy);
+                        if (!enemy.Parameters.ExemptFromCheck)
+                        {
+                            CheckCount--;
+                        }
                     }
                 }
             }
@@ -374,7 +392,7 @@ namespace UFO
         public EnemyPool[] EnemyPools;
         private Dictionary<string, EnemyPool> _enemyPoolDict = new Dictionary<string, EnemyPool>();
 
-        private int _currentStage = -1, _currentBar, _currentBeat;
+        private int _currentStage = -1, _currentBar, _currentBeat, _totalBeats;
 
         private double _nextStageTime, _nextBarTime, _nextBeatTime;
 
@@ -393,28 +411,38 @@ namespace UFO
             Instance = this;
         }
 
-        private void VerifySpawnsAndEnemyPools()
+        private void InitSpawns()
         {
             foreach (StageSettings stage in Stages)
             {
-                int bar = 0, beat = 0;
-                for (int i = 0; i < stage.Spawns.Length; i++)
+                if (stage.StagePatternPrefab == null)
                 {
-                    SpawnInfo spawnInfo = stage.Spawns[i];
-                    if (spawnInfo.Bar < bar || (spawnInfo.Bar == bar && spawnInfo.Beat < beat))
-                    {
-                        Debug.LogError($"{stage.name}'s Spawns[{i}] is out of order, needs to be placed earlier in list.", stage);
-                        return;
-                    }
-                    
-                    if (!_enemyPoolDict.ContainsKey(spawnInfo.EnemyPrefab.gameObject.name))
-                    {
-                        Debug.LogError($"{spawnInfo.EnemyPrefab.gameObject.name} has not been included in the GameManagers list of EnemyPools.");
-                        return;
-                    }
+                    continue;
+                }
 
-                    bar = spawnInfo.Bar;
-                    beat = spawnInfo.Beat;
+                EnemyController[] spawns = stage.StagePatternPrefab.GetComponentsInChildren<EnemyController>();
+                if (spawns.Length == 0)
+                {
+                    continue;
+                }
+
+                Array.Sort(spawns, (s1, s2) => s1.transform.position.y.CompareTo(s2.transform.position.y));
+
+                stage.Spawns = new SpawnInfo[spawns.Length];
+                for (int i = 0; i < spawns.Length; i++)
+                {
+                    EnemyController e = spawns[i];
+
+                    int beat = Mathf.RoundToInt(e.transform.position.y);
+                    string name = e.gameObject.name.Split(' ')[0];
+                    float lane = e.transform.position.x;
+
+                    stage.Spawns[i] = new SpawnInfo(beat, name, e.Parameters, lane);
+                    if (!_enemyPoolDict.ContainsKey(stage.Spawns[i].EnemyPrefabName))
+                    {
+                        Debug.LogError($"{stage.Spawns[i].EnemyPrefabName} has not been included in the GameManagers list of EnemyPools.");
+                        return;
+                    }
                 }
             }
         }
@@ -448,8 +476,9 @@ namespace UFO
                 _enemyPoolDict[pool.EnemyPrefab.gameObject.name] = pool;
             }
 
-            VerifySpawnsAndEnemyPools();
-            //_nextStageTime = UnityEngine.AudioSettings.dspTime + 1.0;
+            InitSpawns();
+            // TODO: get rid of this when menu working.
+            _nextStageTime = UnityEngine.AudioSettings.dspTime + 1.0;
         }
 
         private double CalculateNextStageTime(double startTime, AudioClip currentClip)
@@ -475,7 +504,7 @@ namespace UFO
             double startTime = UnityEngine.AudioSettings.dspTime + _player.Settings.SpawnBeats * BeatLength;
             _audio.Play(stage.MusicTrack, startTime);
 
-            _currentBar = -1;
+            _totalBeats = _currentBar = 0;
 
             _nextStageTime = CalculateNextStageTime(startTime, stage.MusicTrack);
             _nextBeatTime = _nextBarTime = startTime;
@@ -514,21 +543,21 @@ namespace UFO
 
         private void TrySpawningEnemies(SpawnInfo[] spawns)
         {
-            Debug.Log($"Bar: {_currentBar},\tBeat: {_currentBeat}");
+            Debug.Log($"Total: {_totalBeats},\tBar: {_currentBar},\tBeat: {_currentBeat}");
             if (_spawnIndex == spawns.Length)
             {
                 return;
             }
 
             SpawnInfo spawnInfo = spawns[_spawnIndex];
-            while (spawnInfo.Bar == _currentBar && spawnInfo.Beat == _currentBeat)
+            while (spawnInfo.Beat == _totalBeats)
             {
-                EnemyPool pool = _enemyPoolDict[spawnInfo.EnemyPrefab.gameObject.name];
-                if (!spawnInfo.CheckForEnemies || pool.Count == 0)
+                EnemyPool pool = _enemyPoolDict[spawnInfo.EnemyPrefabName];
+                if (!spawnInfo.Parameters.CheckForEnemies || EnemyPools.All(pool => pool.CheckCount == 0))
                 {
                     if (!pool.Spawn(spawnInfo))
                     {
-                        Debug.Log($"Too many {spawnInfo.EnemyPrefab.gameObject.name} active to spawn more!");
+                        Debug.Log($"Too many {spawnInfo.EnemyPrefabName}s active to spawn more!");
                     }
                 }
 
@@ -549,7 +578,7 @@ namespace UFO
             }
 
             _currentBar++;
-            _currentBeat = -1;
+            _currentBeat = 0;
             _nextBarTime += BarLength;
 
             StartNextBeat();
@@ -562,17 +591,29 @@ namespace UFO
                 return;
             }
 
+            _totalBeats++;
             _currentBeat++;
             _nextBeatTime += BeatLength;
+
             TrySpawningEnemies(Stages[_currentStage].Spawns);
 
             IsOnBeat = true;
             OnBeat?.Invoke();
         }
 
-        private int AngleToTarget(ShotController.TargetType target, Vector2 position)
+        public static int RoundToNearest(int value, int nearest)
         {
-            if (target == ShotController.TargetType.Enemy)
+            return nearest * Mathf.RoundToInt((float)value / nearest);
+        }
+
+        public static int AngleToTarget(Vector2 position, Vector2 target)
+        {
+            return Mathf.RoundToInt(Vector2.SignedAngle(Vector2.down, (target - position).normalized));
+        }
+
+        public int AngleToTarget(TargetType target, Vector2 position)
+        {
+            if (target == TargetType.Enemy)
             {
                 Debug.LogError("The player can't have an aimed shot!");
                 return 0;

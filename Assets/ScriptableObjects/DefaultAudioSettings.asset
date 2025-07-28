@@ -21,4 +21,4 @@ MonoBehaviour:
   BombGet: {fileID: 0}
   BombUse: {fileID: 8300000, guid: 8949aeeeea21bdf43baa40aa65928af3, type: 3}
   MusicVolume: 0.7
-  MusicDuckScale: 0.4
+  MusicDuckScale: 0.6

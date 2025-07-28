@@ -73,6 +73,7 @@ namespace UFO
         private IEnumerator Spawning()
         {
             _isSpawning = _isInvincible = true;
+            _isDying = false;
 
             foreach (TrailRenderer trail in _trails)
             {
@@ -146,6 +147,7 @@ namespace UFO
         {
             if (_isInvincible || _isDying)
             {
+                GameManager.OnHitShield?.Invoke(transform.position);
                 return;
             }
 
@@ -153,9 +155,12 @@ namespace UFO
             {
                 StartCoroutine(ApplyingInvincibility());
                 IsShielded = false;
+
+                GameManager.OnHitShield?.Invoke(transform.position);
                 return;
             }
 
+            GameManager.OnHitHurt?.Invoke(transform.position);
             _dying = StartCoroutine(Dying());
         }
 

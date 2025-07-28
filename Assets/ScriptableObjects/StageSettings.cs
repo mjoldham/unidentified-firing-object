@@ -1,24 +1,29 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace UFO
 {
     [Serializable]
+    public struct EnemyParams
+    {
+        public RouteStep CurrentStep;
+        public bool CheckForEnemies, ExemptFromCheck;
+    }
+
     public struct SpawnInfo
     {
-        // If true, no enemies must be present for this to spawn.
-        public bool CheckForEnemies;
-
-        // Whether to mirror the enemy's movements.
-        public bool IsMirrored;
-
-        public int Bar;
-        [Range(0, GameManager.BeatsPerBar - 1)]
         public int Beat;
+        public string EnemyPrefabName;
+        public EnemyParams Parameters;
+        public float Lane;
 
-        public EnemyController EnemyPrefab;
-        public Transform RoutePrefab;
+        public SpawnInfo(int beat, string name, EnemyParams enemyParams, float lane)
+        {
+            Beat = beat;
+            EnemyPrefabName = name;
+            Parameters = enemyParams;
+            Lane = lane;
+        }
     }
 
     [CreateAssetMenu(fileName = "StageSettings", menuName = "Scriptable Objects/StageSettings")]
@@ -30,6 +35,9 @@ namespace UFO
         public Sprite Background; // TODO: either pack bgs into one texture ourselves or use sprite atlas to avoid hitching.
         public float ScrollSpeed;
 
+        public Transform StagePatternPrefab;
+
+        [HideInInspector]
         public SpawnInfo[] Spawns;
     }
 }

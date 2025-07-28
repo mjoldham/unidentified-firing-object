@@ -185,7 +185,7 @@ Transform:
   m_GameObject: {fileID: 5177114424854727179}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 4, z: 0}
   m_LocalScale: {x: 1.7617931, y: 1.7617931, z: 1.7617931}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -226,6 +226,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e45b2977bcad0ae4882a7c5ef2647c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Parameters:
+    CurrentStep: {fileID: 0}
+    CheckForEnemies: 0
+    IsMirrored: 0
+    WaitToFire: 0
   ShotSealingDistance: 1
   HitboxParent: {fileID: 2564444344280621522}
   HurtboxParent: {fileID: 7280738695302344207}

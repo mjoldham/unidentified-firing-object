@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -12,6 +11,20 @@ namespace UFO
 
         public static Action<Vector2> OnKill;
 
+        public EnemyParams Parameters;
+
+        public bool WaitToFire;
+        public float LookSpeed = 0.0f;
+
+        public int Health = 1;
+        private int _fullHealth;
+
+        // How the enemy should move along the x-axis in normalised time (0 to 1).
+        public AnimationCurve XCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
+
+        // How the enemy should move along the y-axis in normalised time (0 to 1).
+        public AnimationCurve YCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
+
         public float ShotSealingDistance = 1.0f; // Set this to zero for relentless enemies!
         private float _sealingDistSqr;
 
@@ -20,27 +33,35 @@ namespace UFO
         [HideInInspector]
         public Collider2D[] Hitboxes, Hurtboxes, Shieldboxes;
 
-        // How the enemy should move along the x-axis in normalised time (0 to 1).
-        public AnimationCurve XCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
-
-        // How the enemy should move along the y-axis in normalised time (0 to 1).
-        public AnimationCurve YCurve = AnimationCurve.Constant(0.0f, 1.0f, 0.0f);
-
-        public int Health = 1;
-        private int _fullHealth;
-
-        private Queue<RouteStep> _route;
-        private int _moveBeats, _fireCount;
-        private bool _waitToFire;
-
-        private bool _isMirrored;
+        private int _moveBeats;
 
         private ShotEmitter[] _emitters;
 
         Vector2 _start, _destination;
         double _destTime, _destDuration;
 
-        private bool _isExiting;
+        private bool _isFiring, _isExiting;
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Parameters.CheckForEnemies ? Color.red : Color.green;
+            if (Parameters.ExemptFromCheck)
+            {
+                Gizmos.color += Color.blue;
+            }
+
+            Gizmos.DrawWireSphere(transform.position, 1.0f);
+
+            if (Parameters.CurrentStep == null)
+            {
+                return;
+            }
+
+            Gizmos.color = Color.green;
+            Vector2 start = new Vector2(transform.position.x, GameManager.ScreenHalfHeight + 1.0f);
+            Vector2 end = new Vector2(Parameters.CurrentStep.transform.position.x, Parameters.CurrentStep.transform.localPosition.y);
+            Gizmos.DrawLine(start, end);
+        }
 
         public void Init()
         {
@@ -95,13 +116,8 @@ namespace UFO
             gameObject.SetActive(false);
         }
 
-        private void StartMove(Vector2 position, int beats, bool isMirrored)
+        private void StartMove(Vector2 position, int beats)
         {
-            if (isMirrored)
-            {
-                position.x = -position.x;
-            }
-
             _moveBeats = beats;
             if (_moveBeats == 0)
             {
@@ -116,51 +132,44 @@ namespace UFO
             _destTime = UnityEngine.AudioSettings.dspTime + _destDuration;
         }
 
-        private void StartMove(RouteStep step)
+        private void ReloadEmitters(bool isMirrored)
         {
-            _fireCount = step.NumBursts;
-            _waitToFire = step.WaitToFire;
-
-            if (_fireCount > 0)
+            foreach (ShotEmitter emitter in _emitters)
             {
-                foreach (ShotEmitter emitter in _emitters)
-                {
-                    emitter.Restart();
-                    emitter.IsMirrored = _isMirrored ? !emitter.IsMirrored : emitter.IsMirrored;
-                }
+                emitter.Restart();
+                emitter.IsMirrored = isMirrored;
+            }
+        }
+
+        private void StartMove()
+        {
+            // If finished moving, exit the stage.
+            if (Parameters.CurrentStep == null)
+            {
+                ExitStage();
+                return;
             }
 
-            StartMove(step.transform.position, step.BeatsToComplete, _isMirrored);
+            _isFiring = true;
+
+            Vector2 pos = new Vector2(Parameters.CurrentStep.transform.position.x, Parameters.CurrentStep.transform.localPosition.y);
+            ReloadEmitters(pos.x > 0.0f);
+
+            StartMove(pos, Parameters.CurrentStep.BeatsToComplete);
+            Parameters.CurrentStep = Parameters.CurrentStep.NextStep;
         }
 
         public void Spawn(SpawnInfo spawnInfo)
         {
-            _isExiting = false;
+            _isFiring = _isExiting = false;
             _moveBeats = 0;
-            _isMirrored = spawnInfo.IsMirrored;
+
+            Parameters = spawnInfo.Parameters;
             Health = _fullHealth;
+            transform.position = _destination = new Vector2(spawnInfo.Lane, GameManager.ScreenHalfHeight + 1.0f);
 
+            ReloadEmitters(spawnInfo.Lane > 0.0f);
             gameObject.SetActive(true);
-
-            if (spawnInfo.RoutePrefab == null)
-            {
-                transform.position = _destination = new Vector2(0.0f, GameManager.ScreenHalfHeight + 1.0f);
-                ExitStage();
-                return;
-            }
-
-            _route = new Queue<RouteStep>(spawnInfo.RoutePrefab.GetComponentsInChildren<RouteStep>());
-            if (!_route.TryDequeue(out RouteStep step))
-            {
-                transform.position = _destination = new Vector2(0.0f, GameManager.ScreenHalfHeight + 1.0f);
-                ExitStage();
-                return;
-            }
-
-            int lane = Mathf.RoundToInt(step.transform.position.x);
-            lane = Mathf.Clamp(_isMirrored ? -lane : lane, -(GameManager.NumLanes - 1) / 2, (GameManager.NumLanes - 1) / 2);
-            transform.position = _destination = new Vector2(lane, GameManager.ScreenHalfHeight + 1.0f);
-            StartMove(step);
         }
 
         public bool TryDie(int damage)
@@ -192,13 +201,24 @@ namespace UFO
             if (Hitboxes.Any(hitbox => hitbox.enabled && hitbox.OverlapPoint(position)))
             {
                 player.TryDie();
-                GameManager.OnHitHurt?.Invoke(position);
             }
         }
 
         // Returns false when enemy should be despawned after exiting the stage.
         public bool Tick(float deltaTime)
         {
+            if (LookSpeed > 0.0f)
+            {
+                float angle = 0.0f;
+                if (!_isExiting)
+                {
+                    angle = GameManager.AngleToTarget(transform.position, _player.transform.position);
+                }
+
+                angle = Mathf.LerpAngle(transform.rotation.eulerAngles.z, angle, LookSpeed * deltaTime);
+                transform.rotation = Quaternion.Euler(0.0f, 0.0f, angle);
+            }
+
             // Updates position based on destination and curves.
             double time = UnityEngine.AudioSettings.dspTime;
             if (time < _destTime)
@@ -207,11 +227,11 @@ namespace UFO
                 float tx = XCurve.Evaluate(1.0f - t);
                 float ty = YCurve.Evaluate(1.0f - t);
 
-                float x = Mathf.Lerp(_start.x, _destination.x, tx);
-                float y = Mathf.Lerp(_start.y, _destination.y, ty);
+                float x = Mathf.LerpUnclamped(_start.x, _destination.x, tx);
+                float y = Mathf.LerpUnclamped(_start.y, _destination.y, ty);
                 transform.position = new Vector2(x, y);
 
-                if (_waitToFire)
+                if (WaitToFire)
                 {
                     return true;
                 }
@@ -226,38 +246,16 @@ namespace UFO
                 }
             }
 
-            if (_fireCount == 0)
-            {
-                return true;
-            }
+            // Keeps emitters ticking but suppresses fire if:
+            // - below the cutoff height.
+            bool overrideFire = transform.position.y < GameManager.CutoffHeight;
+            // - offscreen.
+            overrideFire |= transform.position.y > GameManager.ScreenHalfHeight;
+            overrideFire |= Mathf.Abs(transform.position.x) > GameManager.ScreenHalfWidth;
+            // - within sealing distance.
+            overrideFire |= (_player.transform.position - transform.position).sqrMagnitude < _sealingDistSqr;
 
-            // While above the cutoff height or offscreen, keeps ticking emitters.
-            if (transform.position.y < GameManager.CutoffHeight || transform.position.y > GameManager.ScreenHalfHeight
-                || Mathf.Abs(transform.position.x) > GameManager.ScreenHalfWidth)
-            {
-                return true;
-            }
-
-            if ((_player.transform.position - transform.position).sqrMagnitude < _sealingDistSqr)
-            {
-                return true;
-            }
-
-            if (ShotEmitter.Tick(_emitters))
-            {
-                return true;
-            }
-
-            if (--_fireCount == 0)
-            {
-                return true;
-            }
-
-            foreach (ShotEmitter emitter in _emitters)
-            {
-                emitter.Restart();
-            }
-
+            _isFiring = ShotEmitter.Tick(_emitters, overrideFire);
             return true;
         }
 
@@ -265,7 +263,7 @@ namespace UFO
         {
             _isExiting = true;
             Vector2 dest = new Vector2(transform.position.x, -GameManager.ScreenHalfHeight - 1.0f);
-            StartMove(dest, 4, false);
+            StartMove(dest, 4);
         }
 
         private void OnBeat()
@@ -276,19 +274,12 @@ namespace UFO
             }
 
             // Don't start next step if still firing or moving.
-            if (_fireCount > 0 || --_moveBeats > 0)
+            if (_isFiring || --_moveBeats > 0)
             {
                 return;
             }
 
-            // If finished moving, exit the stage.
-            if (!_route.TryDequeue(out RouteStep step))
-            {
-                ExitStage();
-                return;
-            }
-
-            StartMove(step);
+            StartMove();
         }
 
         private void OnPause()

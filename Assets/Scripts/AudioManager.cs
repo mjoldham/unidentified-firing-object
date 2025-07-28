@@ -18,8 +18,8 @@ namespace UFO
         private List<AudioSource> _oneshotSources = new List<AudioSource>();
 
         private Coroutine _duckingMusic = null;
-        private bool _hasHitHurt, _hasHitShield;
-        private int _hurtCount, _shieldCount;
+        private bool _hasHitHurt, _hasHitShield, _hasKilled;
+        private int _hurtCount, _shieldCount, _killCount;
 
         private void InitLoopingSource(AudioSource source, AudioClip clip)
         {
@@ -65,7 +65,7 @@ namespace UFO
 
         private void LateUpdate()
         {
-            _hasHitHurt = _hasHitShield = false;
+            _hasHitHurt = _hasHitShield = _hasKilled = false;
         }
 
         public void Play(AudioClip track, double atTime)
@@ -130,26 +130,26 @@ namespace UFO
 
         private void OnHitHurt(Vector2 position)
         {
-            if (_hasHitHurt || _hurtCount >= 4)
+            if (_hasHitHurt || _hurtCount > 2)
             {
                 return;
             }
 
             _hasHitHurt = true;
-            _hitSource.PlayOneShot(Settings.HitHurt/*, 1.0f / (_hurtCount + 1)*/);
+            _hitSource.PlayOneShot(Settings.HitHurt);
 
             StartCoroutine(KeepingHurtCount());
         }
 
         private void OnHitShield(Vector2 position)
         {
-            if (_hasHitShield || _shieldCount >= 4)
+            if (_hasHitShield || _shieldCount > 2)
             {
                 return;
             }
 
             _hasHitShield = true;
-            _hitSource.PlayOneShot(Settings.HitShield/*, 1.0f / (_shieldCount + 1)*/);
+            _hitSource.PlayOneShot(Settings.HitShield);
 
             StartCoroutine(KeepingShieldCount());
         }
@@ -166,9 +166,9 @@ namespace UFO
             yield return Fading(_musicSource, Settings.MusicVolume, transition);
         }
 
-        private void PlayCritical(AudioClip clip, float duckDuration)
+        private void PlayCritical(AudioClip clip, float duckDuration, float volumeScale = 1.0f)
         {
-            _criticalSource.PlayOneShot(clip);
+            _criticalSource.PlayOneShot(clip, volumeScale);
             if (_duckingMusic != null)
             {
                 StopCoroutine(_duckingMusic);
@@ -192,9 +192,24 @@ namespace UFO
             PlayCritical(Settings.BombUse, 0.8f * Settings.BombUse.length);
         }
 
+        IEnumerator KeepingKillCount()
+        {
+            _killCount++;
+            yield return new WaitForSeconds(Settings.Kill.length);
+            _killCount--;
+        }
+
         private void OnKill(Vector2 position)
         {
-            PlayCritical(Settings.Kill, Settings.Kill.length);
+            if (_hasKilled || _killCount > 2)
+            {
+                return;
+            }
+
+            _hasKilled = true;
+            PlayCritical(Settings.Kill, 0.8f * Settings.Kill.length);
+
+            StartCoroutine(KeepingKillCount());
         }
 
         private void OnPause()

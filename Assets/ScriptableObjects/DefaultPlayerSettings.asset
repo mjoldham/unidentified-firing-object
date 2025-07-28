@@ -155,4 +155,4 @@ MonoBehaviour:
   BombLimit: 5
   BombSaveDuration: 0.3
   InvincibilityDuration: 2
-  HitboxDamage: 5
+  HitboxDamage: 1
