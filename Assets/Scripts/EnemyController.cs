@@ -52,14 +52,15 @@ namespace UFO
 
             Gizmos.DrawWireSphere(transform.position, 1.0f);
 
-            if (Parameters.CurrentStep == null)
+            Gizmos.color = Color.red;
+            Vector2 start = new Vector2(transform.position.x, GameManager.ScreenHalfHeight + 1.0f);
+            Vector2 end = new Vector2(transform.position.x, -GameManager.ScreenHalfHeight - 1.0f);
+            if (Parameters.CurrentStep != null)
             {
-                return;
+                Gizmos.color = Color.green;
+                end = new Vector2(Parameters.CurrentStep.transform.position.x, Parameters.CurrentStep.transform.localPosition.y);
             }
 
-            Gizmos.color = Color.green;
-            Vector2 start = new Vector2(transform.position.x, GameManager.ScreenHalfHeight + 1.0f);
-            Vector2 end = new Vector2(Parameters.CurrentStep.transform.position.x, Parameters.CurrentStep.transform.localPosition.y);
             Gizmos.DrawLine(start, end);
         }
 

@@ -16,4 +16,4 @@ MonoBehaviour:
   BPM: 180
   Background: {fileID: 21300000, guid: b3cada443b92c34498e0699f077dd662, type: 3}
   ScrollSpeed: 1
-  StagePatternPrefab: {fileID: 8735252118160439579, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+  StagePatternPrefab: {fileID: 3792043837851938370, guid: bc162954b7420594eac8caa1a63077fe, type: 3}
