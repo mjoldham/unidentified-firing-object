@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UFO
 {
@@ -9,6 +10,13 @@ namespace UFO
         public GameObject MainMenu;
         public GameObject Credits;
         public GameObject Options;
+
+        public GameObject HUD;
+
+        public PlayerController Player;
+
+        public Text Extends;
+        public Text Bombs;
 
         private void Awake()
         {
@@ -21,12 +29,24 @@ namespace UFO
             Instance = this;
         }
 
+        private void Update()
+        {
+            Extends.text = "Extend Count: " + Player.ExtendCount.ToString();
+            Bombs.text = "Bomb Count: " + Player.BombCount.ToString();
+        }
+
         public void StartGame()
         {
             if (MainMenu != null)
                 MainMenu.SetActive(false);
 
+            ToggleHUD();
             GameManager.Instance.StartGame();
+        }
+
+        public void ToggleHUD()
+        {
+            HUD.SetActive(!HUD.activeInHierarchy);
         }
 
         public void ShowPanel(GameObject panel)
