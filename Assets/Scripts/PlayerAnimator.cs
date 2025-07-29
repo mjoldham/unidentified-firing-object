@@ -15,14 +15,14 @@ namespace UFO
 
         public enum AnimState
         {
-            Neutral = 0,
-            BankLeft,
-            BankRight
+            PlayerNeutral = 0,
+            PlayerBankLeft,
+            PlayerBankRight
         }
 
-        private static int[] _stateIDs = new int[] { Animator.StringToHash("ufo_neutral"),
-                                                     Animator.StringToHash("ufo_bankleft"),
-                                                     Animator.StringToHash("ufo_bankright") };
+        private static int[] _stateIDs = new int[] { Animator.StringToHash(nameof(AnimState.PlayerNeutral)),
+                                                     Animator.StringToHash(nameof(AnimState.PlayerBankLeft)),
+                                                     Animator.StringToHash(nameof(AnimState.PlayerBankRight)) };
 
         private Vector3 _thrusterLeftPos, _thrusterRightPos;
         private const float _pixelSize = 1.0f / 64.0f;
@@ -57,7 +57,7 @@ namespace UFO
 
                 if (move.x < 0.0f)
                 {
-                    GoToState(BodyAnimator, _stateIDs[(int)AnimState.BankLeft]);
+                    GoToState(BodyAnimator, _stateIDs[(int)AnimState.PlayerBankLeft]);
                     ThrusterLeft.localPosition = _thrusterLeftPos + new Vector3(-2 * _pixelSize, 0.0f, 0.0f);
                     ThrusterRight.localPosition = _thrusterRightPos + new Vector3(-2 * _pixelSize, 0.0f, 0.0f);
 
@@ -65,7 +65,7 @@ namespace UFO
                 }
                 else
                 {
-                    GoToState(BodyAnimator, _stateIDs[(int)AnimState.BankRight]);
+                    GoToState(BodyAnimator, _stateIDs[(int)AnimState.PlayerBankRight]);
                     ThrusterLeft.localPosition = _thrusterLeftPos + new Vector3(2 * _pixelSize, 0.0f, 0.0f);
                     ThrusterRight.localPosition = _thrusterRightPos + new Vector3(2 * _pixelSize, 0.0f, 0.0f);
 
@@ -90,7 +90,7 @@ namespace UFO
                 ThrusterLeft.rotation = ThrusterRight.rotation = Quaternion.identity;
             }
 
-            GoToState(BodyAnimator, _stateIDs[(int)AnimState.Neutral]);
+            GoToState(BodyAnimator, _stateIDs[(int)AnimState.PlayerNeutral]);
             ThrusterLeft.localPosition = _thrusterLeftPos;
             ThrusterRight.localPosition = _thrusterRightPos;
         }
