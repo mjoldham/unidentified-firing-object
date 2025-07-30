@@ -51,9 +51,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1832d35bdbc38004c880eb68250bf9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parameters: {fileID: 11400000, guid: e802992de201217459e8f302dfd6e92b, type: 2}
+  Parameters: {fileID: 11400000, guid: 7c40d0d21ef3c6244bbfa8208706517e, type: 2}
   IsMirrored: 0
   WaitFrames: 0
+  WaitBeats: 0
 --- !u!114 &1335229462614094088
 MonoBehaviour:
   m_ObjectHideFlags: 0

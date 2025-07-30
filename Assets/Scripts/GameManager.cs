@@ -13,9 +13,9 @@ namespace UFO
         private AudioManager _audio;
         private PlayerController _player;
 
-        public GameObject _mainMenuUI;
+        public GameObject MainMenu;
 
-        public bool _playing = false;
+        public bool Playing = false;
 
         public const int BeatsPerBar = 4;
         public const int NumLanes = 5;
@@ -482,8 +482,6 @@ namespace UFO
             }
 
             InitSpawns();
-            // TODO: get rid of this when menu working.
-            _nextStageTime = UnityEngine.AudioSettings.dspTime + 1.0;
         }
 
         private double CalculateNextStageTime(double startTime, AudioClip currentClip)
@@ -734,7 +732,7 @@ namespace UFO
 
         void FixedUpdate()
         {
-            if (!_playing)
+            if (!Playing)
             {
                 return;
             }
@@ -860,8 +858,8 @@ namespace UFO
         {
             if (_currentStage == -1)
             {
-                if (_playing) return;
-                _playing = true;
+                if (Playing) return;
+                Playing = true;
 
                 double startTime = UnityEngine.AudioSettings.dspTime + 1.0;
                 _nextStageTime = startTime;

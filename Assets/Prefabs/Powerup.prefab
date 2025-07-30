@@ -419,11 +419,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dce601d635f6a8c4db582b28765438a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Parameters:
+    CurrentStep: {fileID: 0}
+    CheckForEnemies: 0
+    ExemptFromCheck: 0
   ShieldCollider: {fileID: 2748961602715905768}
   PowerCollider: {fileID: 9001744567158333387}
   BombCollider: {fileID: 7808646368746118296}
   FallDuration: 7
-  TripleDuration: 2
+  TripleDuration: 1.4
   TurnSpeedStart: 180
   TurnSpeedEnd: 1440
   FallCurve:

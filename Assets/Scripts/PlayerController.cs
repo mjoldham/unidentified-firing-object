@@ -14,7 +14,8 @@ namespace UFO
 
         public static Action OnTick;
         public static Action OnSpawn, OnStartDie, OnDeath, OnGameOver, OnFireStart, OnFireEnd, OnBombUse;
-        public static Action OnGetShield, OnGetBomb, OnGetPower, OnGetExtend, OnItemScore;
+        public static Action OnGetShield, OnShieldDown, OnGetBomb, OnGetPower, OnGetExtend, OnItemScore;
+        public static Action OnInvincibilityStart, OnInvincibilityEnd;
         public static Action<Vector2, bool> OnMove;
 
         [HideInInspector]
@@ -74,6 +75,7 @@ namespace UFO
         {
             _isSpawning = _isInvincible = true;
             _isDying = false;
+            OnInvincibilityStart?.Invoke();
 
             foreach (TrailRenderer trail in _trails)
             {
@@ -118,8 +120,10 @@ namespace UFO
         private IEnumerator ApplyingInvincibility()
         {
             _isInvincible = true;
+            OnInvincibilityStart?.Invoke();
             yield return new WaitForSeconds(Settings.InvincibilityDuration);
             _isInvincible = false;
+            OnInvincibilityEnd?.Invoke();
         }
         
         private IEnumerator Dying()
@@ -156,6 +160,7 @@ namespace UFO
                 StartCoroutine(ApplyingInvincibility());
                 IsShielded = false;
 
+                OnShieldDown?.Invoke();
                 GameManager.OnHitShield?.Invoke(transform.position);
                 return;
             }
@@ -205,6 +210,7 @@ namespace UFO
 
         public void GetShield()
         {
+            StartCoroutine(ApplyingInvincibility());
             if (IsShielded)
             {
                 // TODO: score points when exceeding item limits.
@@ -218,6 +224,7 @@ namespace UFO
 
         public void GetBomb()
         {
+            StartCoroutine(ApplyingInvincibility());
             if (BombCount == Settings.BombLimit)
             {
                 OnItemScore?.Invoke();
@@ -230,6 +237,7 @@ namespace UFO
 
         public void GetPower()
         {
+            StartCoroutine(ApplyingInvincibility());
             if (PowerCount == _emitters.Length - 1)
             {
                 OnItemScore?.Invoke();
@@ -242,6 +250,7 @@ namespace UFO
 
         public void GetExtend()
         {
+            StartCoroutine(ApplyingInvincibility());
             ExtendCount++;
             OnGetExtend?.Invoke();
         }

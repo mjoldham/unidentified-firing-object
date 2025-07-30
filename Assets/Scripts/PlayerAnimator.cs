@@ -13,6 +13,13 @@ namespace UFO
         public int DeathFrames = 25;
         private int _deathFrames;
 
+        public MeshRenderer Shield;
+
+        public int FlashingFrames = 10;
+        private int _flashingFrames;
+
+        private SpriteRenderer[] _renderers;
+
         public enum AnimState
         {
             PlayerNeutral = 0,
@@ -31,6 +38,7 @@ namespace UFO
 
         private void Start()
         {
+            _renderers = GetComponentsInChildren<SpriteRenderer>();
             _thrusterLeftPos = (Vector2)ThrusterLeft.localPosition;
             _thrusterRightPos = (Vector2)ThrusterRight.localPosition;
 
@@ -41,6 +49,8 @@ namespace UFO
 
             DeathFlash.transform.SetParent(null);
             DeathFlash.gameObject.SetActive(false);
+
+            Shield.gameObject.SetActive(false);
         }
 
         public static void SwitchToState(Animator animator, AnimState state)
@@ -122,8 +132,39 @@ namespace UFO
             DeathFlash.gameObject.SetActive(true);
         }
 
-        // TODO: flashing when invincible
-        // TODO; shielded effect
+        private void OnInvincibilityStart()
+        {
+            _flashingFrames = FlashingFrames;
+            if (_renderers == null)
+            {
+                return;
+            }
+
+            foreach (SpriteRenderer renderer in _renderers)
+            {
+                renderer.enabled = false;
+            }
+        }
+
+        private void OnInvincibilityEnd()
+        {
+            _flashingFrames = 0;
+            foreach (SpriteRenderer renderer in _renderers)
+            {
+                renderer.enabled = true;
+            }
+        }
+
+        private void OnGetShield()
+        {
+            Shield.gameObject.SetActive(true);
+        }
+
+        private void OnShieldDown()
+        {
+            Shield.gameObject.SetActive(false);
+        }
+
         private void Tick()
         {
             float fireFreq = 10.0f;
@@ -136,6 +177,24 @@ namespace UFO
                 for (int i = 0; i < MuzzleFlashes.Length; i++)
                 {
                     MuzzleFlashes[i].material.SetFloat(GameManager.NormTimeID, 3.0f * fireFreq * Time.time);
+                }
+            }
+
+            if (_flashingFrames != 0)
+            {
+                bool flip = _flashingFrames > 0;
+                int frames = Mathf.Abs(_flashingFrames);
+                if (--frames == 0)
+                {
+                    _flashingFrames = flip ? -FlashingFrames : FlashingFrames;
+                    foreach (SpriteRenderer renderer in _renderers)
+                    {
+                        renderer.enabled = flip;
+                    }
+                }
+                else
+                {
+                    _flashingFrames = flip ? frames : -frames;
                 }
             }
 
@@ -161,6 +220,12 @@ namespace UFO
             PlayerController.OnFireStart += OnFireStart;
             PlayerController.OnFireEnd += OnFireEnd;
             PlayerController.OnDeath += OnDeath;
+
+            PlayerController.OnGetShield += OnGetShield;
+            PlayerController.OnShieldDown += OnShieldDown;
+
+            PlayerController.OnInvincibilityStart += OnInvincibilityStart;
+            PlayerController.OnInvincibilityEnd += OnInvincibilityEnd;
         }
 
         private void OnDisable()
@@ -170,6 +235,12 @@ namespace UFO
             PlayerController.OnFireStart -= OnFireStart;
             PlayerController.OnFireEnd -= OnFireEnd;
             PlayerController.OnDeath -= OnDeath;
+
+            PlayerController.OnGetShield -= OnGetShield;
+            PlayerController.OnShieldDown -= OnShieldDown;
+
+            PlayerController.OnInvincibilityStart -= OnInvincibilityStart;
+            PlayerController.OnInvincibilityEnd -= OnInvincibilityEnd;
         }
     }
 }

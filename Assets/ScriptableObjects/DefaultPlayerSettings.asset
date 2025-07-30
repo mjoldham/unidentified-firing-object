@@ -152,6 +152,7 @@ MonoBehaviour:
   SlowSpeed: 3
   FastSpeed: 6
   ShotTimeBuffer: 10
+  BombMaxDamage: 50
   BombLimit: 5
   BombSaveDuration: 0.3
   InvincibilityDuration: 2

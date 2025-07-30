@@ -11,6 +11,8 @@ namespace UFO
 
         public static Action<Vector2> OnKill;
 
+        private static int _damageID = Shader.PropertyToID("_Damage");
+
         public bool WaitToFire;
         public float LookSpeed = 0.0f;
 
@@ -31,6 +33,9 @@ namespace UFO
         [HideInInspector]
         public Collider2D[] Hitboxes, Hurtboxes, Shieldboxes;
 
+        public int DamageFrames = 5;
+        private int _damageFrames;
+
         private int _moveBeats;
 
         private ShotEmitter[] _emitters;
@@ -39,6 +44,8 @@ namespace UFO
         double _destTime, _destDuration;
 
         private bool _isFiring, _isExiting;
+
+        private Material _spriteMat;
 
         private void OnDrawGizmos()
         {
@@ -66,6 +73,7 @@ namespace UFO
         {
             _player = PlayerController.Instance;
             _animator = GetComponent<Animator>();
+            _spriteMat = GetComponentInChildren<SpriteRenderer>().material;
 
             if (HitboxParent != null)
             {
@@ -186,6 +194,9 @@ namespace UFO
                 return true;
             }
 
+            _damageFrames = DamageFrames;
+            _spriteMat.SetFloat(_damageID, 1.0f);
+
             return false;
         }
 
@@ -203,12 +214,24 @@ namespace UFO
             }
         }
 
-        // TODO: damage flash/wobble, low health flash, shrink on death then disable.
-        // TODO: make static blue rays.
+
+        private void DamageTick()
+        {
+            if (--_damageFrames <= 0)
+            {
+                _spriteMat.SetFloat(_damageID, 0.0f);
+                return;
+            }
+
+            float t = (float)(DamageFrames - _damageFrames) / DamageFrames;
+            _spriteMat.SetFloat(_damageID, t);
+        }
 
         // Returns false when enemy should be despawned after exiting the stage.
         public bool Tick(float deltaTime)
         {
+            DamageTick();
+
             if (LookSpeed > 0.0f)
             {
                 float angle = 0.0f;

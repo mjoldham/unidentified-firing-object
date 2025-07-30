@@ -125,7 +125,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: -876546973899608171, guid: 216ff037331d03741b5d1cd3e3313719, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -229,6 +229,7 @@ MonoBehaviour:
   Parameters:
     CurrentStep: {fileID: 0}
     CheckForEnemies: 0
+    ExemptFromCheck: 0
   WaitToFire: 1
   LookSpeed: 5
   Health: 1
@@ -287,6 +288,7 @@ MonoBehaviour:
   Hitboxes: []
   Hurtboxes: []
   Shieldboxes: []
+  DamageFrames: 5
 --- !u!1 &5503047975795626266
 GameObject:
   m_ObjectHideFlags: 0

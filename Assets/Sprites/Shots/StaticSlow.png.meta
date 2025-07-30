@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 909a1c9a9a3f4e4448a11b0d7925fccc
+guid: f81c30b3959b3984095cc7e38e73c3f2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2714009433229327872
-    second: UFOState3_0
+      213: -8705673482440701631
+    second: StaticSlow_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -101,7 +101,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: UFOState3_0
+      name: StaticSlow_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 0
-        width: 32
-        height: 35
+        x: 0
+        y: 1
+        width: 12
+        height: 22
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0028e47ccc6e55ad0800000000000000
-      internalID: -2714009433229327872
+      spriteID: 1498594a71c3f2780800000000000000
+      internalID: -8705673482440701631
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      UFOState3_0: -2714009433229327872
+      StaticSlow_0: -8705673482440701631
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
