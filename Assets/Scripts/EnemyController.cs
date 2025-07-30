@@ -4,14 +4,12 @@ using UnityEngine;
 
 namespace UFO
 {
-    public class EnemyController : MonoBehaviour
+    public class EnemyController : BaseSpawnable
     {
         protected PlayerController _player;
         protected Animator _animator;
 
         public static Action<Vector2> OnKill;
-
-        public EnemyParams Parameters;
 
         public bool WaitToFire;
         public float LookSpeed = 0.0f;
@@ -160,7 +158,7 @@ namespace UFO
             Parameters.CurrentStep = Parameters.CurrentStep.NextStep;
         }
 
-        public void Spawn(SpawnInfo spawnInfo)
+        public override void Spawn(SpawnInfo spawnInfo)
         {
             _isFiring = _isExiting = false;
             _moveBeats = 0;
@@ -204,6 +202,9 @@ namespace UFO
                 player.TryDie();
             }
         }
+
+        // TODO: damage flash/wobble, low health flash, shrink on death then disable.
+        // TODO: make static blue rays.
 
         // Returns false when enemy should be despawned after exiting the stage.
         public bool Tick(float deltaTime)

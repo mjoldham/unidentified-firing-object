@@ -21,6 +21,10 @@ namespace UFO
         private bool _hasHitHurt, _hasHitShield, _hasKilled;
         private int _hurtCount, _shieldCount, _killCount;
 
+        // TODO: gameover sound
+        // TODO: stage title + gameover + stage complete
+        // TODO: item get sounds
+
         private void InitLoopingSource(AudioSource source, AudioClip clip)
         {
             source.playOnAwake = false;

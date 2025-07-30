@@ -4,7 +4,7 @@ using UnityEngine;
 namespace UFO
 {
     [Serializable]
-    public struct EnemyParams
+    public struct SpawnParams
     {
         public RouteStep CurrentStep;
         public bool CheckForEnemies, ExemptFromCheck;
@@ -13,16 +13,16 @@ namespace UFO
     public struct SpawnInfo
     {
         public int Beat;
-        public string EnemyPrefabName;
-        public EnemyParams Parameters;
         public float Lane;
-
-        public SpawnInfo(int beat, string name, EnemyParams enemyParams, float lane)
+        public string PrefabName;
+        public SpawnParams Parameters;
+        
+        public SpawnInfo(BaseSpawnable spawnable)
         {
-            Beat = beat;
-            EnemyPrefabName = name;
-            Parameters = enemyParams;
-            Lane = lane;
+            Beat = Mathf.RoundToInt(spawnable.transform.position.y);
+            Lane = spawnable.transform.position.x;
+            PrefabName = spawnable.gameObject.name.Split(' ')[0];
+            Parameters = spawnable.Parameters;
         }
     }
 

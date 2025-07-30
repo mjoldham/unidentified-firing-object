@@ -357,10 +357,10 @@ namespace UFO
                 CheckCount = 0;
             }
 
-            public void ApplyBomb(Vector3 source)
+            public void ApplyBomb(Vector3 source, int maxDamage)
             {
                 int count = _activeEnemies.Count;
-                float heightSqr = ScreenHalfHeight * ScreenHalfHeight;
+                float rangeSqr = ScreenHalfWidth * ScreenHalfWidth + ScreenHalfHeight * ScreenHalfHeight;
                 for (int i = 0; i < count; i++)
                 {
                     EnemyController enemy = _activeEnemies.Dequeue();
@@ -372,7 +372,7 @@ namespace UFO
 
                     OnHitHurt?.Invoke(enemy.transform.position);
 
-                    int damage = (int)Mathf.Lerp(100, 1, (enemy.transform.position - source).sqrMagnitude / heightSqr);
+                    int damage = (int)Mathf.Lerp(maxDamage, 1, (enemy.transform.position - source).sqrMagnitude / rangeSqr);
                     if (!enemy.TryDie(damage))
                     {
                         _activeEnemies.Enqueue(enemy);
@@ -391,6 +391,10 @@ namespace UFO
 
         public EnemyPool[] EnemyPools;
         private Dictionary<string, EnemyPool> _enemyPoolDict = new Dictionary<string, EnemyPool>();
+
+        public PowerupController PowerupPrefab;
+        private PowerupController[] _powerups = new PowerupController[3];
+        private int _nextPowerup;
 
         private int _currentStage = -1, _currentBar, _currentBeat, _totalBeats;
 
@@ -411,6 +415,7 @@ namespace UFO
             Instance = this;
         }
 
+        // TODO: find a way to do this offline so each stage has Spawns ready w/o processing.
         private void InitSpawns()
         {
             foreach (StageSettings stage in Stages)
@@ -420,7 +425,7 @@ namespace UFO
                     continue;
                 }
 
-                EnemyController[] spawns = stage.StagePatternPrefab.GetComponentsInChildren<EnemyController>();
+                BaseSpawnable[] spawns = stage.StagePatternPrefab.GetComponentsInChildren<BaseSpawnable>();
                 if (spawns.Length == 0)
                 {
                     continue;
@@ -431,16 +436,10 @@ namespace UFO
                 stage.Spawns = new SpawnInfo[spawns.Length];
                 for (int i = 0; i < spawns.Length; i++)
                 {
-                    EnemyController e = spawns[i];
-
-                    int beat = Mathf.RoundToInt(e.transform.position.y);
-                    string name = e.gameObject.name.Split(' ')[0];
-                    float lane = e.transform.position.x;
-
-                    stage.Spawns[i] = new SpawnInfo(beat, name, e.Parameters, lane);
-                    if (!_enemyPoolDict.ContainsKey(stage.Spawns[i].EnemyPrefabName))
+                    stage.Spawns[i] = new SpawnInfo(spawns[i]);
+                    if (spawns[i] is EnemyController && !_enemyPoolDict.ContainsKey(stage.Spawns[i].PrefabName))
                     {
-                        Debug.LogError($"{stage.Spawns[i].EnemyPrefabName} has not been included in the GameManagers list of EnemyPools.");
+                        Debug.LogError($"{name} has not been included in the GameManagers list of EnemyPools.");
                         return;
                     }
                 }
@@ -474,6 +473,12 @@ namespace UFO
             {
                 pool.Init(transform);
                 _enemyPoolDict[pool.EnemyPrefab.gameObject.name] = pool;
+            }
+
+            for (int i = 0; i < _powerups.Length; i++)
+            {
+                _powerups[i] = Instantiate(PowerupPrefab);
+                _powerups[i].Init();
             }
 
             InitSpawns();
@@ -531,6 +536,11 @@ namespace UFO
             {
                 pool.Clear();
             }
+
+            foreach (PowerupController powerup in _powerups)
+            {
+                powerup.gameObject.SetActive(false);
+            }
         }
 
         public void RestartStage()
@@ -541,7 +551,7 @@ namespace UFO
             StartNextStage();
         }
 
-        private void TrySpawningEnemies(SpawnInfo[] spawns)
+        private void TrySpawning(SpawnInfo[] spawns)
         {
             Debug.Log($"Total: {_totalBeats},\tBar: {_currentBar},\tBeat: {_currentBeat}");
             if (_spawnIndex == spawns.Length)
@@ -549,15 +559,21 @@ namespace UFO
                 return;
             }
 
-            SpawnInfo spawnInfo = spawns[_spawnIndex];
-            while (spawnInfo.Beat == _totalBeats)
+            for (SpawnInfo spawnInfo = spawns[_spawnIndex]; spawnInfo.Beat == _totalBeats; spawnInfo = spawns[_spawnIndex])
             {
-                EnemyPool pool = _enemyPoolDict[spawnInfo.EnemyPrefabName];
                 if (!spawnInfo.Parameters.CheckForEnemies || EnemyPools.All(pool => pool.CheckCount == 0))
                 {
-                    if (!pool.Spawn(spawnInfo))
+                    if (_enemyPoolDict.TryGetValue(spawnInfo.PrefabName, out EnemyPool pool))
                     {
-                        Debug.Log($"Too many {spawnInfo.EnemyPrefabName}s active to spawn more!");
+                        if (!pool.Spawn(spawnInfo))
+                        {
+                            Debug.Log($"Too many {spawnInfo.PrefabName}s active to spawn more!");
+                        }
+                    }
+                    else
+                    {
+                        _powerups[_nextPowerup].Spawn(spawnInfo);
+                        _nextPowerup = (_nextPowerup + 1) % _powerups.Length;
                     }
                 }
 
@@ -565,8 +581,6 @@ namespace UFO
                 {
                     break;
                 }
-
-                spawnInfo = spawns[_spawnIndex];
             }
         }
 
@@ -595,7 +609,7 @@ namespace UFO
             _currentBeat++;
             _nextBeatTime += BeatLength;
 
-            TrySpawningEnemies(Stages[_currentStage].Spawns);
+            TrySpawning(Stages[_currentStage].Spawns);
 
             IsOnBeat = true;
             OnBeat?.Invoke();
@@ -666,7 +680,7 @@ namespace UFO
 
             foreach (EnemyPool pool in EnemyPools)
             {
-                pool.ApplyBomb(_player.transform.position);
+                pool.ApplyBomb(_player.transform.position, _player.Settings.BombMaxDamage);
             }
 
             _bombFrames = BombFrames;
@@ -680,6 +694,7 @@ namespace UFO
 
         private void OnGameOver()
         {
+            // TODO: gameover effects
             RestartStage();
         }
 
@@ -783,6 +798,15 @@ namespace UFO
 
             // Updates player movement and firing.
             _player.Tick(Time.fixedDeltaTime);
+
+            // Updates any active powerups.
+            foreach (PowerupController powerup in _powerups)
+            {
+                if (powerup.gameObject.activeSelf)
+                {
+                    powerup.Tick(_player, Time.fixedDeltaTime);
+                }
+            }
 
             // Moves shots.
             _playerShotPool.Tick(Time.fixedDeltaTime);

@@ -17,7 +17,7 @@ namespace UFO
 
         public int ShotTimeBuffer = 20;
 
-        public int BombLimit = 5;
+        public int BombMaxDamage = 50, BombLimit = 5;
         public float BombSaveDuration = 0.2f, InvincibilityDuration = 2.0f;
 
         [Min(0)]

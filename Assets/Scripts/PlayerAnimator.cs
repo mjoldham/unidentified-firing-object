@@ -122,6 +122,8 @@ namespace UFO
             DeathFlash.gameObject.SetActive(true);
         }
 
+        // TODO: flashing when invincible
+        // TODO; shielded effect
         private void Tick()
         {
             float fireFreq = 10.0f;
