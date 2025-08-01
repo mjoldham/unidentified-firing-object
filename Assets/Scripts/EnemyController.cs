@@ -16,8 +16,8 @@ namespace UFO
         public bool WaitToFire;
         public float LookSpeed = 0.0f;
 
-        public int Health = 1;
-        private int _fullHealth;
+        public float Health = 1.0f;
+        private float _fullHealth;
 
         // How the enemy should move along the x-axis in normalised time (0 to 1).
         public AnimationCurve XCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
@@ -179,16 +179,18 @@ namespace UFO
             gameObject.SetActive(true);
         }
 
-        public bool TryDie(int damage)
+        public bool TryDie(float damage)
         {
-            if (damage == 0)
+            if (damage == 0.0f)
             {
                 return false;
             }
 
+            GameManager.AddScore(damage);
             Health -= damage;
-            if (Health <= 0)
+            if (Health <= 0.0f)
             {
+                GameManager.AddScore(_fullHealth);
                 OnKill?.Invoke(transform.position);
                 gameObject.SetActive(false);
                 return true;

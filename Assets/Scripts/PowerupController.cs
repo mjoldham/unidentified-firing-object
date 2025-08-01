@@ -5,7 +5,8 @@ namespace UFO
 {
     public class PowerupController : BaseSpawnable
     {
-        public CircleCollider2D ShieldCollider, PowerCollider, BombCollider;
+        public CircleCollider2D ShieldCollider, ExtendCollider, PowerCollider, BombCollider;
+        private CircleCollider2D _shieldExtend;
 
         public float FallDuration = 10.0f, TripleDuration = 2.5f;
         public float TurnSpeedStart = 180.0f, TurnSpeedEnd = 720.0f;
@@ -13,7 +14,9 @@ namespace UFO
         // Normalised position of the powerup over normalised time
         public AnimationCurve FallCurve = AnimationCurve.Linear(0.0f, 0.0f, 1.0f, 1.0f);
 
-        private bool _spawnExtend;
+        public static bool SpawnExtend;
+        private bool _spawnedExtend;
+
         private float _fallTimer, _tripleTimer, _outerRadiusSqr;
 
         public void Init()
@@ -22,13 +25,28 @@ namespace UFO
             _outerRadiusSqr += 2.0f * ShieldCollider.radius;
             _outerRadiusSqr *= _outerRadiusSqr;
 
+            ExtendCollider.gameObject.SetActive(false);
             gameObject.SetActive(false);
         }
 
         public override void Spawn(SpawnInfo spawnInfo)
         {
             transform.position = new Vector2(spawnInfo.Lane, GameManager.ScreenHalfHeight + 1.0f);
-            //_spawnExtend = ; // TODO: decide whether to spawn extend through GM.
+            if (SpawnExtend && PlayerController.Instance.IsShielded)
+            {
+                SpawnExtend = false;
+                _spawnedExtend = true;
+                ShieldCollider.gameObject.SetActive(false);
+                ExtendCollider.gameObject.SetActive(true);
+                _shieldExtend = ExtendCollider;
+            }
+            else
+            {
+                _spawnedExtend = false;
+                ShieldCollider.gameObject.SetActive(true);
+                ExtendCollider.gameObject.SetActive(false);
+                _shieldExtend = ShieldCollider;
+            }
 
             _fallTimer = FallDuration;
             _tripleTimer = TripleDuration;
@@ -53,6 +71,7 @@ namespace UFO
             // Updates rotation.
             float delta = Mathf.Lerp(TurnSpeedEnd, TurnSpeedStart, _tripleTimer / TripleDuration) * deltaTime;
             transform.rotation *= Quaternion.Euler(0.0f, 0.0f, delta);
+            _shieldExtend.transform.rotation = PowerCollider.transform.rotation = BombCollider.transform.rotation = Quaternion.identity;
 
             // If player is inside then check triple timer.
             Vector2 playerPos = player.transform.position;
@@ -62,17 +81,17 @@ namespace UFO
                 _tripleTimer -= deltaTime;
                 if (_tripleTimer <= 0.0f)
                 {
-                    if (_spawnExtend)
+                    if (_spawnedExtend)
                     {
-                        player.GetExtend();
+                        player.GetExtend(_shieldExtend.transform.position);
                     }
                     else
                     {
-                        player.GetShield();
+                        player.GetShield(_shieldExtend.transform.position);
                     }
 
-                    player.GetPower();
-                    player.GetBomb();
+                    player.GetPower(PowerCollider.transform.position);
+                    player.GetBomb(BombCollider.transform.position);
 
                     gameObject.SetActive(false);
                     return false;
@@ -86,27 +105,27 @@ namespace UFO
 
             // Checks collision with individual powerups.
             bool despawn = false;
-            if (ShieldCollider.OverlapPoint(playerPos))
+            if (_shieldExtend.OverlapPoint(playerPos))
             {
                 despawn = true;
-                if (_spawnExtend)
+                if (_spawnedExtend)
                 {
-                    player.GetExtend();
+                    player.GetExtend(_shieldExtend.transform.position);
                 }
                 else
                 {
-                    player.GetShield();
+                    player.GetShield(_shieldExtend.transform.position);
                 }
             }
             else if (PowerCollider.OverlapPoint(playerPos))
             {
                 despawn = true;
-                player.GetPower();
+                player.GetPower(PowerCollider.transform.position);
             }
             else if (BombCollider.OverlapPoint(playerPos))
             {
                 despawn = true;
-                player.GetBomb();
+                player.GetBomb(BombCollider.transform.position);
             }
 
             if (despawn)

@@ -7,7 +7,7 @@ namespace UFO
     public class PlayerSettings : ScriptableObject
     {
         public InputAction LeftAction, RightAction, UpAction, DownAction, FireAction, BombAction;
-        public InputAction PauseAction, RestartAction;
+        public InputAction PauseAction, RestartAction, EndAction;
 
         [Min(1)]
         public int SpawnBeats = 2;

@@ -10,6 +10,5 @@ namespace UFO
 
         [Min(0.1f)]
         public float Speed = 0.1f;
-        public int Damage = 1;
     }
 }

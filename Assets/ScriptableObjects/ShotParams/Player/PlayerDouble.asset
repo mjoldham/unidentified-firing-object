@@ -15,3 +15,4 @@ MonoBehaviour:
   Clip: {fileID: 7400000, guid: a018a165881221f4f9c6c02119cb2755, type: 2}
   Target: 1
   Speed: 12
+  Damage: 2

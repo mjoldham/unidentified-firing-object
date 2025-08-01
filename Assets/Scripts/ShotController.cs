@@ -19,7 +19,7 @@ namespace UFO
         [HideInInspector]
         public float Speed = 5.0f;
         [HideInInspector]
-        public int Damage = 1;
+        public float Damage = 1.0f;
 
         [HideInInspector]
         public int Angle = 0;
@@ -43,12 +43,12 @@ namespace UFO
             gameObject.SetActive(false);
         }
 
-        public void Spawn(ShotParams shotParams, Vector2 position, int angle)
+        public void Spawn(ShotParams shotParams, float damage, Vector2 position, int angle)
         {
             _overrideController[_overrideClip] = shotParams.Clip;
             Target = shotParams.Target;
             Speed = shotParams.Speed;
-            Damage = shotParams.Damage;
+            Damage = damage;
 
             if (Target != TargetType.Player)
             {
@@ -62,7 +62,7 @@ namespace UFO
             gameObject.SetActive(true);
         }
 
-        public bool TryDamage(EnemyController enemy, ref int damage)
+        public bool TryDamage(EnemyController enemy, ref float damage)
         {
             Collider2D[] results = new Collider2D[16];
             ContactFilter2D filter = new ContactFilter2D();

@@ -18,7 +18,14 @@ MonoBehaviour:
   HitHurt: {fileID: 8300000, guid: 20a86e36353b75a489ca02603023cb77, type: 3}
   HitShield: {fileID: 8300000, guid: 9ad5edfb3b0cc5145b5fd6ad2328e3e6, type: 3}
   Kill: {fileID: 8300000, guid: 7ae8cd196bf28674082b6d364514c273, type: 3}
-  BombGet: {fileID: 0}
+  ShieldGet: {fileID: 8300000, guid: e7cadd7824e3e0049b1530ce66cafd43, type: 3}
+  PowerGet: {fileID: 8300000, guid: 4e757da2f31f04f488619c3cd87235d9, type: 3}
+  BombGet: {fileID: 8300000, guid: 59bcab890132dfe49a4191a0e33e856e, type: 3}
+  ExtendGet: {fileID: 8300000, guid: 5213a3c4dd8d1dd4189682f68c03d296, type: 3}
+  ItemScore: {fileID: 8300000, guid: 5a22f6266c67fcc44bfb284b064e26e6, type: 3}
+  ShieldDown: {fileID: 8300000, guid: ed9d6f8d6287972438b0dde1530b3cc0, type: 3}
   BombUse: {fileID: 8300000, guid: 8949aeeeea21bdf43baa40aa65928af3, type: 3}
+  GameOver: {fileID: 8300000, guid: 4d616c806daf8b8489a4f2b0f1d07dbd, type: 3}
+  MenuLoop: {fileID: 8300000, guid: c2078260d098dd646a04ce26bdc67821, type: 3}
   MusicVolume: 0.7
   MusicDuckScale: 0.6

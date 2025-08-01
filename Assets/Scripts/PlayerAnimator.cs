@@ -1,10 +1,15 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
+using static UnityEngine.ParticleSystem;
 
 namespace UFO
 {
     public class PlayerAnimator : AnimatorBase
     {
+        private PlayerController _player;
+
         public Animator BodyAnimator;
         public Transform ThrusterLeft, ThrusterRight;
         public MeshRenderer[] MuzzleFlashes;
@@ -18,7 +23,18 @@ namespace UFO
         public int FlashingFrames = 10;
         private int _flashingFrames;
 
+        public MeshRenderer PowerupFlashPrefab;
+        public Color ShieldColour, PowerColour, BombColour, ExtendColour, BonusColour;
+        public int PowerupFrames = 25;
+
+        private MeshRenderer _shieldFlash, _powerFlash, _bombFlash, _extendFlash;
+        private int _shieldFrames, _powerFrames, _bombFrames, _extendFrames;
+        private MeshRenderer[] _bonusFlashes = new MeshRenderer[3];
+        private int _bonusCount;
+        private int[] _bonusFrames = new int[3];
+
         private SpriteRenderer[] _renderers;
+        private TrailRenderer[] _trails;
 
         public enum AnimState
         {
@@ -38,13 +54,39 @@ namespace UFO
 
         private void Start()
         {
-            _renderers = GetComponentsInChildren<SpriteRenderer>();
+            _player = PlayerController.Instance;
+            _renderers = _player.GetComponentsInChildren<SpriteRenderer>();
+            _trails = _player.GetComponentsInChildren<TrailRenderer>();
+
             _thrusterLeftPos = (Vector2)ThrusterLeft.localPosition;
             _thrusterRightPos = (Vector2)ThrusterRight.localPosition;
 
             for (int i = 0; i < MuzzleFlashes.Length; i++)
             {
                 MuzzleFlashes[i].gameObject.SetActive(false);
+            }
+
+            _shieldFlash = Instantiate(PowerupFlashPrefab);
+            _shieldFlash.material.SetColor(GameManager.ColourID, ShieldColour);
+            _shieldFlash.gameObject.SetActive(false);
+
+            _powerFlash = Instantiate(PowerupFlashPrefab);
+            _powerFlash.material.SetColor(GameManager.ColourID, PowerColour);
+            _powerFlash.gameObject.SetActive(false);
+
+            _bombFlash = Instantiate(PowerupFlashPrefab);
+            _bombFlash.material.SetColor(GameManager.ColourID, BombColour);
+            _bombFlash.gameObject.SetActive(false);
+
+            _extendFlash = Instantiate(PowerupFlashPrefab);
+            _extendFlash.material.SetColor(GameManager.ColourID, ExtendColour);
+            _extendFlash.gameObject.SetActive(false);
+
+            for (int i = 0; i <_bonusFlashes.Length; i++)
+            {
+                _bonusFlashes[i] = Instantiate(PowerupFlashPrefab);
+                _bonusFlashes[i].material.SetColor(GameManager.ColourID, BonusColour);
+                _bonusFlashes[i].gameObject.SetActive(false);
             }
 
             DeathFlash.transform.SetParent(null);
@@ -124,12 +166,57 @@ namespace UFO
             }
         }
 
+        private void StartFlash(Vector2 position, MeshRenderer flash, int totalFrames, ref int frames)
+        {
+            frames = totalFrames;
+            flash.material.SetFloat(GameManager.NormTimeID, totalFrames < 0 ? 1.0f : 0.0f);
+            flash.transform.position = position;
+            flash.gameObject.SetActive(true);
+        }
+
+        private void OnGetShield(Vector2 position)
+        {
+            StartFlash(position, _shieldFlash, PowerupFrames, ref _shieldFrames);
+            Shield.gameObject.SetActive(true);
+        }
+
+        private void OnShieldDown()
+        {
+            StartFlash(_player.transform.position, _shieldFlash, -PowerupFrames, ref _shieldFrames);
+            Shield.gameObject.SetActive(false);
+        }
+
+        private void OnGetPower(Vector2 position)
+        {
+            StartFlash(position, _powerFlash, PowerupFrames, ref _powerFrames);
+        }
+
+        private void OnGetBomb(Vector2 position)
+        {
+            StartFlash(position, _bombFlash, PowerupFrames, ref _bombFrames);
+        }
+
+        private void OnGetExtend(Vector2 position)
+        {
+            StartFlash(position, _extendFlash, PowerupFrames, ref _extendFrames);
+        }
+
+        private IEnumerator KeepBonusCount()
+        {
+            _bonusCount++;
+            yield return null;
+            _bonusCount--;
+        }
+
+        private void OnGetBonus(Vector2 position)
+        {
+            StartFlash(position, _bonusFlashes[_bonusCount], PowerupFrames, ref _bonusFrames[_bonusCount]);
+            StartCoroutine(KeepBonusCount());
+        }
+
         private void OnDeath()
         {
-            _deathFrames = DeathFrames;
-            DeathFlash.material.SetFloat(GameManager.NormTimeID, 0.0f);
-            DeathFlash.transform.position = transform.position;
-            DeathFlash.gameObject.SetActive(true);
+            StartFlash(_player.transform.position, DeathFlash, DeathFrames, ref _deathFrames);
         }
 
         private void OnInvincibilityStart()
@@ -155,14 +242,35 @@ namespace UFO
             }
         }
 
-        private void OnGetShield()
+        private void FlashTick(MeshRenderer flash, int totalFrames, ref int frames)
         {
-            Shield.gameObject.SetActive(true);
-        }
+            if (frames == 0)
+            {
+                return;
+            }
 
-        private void OnShieldDown()
-        {
-            Shield.gameObject.SetActive(false);
+            if (frames > 0)
+            {
+                if (--frames > 0)
+                {
+                    flash.material.SetFloat(GameManager.NormTimeID, (float)(totalFrames - frames) / totalFrames);
+                }
+                else
+                {
+                    flash.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                if (++frames < 0)
+                {
+                    flash.material.SetFloat(GameManager.NormTimeID, (float)(-frames) / totalFrames);
+                }
+                else
+                {
+                    flash.gameObject.SetActive(false);
+                }
+            }
         }
 
         private void Tick()
@@ -198,23 +306,40 @@ namespace UFO
                 }
             }
 
-            if (_deathFrames == 0)
+            FlashTick(_shieldFlash, PowerupFrames, ref _shieldFrames);
+            FlashTick(_powerFlash, PowerupFrames, ref _powerFrames);
+            FlashTick(_bombFlash, PowerupFrames, ref _bombFrames);
+            FlashTick(_extendFlash, PowerupFrames, ref _extendFrames);
+
+            for (int i = 0; i < _bonusFlashes.Length; i++)
             {
-                return;
+                FlashTick(_bonusFlashes[i], PowerupFrames, ref _bonusFrames[i]);
             }
 
-            if (--_deathFrames > 0)
+            FlashTick(DeathFlash, DeathFrames, ref _deathFrames);
+        }
+
+        private void ResetTrails()
+        {
+            foreach (TrailRenderer trail in _trails)
             {
-                DeathFlash.material.SetFloat(GameManager.NormTimeID, (float)(DeathFrames - _deathFrames) / DeathFrames);
+                trail.Clear();
+                trail.emitting = true;
             }
-            else
+        }
+        
+        private void ClearTrails()
+        {
+            foreach (TrailRenderer trail in _trails)
             {
-                DeathFlash.gameObject.SetActive(false);
+                trail.Clear();
+                trail.emitting = false;
             }
         }
 
         private void OnEnable()
         {
+            PlayerController.OnSpawn += ResetTrails;
             PlayerController.OnTick += Tick;
             PlayerController.OnMove += OnMove;
             PlayerController.OnFireStart += OnFireStart;
@@ -223,13 +348,20 @@ namespace UFO
 
             PlayerController.OnGetShield += OnGetShield;
             PlayerController.OnShieldDown += OnShieldDown;
+            PlayerController.OnGetPower += OnGetPower;
+            PlayerController.OnGetBomb += OnGetBomb;
+            PlayerController.OnGetExtend += OnGetExtend;
+            PlayerController.OnItemScore += OnGetBonus;
 
             PlayerController.OnInvincibilityStart += OnInvincibilityStart;
             PlayerController.OnInvincibilityEnd += OnInvincibilityEnd;
+
+            GameManager.OnGameOver += ClearTrails;
         }
 
         private void OnDisable()
         {
+            PlayerController.OnSpawn -= ResetTrails;
             PlayerController.OnTick -= Tick;
             PlayerController.OnMove -= OnMove;
             PlayerController.OnFireStart -= OnFireStart;
@@ -238,9 +370,15 @@ namespace UFO
 
             PlayerController.OnGetShield -= OnGetShield;
             PlayerController.OnShieldDown -= OnShieldDown;
+            PlayerController.OnGetPower -= OnGetPower;
+            PlayerController.OnGetBomb -= OnGetBomb;
+            PlayerController.OnGetExtend -= OnGetExtend;
+            PlayerController.OnItemScore -= OnGetBonus;
 
             PlayerController.OnInvincibilityStart -= OnInvincibilityStart;
             PlayerController.OnInvincibilityEnd -= OnInvincibilityEnd;
+
+            GameManager.OnGameOver -= ClearTrails;
         }
     }
 }

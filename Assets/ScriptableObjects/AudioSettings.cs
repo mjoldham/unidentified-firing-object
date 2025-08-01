@@ -7,7 +7,10 @@ namespace UFO
     {
         public AudioClip PlayerFire, PlayerStartDie, PlayerDeath;
         public AudioClip HitHurt, HitShield, Kill;
-        public AudioClip BombGet, BombUse;
+        public AudioClip ShieldGet, PowerGet, BombGet, ExtendGet, ItemScore;
+        public AudioClip ShieldDown, BombUse;
+        public AudioClip GameOver;
+        public AudioClip MenuLoop;
 
         public float MusicVolume = 0.7f;
         public float MusicDuckScale = 0.3f;

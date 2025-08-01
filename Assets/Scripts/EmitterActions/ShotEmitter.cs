@@ -1,6 +1,6 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace UFO
@@ -8,6 +8,11 @@ namespace UFO
     public class ShotEmitter : MonoBehaviour
     {
         public ShotParams Parameters;
+        private ShotParams _startParams;
+
+        [Min(0.1f)]
+        public float Damage = 1.0f;
+        private float _startDamage;
 
         public enum ShotMode
         {
@@ -184,7 +189,7 @@ namespace UFO
                 return;
             }
 
-            if (!_gm.SpawnShot(CurrentMode, Parameters, transform.position, ref _lastAngle))
+            if (!_gm.SpawnShot(CurrentMode, Parameters, Damage, transform.position, ref _lastAngle))
             {
                 Debug.Log($"{gameObject.name} has stalled!");
             }
@@ -210,6 +215,8 @@ namespace UFO
         public void Init()
         {
             _gm = GameManager.Instance;
+            _startParams = Parameters;
+            _startDamage = Damage;
 
             _sequence = GetComponents<EmitterAction>();
             foreach (EmitterAction action in _sequence)
@@ -221,6 +228,8 @@ namespace UFO
         public void Restart()
         {
             CurrentOffset = _currentIndex = _lastAngle = 0;
+            Parameters = _startParams;
+            Damage = _startDamage;
         }
 
         // Returns true so long as the sequence isn't finished.

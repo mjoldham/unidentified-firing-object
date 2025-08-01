@@ -4,6 +4,7 @@ using System;
 using static UFO.ShotEmitter;
 using static UFO.ShotController;
 using System.Linq;
+using System.Collections;
 
 namespace UFO
 {
@@ -13,15 +14,18 @@ namespace UFO
         private AudioManager _audio;
         private PlayerController _player;
 
-        public GameObject MainMenu;
-
-        public bool Playing = false;
+        private bool _gameRunning;
 
         public const int BeatsPerBar = 4;
         public const int NumLanes = 5;
         public const float ScreenHalfWidth = 3.5f;
         public const float ScreenHalfHeight = 3.5f;
         public const float CutoffHeight = -ScreenHalfHeight + 1.0f;
+        public const float GameOverDuration = 3.0f;
+
+        public static int ItemScoreBase = 100, ExtendScore = 250000;
+
+        public static int StartingExtends { get; private set; }
 
         public static int HitLayer { get; private set; }
         public static int HurtLayer { get; private set; }
@@ -31,13 +35,44 @@ namespace UFO
         public static int HurtMask { get; private set; }
         public static int ShieldMask { get; private set; }
 
-        public static Action OnBeat, OnPause;
+        public static Action OnGameOver, OnGameEnd, OnBeat, OnPause;
+        public static Action<int> OnGameStart;
+        public static Action<float> OnChangeScroll;
         public static Action<double> OnUnpause;
         public static Action<Vector2> OnHitHurt, OnHitShield;
 
         public static bool IsOnBeat { get; private set; }
         public static double BeatLength { get; private set; }
         public static double BarLength { get; private set; }
+
+        public static int CurrentScore { get; private set; }
+        private static int _extendCounter;
+
+        public static void AddScore(int points)
+        {
+            _extendCounter -= points;
+            CurrentScore += points;
+            if (_extendCounter <= 0)
+            {
+                _extendCounter = ExtendScore;
+                PowerupController.SpawnExtend = true;
+            }
+
+            if (CurrentScore > Hiscore)
+            {
+                Hiscore = CurrentScore;
+            }
+        }
+
+        public static void AddScore(float damage)
+        {
+            AddScore((int)(100.0f * damage));
+        }
+
+        [HideInInspector]
+        public static int Hiscore { get; private set; }
+
+        public static int ItemScoreCount;
 
         public SpriteRenderer BackgroundRenderer;
 
@@ -46,6 +81,7 @@ namespace UFO
 
         private Material _bgMaterial;
         private int _scrollID = Shader.PropertyToID(string.Concat("_", nameof(StageSettings.ScrollSpeed)));
+        private float _scrollScale = 1.0f;
 
         public Color ShotColour, ShotPlusColour;
         public MeshRenderer BombEffect;
@@ -103,6 +139,11 @@ namespace UFO
                 int count = _activeFX.Count;
                 for (int i = 0; i < count; i++)
                 {
+                    if (_activeFX.Count == 0)
+                    {
+                        break;
+                    }
+
                     (MeshRenderer fx, int frames) = _activeFX.Dequeue();
                     if (--frames > 0)
                     {
@@ -122,6 +163,11 @@ namespace UFO
                 int count = _activeFX.Count;
                 for (int i = 0; i < count; i++)
                 {
+                    if (_activeFX.Count == 0)
+                    {
+                        break;
+                    }
+
                     (MeshRenderer fx, int _) = _activeFX.Dequeue();
                     fx.gameObject.SetActive(false);
                     _inactiveFX.Enqueue(fx);
@@ -159,7 +205,7 @@ namespace UFO
                 }
             }
 
-            public bool Spawn(ShotParams shotParams, Vector2 position, int angle)
+            public bool Spawn(ShotParams shotParams, float damage, Vector2 position, int angle)
             {
                 if (_inactiveShots.Count == 0)
                 {
@@ -167,7 +213,7 @@ namespace UFO
                 }
 
                 ShotController shot = _inactiveShots.Dequeue();
-                shot.Spawn(shotParams, position, angle);
+                shot.Spawn(shotParams, damage, position, angle);
                 _activeShots.Enqueue(shot);
 
                 return true;
@@ -178,6 +224,11 @@ namespace UFO
                 int count = _activeShots.Count;
                 for (int i = 0; i < count; i++)
                 {
+                    if (_activeShots.Count == 0)
+                    {
+                        break;
+                    }
+
                     ShotController shot = _activeShots.Dequeue();
                     if (shot.Tick(deltaTime))
                     {
@@ -194,10 +245,15 @@ namespace UFO
             public bool TryKill(EnemyController enemy)
             {
                 bool isHit = false;
-                int damage = 0;
+                float damage = 0.0f;
                 int count = _activeShots.Count;
                 for (int i = 0; i < count; i++)
                 {
+                    if (_activeShots.Count == 0)
+                    {
+                        break;
+                    }
+
                     ShotController shot = _activeShots.Dequeue();
                     if (shot.TryDamage(enemy, ref damage))
                     {
@@ -218,6 +274,11 @@ namespace UFO
                 int count = _activeShots.Count;
                 for (int i = 0; i < count; i++)
                 {
+                    if (_activeShots.Count == 0)
+                    {
+                        break;
+                    }
+
                     ShotController shot = _activeShots.Dequeue();
                     if (shot.TryDamage(player))
                     {
@@ -236,6 +297,11 @@ namespace UFO
                 int count = _activeShots.Count;
                 for (int i = 0; i < count; i++)
                 {
+                    if (_activeShots.Count == 0)
+                    {
+                        break;
+                    }
+
                     ShotController shot = _activeShots.Dequeue();
                     shot.gameObject.SetActive(false);
                     _inactiveShots.Enqueue(shot);
@@ -297,6 +363,11 @@ namespace UFO
                 int count = _activeEnemies.Count;
                 for (int i = 0; i < count; i++)
                 {
+                    if (_activeEnemies.Count == 0)
+                    {
+                        break;
+                    }
+
                     EnemyController enemy = _activeEnemies.Dequeue();
                     if (enemy.Tick(deltaTime))
                     {
@@ -321,6 +392,11 @@ namespace UFO
                 int count = _activeEnemies.Count;
                 for (int i = 0; i < count; i++)
                 {
+                    if (_activeEnemies.Count == 0)
+                    {
+                        break;
+                    }
+
                     EnemyController enemy = _activeEnemies.Dequeue();
                     if (Mathf.Abs(enemy.transform.position.x) > ScreenHalfWidth || Mathf.Abs(enemy.transform.position.y) > ScreenHalfHeight)
                     {
@@ -349,6 +425,11 @@ namespace UFO
                 int count = _activeEnemies.Count;
                 for (int i = 0; i < count; i++)
                 {
+                    if (_activeEnemies.Count == 0)
+                    {
+                        break;
+                    }
+
                     EnemyController enemy = _activeEnemies.Dequeue();
                     enemy.gameObject.SetActive(false);
                     _inactiveEnemies.Enqueue(enemy);
@@ -363,6 +444,11 @@ namespace UFO
                 float rangeSqr = ScreenHalfWidth * ScreenHalfWidth + ScreenHalfHeight * ScreenHalfHeight;
                 for (int i = 0; i < count; i++)
                 {
+                    if (_activeEnemies.Count == 0)
+                    {
+                        break;
+                    }
+
                     EnemyController enemy = _activeEnemies.Dequeue();
                     if (Mathf.Abs(enemy.transform.position.x) > ScreenHalfWidth || Mathf.Abs(enemy.transform.position.y) > ScreenHalfHeight)
                     {
@@ -450,7 +536,10 @@ namespace UFO
         {
             _audio = GetComponent<AudioManager>();
             _player = PlayerController.Instance;
+
+            BackgroundRenderer.sprite = Stages[0].Background;
             _bgMaterial = BackgroundRenderer.material;
+            _bgMaterial.SetFloat(_scrollID, _scrollScale * Stages[0].ScrollSpeed);
 
             HitLayer = LayerMask.NameToLayer(nameof(EnemyController.Hitboxes));
             HurtLayer = LayerMask.NameToLayer(nameof(EnemyController.Hurtboxes));
@@ -513,11 +602,11 @@ namespace UFO
             _nextBeatTime = _nextBarTime = startTime;
 
             BackgroundRenderer.sprite = stage.Background;
-            _bgMaterial.SetFloat(_scrollID, stage.ScrollSpeed);
+            _bgMaterial.SetFloat(_scrollID, _scrollScale * stage.ScrollSpeed);
 
-            if (!_player.gameObject.activeSelf)
+            if (!_player.IsAlive)
             {
-                _player.Spawn();
+                _player.Spawn(StartingExtends);
             }
         }
 
@@ -545,7 +634,10 @@ namespace UFO
         {
             ClearScreen();
             _currentStage--;
+            CurrentScore = ItemScoreCount = 0;
+            _extendCounter = ExtendScore;
 
+            _player.IsAlive = false;
             StartNextStage();
         }
 
@@ -634,7 +726,7 @@ namespace UFO
             return (int)Vector2.SignedAngle(Vector2.down, ((Vector2)_player.transform.position - position).normalized);
         }
 
-        public bool SpawnShot(ShotMode mode, ShotParams shotParams, Vector2 position, ref int angle)
+        public bool SpawnShot(ShotMode mode, ShotParams shotParams, float damage, Vector2 position, ref int angle)
         {
             ShotPool pool;
             switch (shotParams.Target)
@@ -655,7 +747,7 @@ namespace UFO
 
             if (mode == ShotMode.Static)
             {
-                return pool.Spawn(shotParams, position, angle);
+                return pool.Spawn(shotParams, damage, position, angle);
             }
             
             if (mode == ShotMode.Random)
@@ -664,7 +756,7 @@ namespace UFO
             }
 
             angle = Wrap(angle + AngleToTarget(shotParams.Target, position));
-            return pool.Spawn(shotParams, position, angle);
+            return pool.Spawn(shotParams, damage, position, angle);
         }
 
         private void OnBombUse()
@@ -688,12 +780,6 @@ namespace UFO
             BombEffect.material.SetColor(ColourID, ShotPlusColour);
 
             BombEffect.gameObject.SetActive(true);
-        }
-
-        private void OnGameOver()
-        {
-            // TODO: gameover effects
-            RestartStage();
         }
 
         private void Unpause()
@@ -732,7 +818,7 @@ namespace UFO
 
         void FixedUpdate()
         {
-            if (!Playing)
+            if (!_gameRunning)
             {
                 return;
             }
@@ -742,31 +828,46 @@ namespace UFO
             _killFXPool.Tick();
             BombTick();
 
-            if (_player.CheckRestart())
+            if (_player.IsAlive && !_player.IsSpawning && !_player.IsDying)
             {
-                Unpause();
-
-                _player.ExtendCount = 3;
-                _player.gameObject.SetActive(false);
-                RestartStage();
-                return;
-            }
-
-            _isPaused = _isPaused ? !_player.CheckPause() : _player.CheckPause();
-            if (_isPaused)
-            {
-                if (_pauseStart == 0.0)
+                if (_player.CheckEnd())
                 {
-                    _pauseStart = UnityEngine.AudioSettings.dspTime;
-                    OnPause?.Invoke();
+                    if (_pauseStart > 0.0)
+                    {
+                        Unpause();
+                    }
+
+                    OnGameOver?.Invoke();
+                    return;
                 }
 
-                return;
-            }
+                if (_player.CheckRestart())
+                {
+                    if (_pauseStart > 0.0)
+                    {
+                        Unpause();
+                    }
 
-            if (_pauseStart > 0.0)
-            {
-                Unpause();
+                    RestartStage();
+                    return;
+                }
+
+                _isPaused = _isPaused ? !_player.CheckPause() : _player.CheckPause();
+                if (_isPaused)
+                {
+                    if (_pauseStart == 0.0)
+                    {
+                        _pauseStart = UnityEngine.AudioSettings.dspTime;
+                        OnPause?.Invoke();
+                    }
+
+                    return;
+                }
+
+                if (_pauseStart > 0.0)
+                {
+                    Unpause();
+                }
             }
 
             // Manages timeline.
@@ -811,6 +912,11 @@ namespace UFO
             _enemyFriendlyPool.Tick(Time.fixedDeltaTime);
             _enemyShotPool.Tick(Time.fixedDeltaTime);
 
+            if (!_player.IsAlive)
+            {
+                return;
+            }
+
             // Checks shot collisions and player hitbox against enemies first. If they survive then enemy hitboxes are checked against the player.
             foreach (EnemyPool pool in EnemyPools)
             {
@@ -832,14 +938,56 @@ namespace UFO
             _killFXPool.Spawn(position);
         }
 
+        public void StartGame(int startingExtends)
+        {
+            _gameRunning = true;
+
+            StartingExtends = startingExtends;
+            CurrentScore = ItemScoreCount = 0;
+            _extendCounter = ExtendScore;
+            _currentStage = -1;
+            StartNextStage();
+        }
+
+        private IEnumerator GameOvering()
+        {
+            _gameRunning = false;
+            yield return new WaitForSeconds(GameOverDuration);
+
+            ClearScreen();
+            OnGameEnd?.Invoke();
+        }
+
+        private void GameOver()
+        {
+            StartCoroutine(GameOvering());
+        }
+
+        private void OnItemScore(Vector2 position)
+        {
+            AddScore(ItemScoreBase << ItemScoreCount);
+            if (ItemScoreCount < 8)
+            {
+                ItemScoreCount++;
+            }
+        }
+
+        private void ChangeScrollSpeed(float scale)
+        {
+            _scrollScale = scale;
+            _bgMaterial.SetFloat(_scrollID, _scrollScale * Stages[0].ScrollSpeed);
+        }
+
         private void OnEnable()
         {
             OnHitHurt += SpawnHitFX;
             OnHitShield += SpawnHitFX;
+            OnGameStart += StartGame;
+            OnGameOver += GameOver;
+            OnChangeScroll += ChangeScrollSpeed;
 
-            PlayerController.OnGameOver += OnGameOver;
             PlayerController.OnBombUse += OnBombUse;
-
+            PlayerController.OnItemScore += OnItemScore;
             EnemyController.OnKill += SpawnKillFX;
         }
 
@@ -847,23 +995,13 @@ namespace UFO
         {
             OnHitHurt -= SpawnHitFX;
             OnHitShield -= SpawnHitFX;
+            OnGameStart -= StartGame;
+            OnGameOver -= GameOver;
+            OnChangeScroll -= ChangeScrollSpeed;
 
-            PlayerController.OnGameOver -= OnGameOver;
             PlayerController.OnBombUse -= OnBombUse;
-
+            PlayerController.OnItemScore -= OnItemScore;
             EnemyController.OnKill -= SpawnKillFX;
-        }
-
-        public void StartGame()
-        {
-            if (_currentStage == -1)
-            {
-                if (Playing) return;
-                Playing = true;
-
-                double startTime = UnityEngine.AudioSettings.dspTime + 1.0;
-                _nextStageTime = startTime;
-            }
         }
     }
 

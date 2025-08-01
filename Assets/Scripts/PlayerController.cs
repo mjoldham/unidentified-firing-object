@@ -8,13 +8,17 @@ namespace UFO
     {
         public static PlayerController Instance { get; private set; }
 
+        public bool InvincibleOverride;
+
         public PlayerSettings Settings;
 
         public Transform PowerLevels;
 
+        public static bool Autobomb;
+
         public static Action OnTick;
-        public static Action OnSpawn, OnStartDie, OnDeath, OnGameOver, OnFireStart, OnFireEnd, OnBombUse;
-        public static Action OnGetShield, OnShieldDown, OnGetBomb, OnGetPower, OnGetExtend, OnItemScore;
+        public static Action OnSpawn, OnStartDie, OnDeath, OnFireStart, OnFireEnd, OnBombUse, OnShieldDown;
+        public static Action<Vector2> OnGetShield, OnGetBomb, OnGetPower, OnGetExtend, OnItemScore;
         public static Action OnInvincibilityStart, OnInvincibilityEnd;
         public static Action<Vector2, bool> OnMove;
 
@@ -24,7 +28,7 @@ namespace UFO
         public bool IsShielded;
 
         [Min(0)]
-        public int ExtendCount = 3; // NB: The initial spawn consumes an extend, so player is allowed 3 deaths before game over.
+        public int ExtendCount = 2;
 
         [Range(0, 5)]
         public int BombCount = 3;
@@ -32,16 +36,19 @@ namespace UFO
         [Range(0, 4)]
         public int PowerCount;
 
+        [HideInInspector]
+        public bool IsAlive;
+
         private ShotEmitter[][] _emitters;
         private bool _isFiring;
         private int _shotTimeFrames;
 
-        private TrailRenderer[] _trails;
-
         private Coroutine _dying;
-        private bool _isSpawning, _isInvincible, _isDying;
+        private bool _isInvincible;
+        public bool IsSpawning { get; private set; }
+        public bool IsDying { get; private set; }
 
-        public bool IsInvincible { get => _isSpawning || _isInvincible || _isDying; }
+        public bool IsInvincible { get => IsSpawning || _isInvincible || IsDying; }
 
         private void Awake()
         {
@@ -66,21 +73,17 @@ namespace UFO
                 }
             }
 
-            _trails = GetComponentsInChildren<TrailRenderer>();
             Hitbox = GetComponentInChildren<Collider2D>();
-            gameObject.SetActive(false);
+            transform.position = new Vector2(0.0f, -GameManager.ScreenHalfHeight - 1.0f);
         }
 
         private IEnumerator Spawning()
         {
-            _isSpawning = _isInvincible = true;
-            _isDying = false;
+            IsSpawning = _isInvincible = true;
+            IsDying = false;
             OnInvincibilityStart?.Invoke();
 
-            foreach (TrailRenderer trail in _trails)
-            {
-                trail.Clear();
-            }
+            GameManager.ItemScoreCount = 0;
 
             Vector2 start = new Vector2(0.0f, -GameManager.ScreenHalfHeight - 1.0f);
             Vector2 end = new Vector2(0.0f, GameManager.CutoffHeight);
@@ -94,22 +97,27 @@ namespace UFO
             }
 
             transform.position = end;
-            _isSpawning = false;
+            IsSpawning = false;
 
             StartCoroutine(ApplyingInvincibility());
+            OnSpawn?.Invoke();
         }
 
         public void Spawn(int extends)
         {
-            gameObject.SetActive(true);
+            IsAlive = true;
 
+            if (IsShielded)
+            {
+                IsShielded = false;
+                OnShieldDown?.Invoke();
+            }
+            
             ExtendCount = extends;
             BombCount = 3;
             PowerCount = 0;
 
             StartCoroutine(Spawning());
-
-            OnSpawn?.Invoke();
         }
 
         public void Spawn()
@@ -126,21 +134,26 @@ namespace UFO
             OnInvincibilityEnd?.Invoke();
         }
         
+        private void OnGameOver()
+        {
+            StopAllCoroutines();
+
+            IsAlive = false;
+            transform.position = new Vector2(0.0f, -GameManager.ScreenHalfHeight - 1.0f);
+        }
+
         private IEnumerator Dying()
         {
             OnStartDie?.Invoke();
 
-            _isDying = true;
+            IsDying = true;
             yield return new WaitForSeconds(Settings.BombSaveDuration);
-            _isDying = false;
+            IsDying = false;
 
             OnDeath?.Invoke();
             if (ExtendCount == 0)
             {
-                ExtendCount = 3;
-                gameObject.SetActive(false);
-
-                OnGameOver?.Invoke();
+                GameManager.OnGameOver?.Invoke();
                 yield break;
             }
 
@@ -149,7 +162,12 @@ namespace UFO
 
         public void TryDie()
         {
-            if (_isInvincible || _isDying)
+            if (InvincibleOverride)
+            {
+                return;
+            }
+
+            if (_isInvincible || IsDying)
             {
                 GameManager.OnHitShield?.Invoke(transform.position);
                 return;
@@ -162,6 +180,11 @@ namespace UFO
 
                 OnShieldDown?.Invoke();
                 GameManager.OnHitShield?.Invoke(transform.position);
+                return;
+            }
+
+            if (Autobomb && UseBomb())
+            {
                 return;
             }
 
@@ -208,51 +231,51 @@ namespace UFO
             return false;
         }
 
-        public void GetShield()
+        public void GetShield(Vector2 position)
         {
             StartCoroutine(ApplyingInvincibility());
             if (IsShielded)
             {
                 // TODO: score points when exceeding item limits.
-                OnItemScore?.Invoke();
+                OnItemScore?.Invoke(position);
                 return;
             }
 
             IsShielded = true;
-            OnGetShield?.Invoke();
+            OnGetShield?.Invoke(position);
         }
 
-        public void GetBomb()
+        public void GetBomb(Vector2 position)
         {
             StartCoroutine(ApplyingInvincibility());
             if (BombCount == Settings.BombLimit)
             {
-                OnItemScore?.Invoke();
+                OnItemScore?.Invoke(position);
                 return;
             }
 
             BombCount++;
-            OnGetBomb?.Invoke();
+            OnGetBomb?.Invoke(position);
         }
 
-        public void GetPower()
+        public void GetPower(Vector2 position)
         {
             StartCoroutine(ApplyingInvincibility());
             if (PowerCount == _emitters.Length - 1)
             {
-                OnItemScore?.Invoke();
+                OnItemScore?.Invoke(position);
                 return;
             }
 
             PowerCount++;
-            OnGetPower?.Invoke();
+            OnGetPower?.Invoke(position);
         }
 
-        public void GetExtend()
+        public void GetExtend(Vector2 position)
         {
             StartCoroutine(ApplyingInvincibility());
             ExtendCount++;
-            OnGetExtend?.Invoke();
+            OnGetExtend?.Invoke(position);
         }
 
         private void HandleMovement(float deltaTime)
@@ -298,6 +321,7 @@ namespace UFO
 
             bool wasFiring = _isFiring;
             ShotEmitter.Tick(_emitters[PowerCount], ref _isFiring, ref _shotTimeFrames);
+
             if (_isFiring)
             {
                 if (!wasFiring)
@@ -309,6 +333,20 @@ namespace UFO
             {
                 OnFireEnd?.Invoke();
             }
+        }
+
+        private bool UseBomb()
+        {
+            if (BombCount == 0)
+            {
+                return false;
+            }
+
+            IsDying = false;
+            BombCount--;
+            OnBombUse?.Invoke();
+
+            return true;
         }
 
         private void HandleBombing()
@@ -328,9 +366,7 @@ namespace UFO
                 StopCoroutine(_dying);
             }
 
-            _isDying = false;
-            BombCount--;
-            OnBombUse?.Invoke();
+            UseBomb();
         }
 
         public bool CheckPause()
@@ -343,22 +379,27 @@ namespace UFO
             return Settings.RestartAction.WasPerformedThisFrame();
         }
 
+        public bool CheckEnd()
+        {
+            return Settings.EndAction.WasPerformedThisFrame();
+        }
+
         public void Tick(float deltaTime)
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (!IsAlive)
             {
-                Application.Quit();
+                OnTick?.Invoke();
                 return;
             }
 
-            if (_isSpawning)
+            if (IsSpawning)
             {
                 HandleFiring();
                 OnTick?.Invoke();
                 return;
             }
 
-            if (_isDying)
+            if (IsDying)
             {
                 HandleBombing();
                 OnTick?.Invoke();
@@ -383,6 +424,9 @@ namespace UFO
 
             Settings.PauseAction.Enable();
             Settings.RestartAction.Enable();
+            Settings.EndAction.Enable();
+
+            GameManager.OnGameOver += OnGameOver;
         }
 
         private void OnDisable()
@@ -396,6 +440,9 @@ namespace UFO
 
             Settings.PauseAction.Disable();
             Settings.RestartAction.Disable();
+            Settings.EndAction.Disable();
+
+            GameManager.OnGameOver -= OnGameOver;
         }
     }
 }

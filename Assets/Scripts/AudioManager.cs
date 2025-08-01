@@ -8,6 +8,9 @@ namespace UFO
     public class AudioManager : MonoBehaviour
     {
         public AudioSettings Settings;
+        private float _musicScale = 1.0f, _fxScale = 1.0f;
+
+        public static Action<float> OnChangeMusic, OnChangeFX;
 
         private AudioSource _musicSource;
         private AudioSource _playerFireSource;
@@ -17,13 +20,10 @@ namespace UFO
         private Dictionary<AudioSource, Coroutine> _loopSources = new Dictionary<AudioSource, Coroutine>();
         private List<AudioSource> _oneshotSources = new List<AudioSource>();
 
-        private Coroutine _duckingMusic = null;
+        private Coroutine _duckingMusic = null, _menuing = null;
         private bool _hasHitHurt, _hasHitShield, _hasKilled;
         private int _hurtCount, _shieldCount, _killCount;
-
-        // TODO: gameover sound
-        // TODO: stage title + gameover + stage complete
-        // TODO: item get sounds
+        private int _critPriority;
 
         private void InitLoopingSource(AudioSource source, AudioClip clip)
         {
@@ -48,6 +48,7 @@ namespace UFO
         {
             _musicSource = gameObject.AddComponent<AudioSource>();
             InitOneShotSource(_musicSource, Settings.MusicVolume);
+            _oneshotSources.Remove(_musicSource);
             
             _playerFireSource = gameObject.AddComponent<AudioSource>();
             InitLoopingSource(_playerFireSource, Settings.PlayerFire);
@@ -65,6 +66,8 @@ namespace UFO
             {
                 source.Play();
             }
+
+            PlayMenuLoop();
         }
 
         private void LateUpdate()
@@ -72,14 +75,63 @@ namespace UFO
             _hasHitHurt = _hasHitShield = _hasKilled = false;
         }
 
+        private IEnumerator TransitioningToMenu()
+        {
+            if (_musicSource.isPlaying)
+            {
+                yield return StartCoroutine(Fading(_musicSource, 0.0f, 0.3f * GameManager.GameOverDuration));
+                _musicSource.Stop();
+                yield return new WaitForSeconds(0.7f * GameManager.GameOverDuration);
+            }
+
+            _musicSource.clip = Settings.MenuLoop;
+            _musicSource.loop = true;
+            _musicSource.volume = 0.0f;
+
+            _musicSource.Play();
+            yield return StartCoroutine(Fading(_musicSource, _musicScale * Settings.MusicVolume, GameManager.GameOverDuration));
+        }
+
+        public void PlayMenuLoop()
+        {
+            if (_menuing != null)
+            {
+                StopCoroutine(_menuing);
+            }
+
+            _menuing = StartCoroutine(TransitioningToMenu());
+        }
+
+        private IEnumerator TransitioningFromMenu(AudioClip track, double atTime)
+        {
+            double duration = 0.5 * (atTime - UnityEngine.AudioSettings.dspTime);
+            yield return StartCoroutine(Fading(_musicSource, 0.0f, (float)duration));
+            _musicSource.loop = false;
+            Play(track, atTime);
+        }
+
         public void Play(AudioClip track, double atTime)
         {
+            if (_musicSource.loop)
+            {
+                if (_menuing != null)
+                {
+                    StopCoroutine(_menuing);
+                }
+
+                _menuing = StartCoroutine(TransitioningFromMenu(track, atTime));
+                return;
+            }
+
             _musicSource.Stop();
+
             _musicSource.clip = track;
+            _musicSource.volume = _musicScale * Settings.MusicVolume;
+
             _musicSource.PlayScheduled(atTime);
         }
 
-        IEnumerator Fading(AudioSource source, float targetVol, float duration)
+        private IEnumerator Fading(AudioSource source, float targetVol, float duration)
         {
             float startVol = source.volume;
             float endTime = Time.time + duration;
@@ -110,7 +162,7 @@ namespace UFO
 
         private void OnPlayerFireStart()
         {
-            StartFading(_playerFireSource, 1.0f, 0.05f);
+            StartFading(_playerFireSource, _fxScale, 0.05f);
         }
 
         private void OnPlayerFireEnd()
@@ -118,14 +170,14 @@ namespace UFO
             StartFading(_playerFireSource, 0.0f, 0.1f);
         }
 
-        IEnumerator KeepingHurtCount()
+        private IEnumerator KeepingHurtCount()
         {
             _hurtCount++;
             yield return new WaitForSeconds(Settings.HitHurt.length);
             _hurtCount--;
         }
 
-        IEnumerator KeepingShieldCount()
+        private IEnumerator KeepingShieldCount()
         {
             _shieldCount++;
             yield return new WaitForSeconds(Settings.HitShield.length);
@@ -160,19 +212,36 @@ namespace UFO
 
         private IEnumerator DuckMusic(float volumeScale, float duration)
         {
-            float transition = 0.1f;
-            StartCoroutine(Fading(_hitSource, volumeScale, transition));
-            yield return Fading(_musicSource, volumeScale * Settings.MusicVolume, transition);
+            float transition = 0.22f;
+            StartCoroutine(Fading(_hitSource, volumeScale * _fxScale, transition * duration));
+            yield return Fading(_musicSource, volumeScale * _musicScale * Settings.MusicVolume, transition * duration);
 
-            yield return new WaitForSeconds(duration - 2.0f * transition);
+            yield return new WaitForSeconds((1.0f - 2.0f * transition) * duration);
 
-            StartCoroutine(Fading(_hitSource, 1.0f, transition));
-            yield return Fading(_musicSource, Settings.MusicVolume, transition);
+            StartCoroutine(Fading(_hitSource, _fxScale, transition * duration));
+            yield return Fading(_musicSource, _musicScale * Settings.MusicVolume, transition * duration);
+            _critPriority = 0;
         }
 
-        private void PlayCritical(AudioClip clip, float duckDuration, float volumeScale = 1.0f)
+        private void PlayCritical(AudioClip clip, float duckDuration, int priority, float volumeScale = 1.0f)
         {
-            _criticalSource.PlayOneShot(clip, volumeScale);
+            if (_criticalSource.volume == 0.0f)
+            {
+                return;
+            }
+
+            if (priority < _critPriority)
+            {
+                return;
+            }
+
+            if (priority > _critPriority)
+            {
+                _critPriority = priority;
+                _criticalSource.Stop();
+            }
+
+            _criticalSource.PlayOneShot(clip, volumeScale * _fxScale);
             if (_duckingMusic != null)
             {
                 StopCoroutine(_duckingMusic);
@@ -183,20 +252,61 @@ namespace UFO
 
         private void OnStartDie()
         {
-            PlayCritical(Settings.PlayerStartDie, Settings.PlayerStartDie.length);
+            PlayCritical(Settings.PlayerStartDie, Settings.PlayerStartDie.length, 2);
         }
 
         private void OnDeath()
         {
-            PlayCritical(Settings.PlayerDeath, Settings.PlayerDeath.length);
+            PlayCritical(Settings.PlayerDeath, Settings.PlayerDeath.length, 2);
+        }
+
+        private void OnShieldDown()
+        {
+            PlayCritical(Settings.ShieldDown, Settings.ShieldDown.length, 2);
         }
 
         private void OnBombUse()
         {
-            PlayCritical(Settings.BombUse, 0.8f * Settings.BombUse.length);
+            PlayCritical(Settings.BombUse, 0.8f * Settings.BombUse.length, 3);
         }
 
-        IEnumerator KeepingKillCount()
+        private void OnGameOver()
+        {
+            foreach (AudioSource source in _loopSources.Keys)
+            {
+                source.volume = 0.0f;
+            }
+
+            PlayCritical(Settings.GameOver, Settings.GameOver.length, 3);
+            PlayMenuLoop();
+        }
+
+        private void OnGetShield(Vector2 position)
+        {
+            PlayCritical(Settings.ShieldGet, Settings.ShieldGet.length, 2);
+        }
+
+        private void OnGetExtend(Vector2 position)
+        {
+            PlayCritical(Settings.ExtendGet, Settings.ExtendGet.length, 2);
+        }
+
+        private void OnGetPower(Vector2 position)
+        {
+            PlayCritical(Settings.PowerGet, Settings.PowerGet.length, 2);
+        }
+
+        private void OnGetBomb(Vector2 position)
+        {
+            PlayCritical(Settings.BombGet, Settings.BombGet.length, 2);
+        }
+
+        private void OnItemScore(Vector2 position)
+        {
+            PlayCritical(Settings.ItemScore, Settings.ItemScore.length, 2);
+        }
+
+        private IEnumerator KeepingKillCount()
         {
             _killCount++;
             yield return new WaitForSeconds(Settings.Kill.length);
@@ -211,7 +321,7 @@ namespace UFO
             }
 
             _hasKilled = true;
-            PlayCritical(Settings.Kill, 0.8f * Settings.Kill.length);
+            PlayCritical(Settings.Kill, 0.8f * Settings.Kill.length, 1);
 
             StartCoroutine(KeepingKillCount());
         }
@@ -224,7 +334,7 @@ namespace UFO
             }
 
             _oneshotSources.ForEach(source => source.Pause());
-            
+            _musicSource.Pause();
         }
 
         private void OnUnpause(double lostTime)
@@ -235,18 +345,50 @@ namespace UFO
             }
 
             _oneshotSources.ForEach(source => source.UnPause());
+            _musicSource.UnPause();
+        }
+
+        private void SetMusicScale(float scale)
+        {
+            _musicScale = scale;
+            _musicSource.volume = _musicScale * Settings.MusicVolume;
+        }
+
+        private void SetFXScale(float scale)
+        {
+            _fxScale = scale;
+            foreach (AudioSource source in _oneshotSources)
+            {
+                source.volume = _fxScale;
+            }
+
+            if (!_oneshotSources[0].isPlaying)
+            {
+                _oneshotSources[0].PlayOneShot(Settings.Kill);
+            }
         }
 
         private void OnEnable()
         {
+            OnChangeMusic += SetMusicScale;
+            OnChangeFX += SetFXScale;
+
             PlayerController.OnStartDie += OnStartDie;
             PlayerController.OnDeath += OnDeath;
             PlayerController.OnFireStart += OnPlayerFireStart;
             PlayerController.OnFireEnd += OnPlayerFireEnd;
+            PlayerController.OnShieldDown += OnShieldDown;
             PlayerController.OnBombUse += OnBombUse;
+
+            PlayerController.OnGetShield += OnGetShield;
+            PlayerController.OnGetExtend += OnGetExtend;
+            PlayerController.OnGetPower += OnGetPower;
+            PlayerController.OnGetBomb += OnGetBomb;
+            PlayerController.OnItemScore += OnItemScore;
 
             EnemyController.OnKill += OnKill;
 
+            GameManager.OnGameOver += OnGameOver;
             GameManager.OnPause += OnPause;
             GameManager.OnUnpause += OnUnpause;
             GameManager.OnHitHurt += OnHitHurt;
@@ -259,10 +401,18 @@ namespace UFO
             PlayerController.OnDeath -= OnDeath;
             PlayerController.OnFireStart -= OnPlayerFireStart;
             PlayerController.OnFireEnd -= OnPlayerFireEnd;
+            PlayerController.OnShieldDown -= OnShieldDown;
             PlayerController.OnBombUse -= OnBombUse;
+
+            PlayerController.OnGetShield -= OnGetShield;
+            PlayerController.OnGetExtend -= OnGetExtend;
+            PlayerController.OnGetPower -= OnGetPower;
+            PlayerController.OnGetBomb -= OnGetBomb;
+            PlayerController.OnItemScore -= OnItemScore;
 
             EnemyController.OnKill -= OnKill;
 
+            GameManager.OnGameOver -= OnGameOver;
             GameManager.OnPause -= OnPause;
             GameManager.OnUnpause -= OnUnpause;
             GameManager.OnHitHurt -= OnHitHurt;

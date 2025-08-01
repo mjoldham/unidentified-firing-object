@@ -148,6 +148,23 @@ MonoBehaviour:
       m_Action: Restart
       m_Flags: 0
     m_Flags: 0
+  EndAction:
+    m_Name: End
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: e5bbc671-5e18-4b14-a6a9-e8f949f2f15c
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 7478412c-4744-4f19-9443-d742d2ff0257
+      m_Path: <Keyboard>/escape
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: End
+      m_Flags: 0
+    m_Flags: 0
   SpawnBeats: 2
   SlowSpeed: 3
   FastSpeed: 6
