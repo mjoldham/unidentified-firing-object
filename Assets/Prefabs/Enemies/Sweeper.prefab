@@ -292,7 +292,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  ShotSealingDistance: 1
+  ShotSealingDistance: 0
   HitboxParent: {fileID: 2564444344280621522}
   HurtboxParent: {fileID: 7280738695302344207}
   ShieldboxParent: {fileID: 0}
@@ -376,7 +376,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.35, y: 0.4}
+  m_Size: {x: 0.4, y: 0.4}
   m_EdgeRadius: 0
 --- !u!1001 &166017584255025085
 PrefabInstance:

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 818057ae1a85fab4a8b1e886bf1ccd6b
+guid: 93c226ace8b15194fbdec8d11de87286
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2888178741074152428
-    second: Centipede4_0
+      213: 1366121779973285263
+    second: StaticFast_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -101,7 +101,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Centipede4_0
+      name: StaticFast_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 2
-        width: 22
-        height: 30
+        y: 1
+        width: 12
+        height: 22
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 414b07abcb02be7d0800000000000000
-      internalID: -2888178741074152428
+      spriteID: f856b37558075f210800000000000000
+      internalID: 1366121779973285263
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Centipede4_0: -2888178741074152428
+      StaticFast_0: 1366121779973285263
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

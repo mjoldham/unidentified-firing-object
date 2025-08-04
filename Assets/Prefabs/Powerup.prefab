@@ -546,8 +546,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Parameters:
     CurrentStep: {fileID: 0}
-    CheckForEnemies: 0
-    ExemptFromCheck: 0
+    Condition: 0
+    ExemptFromCheck: 1
   ShieldCollider: {fileID: 2748961602715905768}
   ExtendCollider: {fileID: 8709681412242030129}
   PowerCollider: {fileID: 9001744567158333387}

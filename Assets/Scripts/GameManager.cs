@@ -14,6 +14,8 @@ namespace UFO
         private AudioManager _audio;
         private PlayerController _player;
 
+        public int StartAtStage, StartAtBeat;
+
         private bool _gameRunning;
 
         public const int BeatsPerBar = 4;
@@ -490,6 +492,8 @@ namespace UFO
         private bool _isPaused;
         private double _pauseStart;
 
+        private bool _carryOver;
+
         private void Awake()
         {
             if (Instance != null)
@@ -578,7 +582,7 @@ namespace UFO
             return startTime + (double)currentClip.samples / currentClip.frequency;
         }
 
-        private void StartNextStage()
+        private void StartNextStage(int atBeat = 0)
         {
             IsOnBeat = false;
             if (++_currentStage == Stages.Length)
@@ -588,15 +592,16 @@ namespace UFO
             }
 
             _spawnIndex = 0;
+            _carryOver = false;
 
             StageSettings stage = Stages[_currentStage];
             BeatLength = 60.0 / stage.BPM;
             BarLength = BeatsPerBar * BeatLength;
 
             double startTime = UnityEngine.AudioSettings.dspTime + _player.Settings.SpawnBeats * BeatLength;
-            _audio.Play(stage.MusicTrack, startTime);
-
-            _totalBeats = _currentBar = 0;
+            _totalBeats = atBeat;
+            _currentBar = atBeat / BeatsPerBar;
+            _audio.Play(stage.MusicTrack, startTime, _totalBeats);
 
             _nextStageTime = CalculateNextStageTime(startTime, stage.MusicTrack);
             _nextBeatTime = _nextBarTime = startTime;
@@ -638,7 +643,7 @@ namespace UFO
             _extendCounter = ExtendScore;
 
             _player.IsAlive = false;
-            StartNextStage();
+            StartNextStage(StartAtBeat);
         }
 
         private void TrySpawning(SpawnInfo[] spawns)
@@ -649,22 +654,46 @@ namespace UFO
                 return;
             }
 
-            for (SpawnInfo spawnInfo = spawns[_spawnIndex]; spawnInfo.Beat == _totalBeats; spawnInfo = spawns[_spawnIndex])
+            for (SpawnInfo spawnInfo = spawns[_spawnIndex]; spawnInfo.Beat <= _totalBeats; spawnInfo = spawns[_spawnIndex])
             {
-                if (!spawnInfo.Parameters.CheckForEnemies || EnemyPools.All(pool => pool.CheckCount == 0))
+                if (spawnInfo.Beat < _totalBeats)
                 {
-                    if (_enemyPoolDict.TryGetValue(spawnInfo.PrefabName, out EnemyPool pool))
+                    _spawnIndex++;
+                    continue;
+                }
+
+                if ((spawnInfo.Parameters.Condition == SpawnCondition.NoEnemies && EnemyPools.Any(pool => pool.CheckCount > 0))
+                    || (spawnInfo.Parameters.Condition == SpawnCondition.CarryOver && !_carryOver))
+                {
+                    _carryOver = false;
+                    if (++_spawnIndex == spawns.Length)
                     {
-                        if (!pool.Spawn(spawnInfo))
-                        {
-                            Debug.Log($"Too many {spawnInfo.PrefabName}s active to spawn more!");
-                        }
+                        break;
                     }
-                    else
+
+                    continue;
+                }
+
+                if (spawnInfo.Parameters.Condition == SpawnCondition.None)
+                {
+                    _carryOver &= spawnInfo.Parameters.ExemptFromCheck;
+                }
+                else
+                {
+                    _carryOver = true;
+                }
+
+                if (_enemyPoolDict.TryGetValue(spawnInfo.PrefabName, out EnemyPool pool))
+                {
+                    if (!pool.Spawn(spawnInfo))
                     {
-                        _powerups[_nextPowerup].Spawn(spawnInfo);
-                        _nextPowerup = (_nextPowerup + 1) % _powerups.Length;
+                        Debug.Log($"Too many {spawnInfo.PrefabName}s active to spawn more!");
                     }
+                }
+                else
+                {
+                    _powerups[_nextPowerup].Spawn(spawnInfo);
+                    _nextPowerup = (_nextPowerup + 1) % _powerups.Length;
                 }
 
                 if (++_spawnIndex == spawns.Length)
@@ -945,8 +974,8 @@ namespace UFO
             StartingExtends = startingExtends;
             CurrentScore = ItemScoreCount = 0;
             _extendCounter = ExtendScore;
-            _currentStage = -1;
-            StartNextStage();
+            _currentStage = StartAtStage - 1;
+            StartNextStage(StartAtBeat);
         }
 
         private IEnumerator GameOvering()

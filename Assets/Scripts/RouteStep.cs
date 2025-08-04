@@ -9,7 +9,7 @@ namespace UFO
         public int BeatsToComplete;
         public RouteStep NextStep;
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
             Vector2 pos = new Vector2(transform.position.x, transform.localPosition.y);
             if (NextStep != null)

@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Parameters: {fileID: 11400000, guid: e802992de201217459e8f302dfd6e92b, type: 2}
+  Damage: 1
   IsMirrored: 0
   WaitFrames: 0
   WaitBeats: 0
@@ -106,4 +107,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Emitter: {fileID: 0}
-  FramesToWait: 30
+  FramesToWait: 90

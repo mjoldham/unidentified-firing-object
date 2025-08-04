@@ -3,11 +3,19 @@ using UnityEngine;
 
 namespace UFO
 {
+    public enum SpawnCondition
+    {
+        None,
+        NoEnemies,
+        CarryOver
+    }
+
     [Serializable]
     public struct SpawnParams
     {
         public RouteStep CurrentStep;
-        public bool CheckForEnemies, ExemptFromCheck;
+        public SpawnCondition Condition;
+        public bool ExemptFromCheck;
     }
 
     public struct SpawnInfo

@@ -102,15 +102,15 @@ namespace UFO
             _menuing = StartCoroutine(TransitioningToMenu());
         }
 
-        private IEnumerator TransitioningFromMenu(AudioClip track, double atTime)
+        private IEnumerator TransitioningFromMenu(AudioClip track, double atTime, int atBeat)
         {
             double duration = 0.5 * (atTime - UnityEngine.AudioSettings.dspTime);
             yield return StartCoroutine(Fading(_musicSource, 0.0f, (float)duration));
             _musicSource.loop = false;
-            Play(track, atTime);
+            Play(track, atTime, atBeat);
         }
 
-        public void Play(AudioClip track, double atTime)
+        public void Play(AudioClip track, double atTime, int atBeat)
         {
             if (_musicSource.loop)
             {
@@ -119,7 +119,7 @@ namespace UFO
                     StopCoroutine(_menuing);
                 }
 
-                _menuing = StartCoroutine(TransitioningFromMenu(track, atTime));
+                _menuing = StartCoroutine(TransitioningFromMenu(track, atTime, atBeat));
                 return;
             }
 
@@ -127,6 +127,7 @@ namespace UFO
 
             _musicSource.clip = track;
             _musicSource.volume = _musicScale * Settings.MusicVolume;
+            _musicSource.time = (float)(atBeat * GameManager.BeatLength);
 
             _musicSource.PlayScheduled(atTime);
         }

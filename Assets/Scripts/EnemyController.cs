@@ -44,12 +44,25 @@ namespace UFO
         double _destTime, _destDuration;
 
         private bool _isFiring, _isExiting;
+        private bool _isOffscreen, _shotSealed;
 
-        private Material _spriteMat;
+        private Material[] _spriteMats;
 
-        private void OnDrawGizmos()
+        private void OnDrawGizmosSelected()
         {
-            Gizmos.color = Parameters.CheckForEnemies ? Color.red : Color.green;
+            if (Parameters.Condition == SpawnCondition.None)
+            {
+                Gizmos.color = Color.green;
+            }
+            else if (Parameters.Condition == SpawnCondition.NoEnemies)
+            {
+                Gizmos.color = Color.red;
+            }
+            else
+            {
+                Gizmos.color = Color.black;
+            }
+
             if (Parameters.ExemptFromCheck)
             {
                 Gizmos.color += Color.blue;
@@ -73,7 +86,13 @@ namespace UFO
         {
             _player = PlayerController.Instance;
             _animator = GetComponent<Animator>();
-            _spriteMat = GetComponentInChildren<SpriteRenderer>().material;
+
+            SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>();
+            _spriteMats = new Material[sprites.Length];
+            for (int i = 0; i < sprites.Length; i++)
+            {
+                _spriteMats[i] = sprites[i].material;
+            }
 
             if (HitboxParent != null)
             {
@@ -129,6 +148,7 @@ namespace UFO
             if (_moveBeats == 0)
             {
                 transform.position = _destination = position;
+                StartMove();
                 return;
             }
 
@@ -160,15 +180,16 @@ namespace UFO
             _isFiring = true;
 
             Vector2 pos = new Vector2(Parameters.CurrentStep.transform.position.x, Parameters.CurrentStep.transform.localPosition.y);
-            ReloadEmitters(pos.x > 0.0f);
-
-            StartMove(pos, Parameters.CurrentStep.BeatsToComplete);
+            int beats = Parameters.CurrentStep.BeatsToComplete;
             Parameters.CurrentStep = Parameters.CurrentStep.NextStep;
+
+            ReloadEmitters(pos.x > 0.0f);
+            StartMove(pos, beats);
         }
 
         public override void Spawn(SpawnInfo spawnInfo)
         {
-            _isFiring = _isExiting = false;
+            _isFiring = _isExiting = _isOffscreen = _shotSealed = false;
             _moveBeats = 0;
 
             Parameters = spawnInfo.Parameters;
@@ -197,7 +218,10 @@ namespace UFO
             }
 
             _damageFrames = DamageFrames;
-            _spriteMat.SetFloat(_damageID, 1.0f);
+            foreach (Material mat in _spriteMats)
+            {
+                mat.SetFloat(_damageID, 1.0f);
+            }
 
             return false;
         }
@@ -216,17 +240,23 @@ namespace UFO
             }
         }
 
-
         private void DamageTick()
         {
             if (--_damageFrames <= 0)
             {
-                _spriteMat.SetFloat(_damageID, 0.0f);
+                foreach (Material mat in _spriteMats)
+                {
+                    mat.SetFloat(_damageID, 0.0f);
+                }
+
                 return;
             }
 
             float t = (float)(DamageFrames - _damageFrames) / DamageFrames;
-            _spriteMat.SetFloat(_damageID, t);
+            foreach (Material mat in _spriteMats)
+            {
+                mat.SetFloat(_damageID, t);
+            }
         }
 
         // Returns false when enemy should be despawned after exiting the stage.
@@ -275,14 +305,14 @@ namespace UFO
 
             // Keeps emitters ticking but suppresses fire if:
             // - below the cutoff height.
-            bool overrideFire = transform.position.y < GameManager.CutoffHeight;
+            _isOffscreen = transform.position.y < GameManager.CutoffHeight;
             // - offscreen.
-            overrideFire |= transform.position.y > GameManager.ScreenHalfHeight;
-            overrideFire |= Mathf.Abs(transform.position.x) > GameManager.ScreenHalfWidth;
+            _isOffscreen |= transform.position.y > GameManager.ScreenHalfHeight;
+            _isOffscreen |= Mathf.Abs(transform.position.x) > GameManager.ScreenHalfWidth;
             // - within sealing distance.
-            overrideFire |= (_player.transform.position - transform.position).sqrMagnitude < _sealingDistSqr;
+            _shotSealed = (_player.transform.position - transform.position).sqrMagnitude < _sealingDistSqr;
 
-            _isFiring = ShotEmitter.Tick(_emitters, overrideFire);
+            _isFiring = ShotEmitter.Tick(_emitters, _isOffscreen || _shotSealed);
             return true;
         }
 
@@ -300,8 +330,8 @@ namespace UFO
                 return;
             }
 
-            // Don't start next step if still firing or moving.
-            if (_isFiring || --_moveBeats > 0)
+            // Don't start next step if still moving or firing when onscreen.
+            if (--_moveBeats > 0 || (_isFiring && !_isOffscreen))
             {
                 return;
             }

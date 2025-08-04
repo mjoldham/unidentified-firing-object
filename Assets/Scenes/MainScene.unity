@@ -2120,10 +2120,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.37479088
-    y: 0.18450704
-    width: 0.24986058
-    height: 0.6309859
+    x: -0.08031088
+    y: -0.08031088
+    width: 1.1606218
+    height: 1.1606218
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
@@ -5257,7 +5257,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 409.46878, y: -10.799988}
+  m_AnchoredPosition: {x: 409.4688, y: -10.799988}
   m_SizeDelta: {x: 67, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1058145092
@@ -5440,14 +5440,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 791334dba9340ee4387861c4f7d4b060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  StartAtStage: 0
+  StartAtBeat: 0
   BackgroundRenderer: {fileID: 1523567844}
   Stages:
   - {fileID: 11400000, guid: bf66478c7df080e4c8adf9ced9aaf038, type: 2}
-  - {fileID: 11400000, guid: 3bdd9e9154f04fd47b77760ea1332564, type: 2}
-  - {fileID: 11400000, guid: 9d513c5fb7677404db72e3e7f1f96f98, type: 2}
-  - {fileID: 11400000, guid: 758c9d37a6490c74aa85f6380bd39646, type: 2}
-  - {fileID: 11400000, guid: 7274d4b25ccb5a14aac36d3970658120, type: 2}
-  - {fileID: 11400000, guid: 602c1a97b9b2e2847955474f825881da, type: 2}
   ShotColour: {r: 0.9960785, g: 0, b: 0, a: 1}
   ShotPlusColour: {r: 0.9686275, g: 0.94117653, b: 0.427451, a: 1}
   BombEffect: {fileID: 791180295907328824}
@@ -5460,22 +5457,20 @@ MonoBehaviour:
   PlayerShotMaxCount: 32
   EnemyShotMaxCount: 256
   EnemyPools:
-  - MaxCount: 16
+  - MaxCount: 32
     EnemyPrefab: {fileID: 5932211203276947195, guid: c6bb4fea90afc8746a8cf3320c349479, type: 3}
-  - MaxCount: 8
+  - MaxCount: 16
     EnemyPrefab: {fileID: 5932211203276947195, guid: 3632587e2ec0bd84e8c3ceeecf38d1d7, type: 3}
   - MaxCount: 8
-    EnemyPrefab: {fileID: 5932211203276947195, guid: b0254e08b6a125344933a8bf14c592db, type: 3}
-  - MaxCount: 8
     EnemyPrefab: {fileID: 5932211203276947195, guid: 5085e681fc3e2914ea11cd7a50486e85, type: 3}
-  - MaxCount: 8
+  - MaxCount: 16
     EnemyPrefab: {fileID: 5932211203276947195, guid: b1b372bb89d9b6a4682f57b48c682be0, type: 3}
-  - MaxCount: 8
-    EnemyPrefab: {fileID: 5932211203276947195, guid: ebebf08cfb184c04892b1eeefeb27e7c, type: 3}
   - MaxCount: 8
     EnemyPrefab: {fileID: 5932211203276947195, guid: 05fc3b12d4c52e94f89db0c1d01bf355, type: 3}
   - MaxCount: 8
-    EnemyPrefab: {fileID: 5932211203276947195, guid: 34a9bef9858723543b145e0a1c352cf8, type: 3}
+    EnemyPrefab: {fileID: 5932211203276947195, guid: 0e992b8d0f1395c45b54962f10a2e14b, type: 3}
+  - MaxCount: 2
+    EnemyPrefab: {fileID: 5932211203276947195, guid: 91354ea4ffbc49c419459ee1c7454d4e, type: 3}
   PowerupPrefab: {fileID: 1266205234630050616, guid: b9d0aee385f7e674ca53fa70f33720e3, type: 3}
 --- !u!114 &1068270319
 MonoBehaviour:
@@ -10530,7 +10525,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: STAGE COMPLETE
+  m_Text: "STAGE COMPLETE\n\nEXTENDS\t-\t99999\nSHIELD\t-\t99999\nBOMBS\t-\t99999"
 --- !u!222 &2144311453
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10556,7 +10551,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 323.8265, y: 29.08}
+  m_SizeDelta: {x: 323.8265, y: 128.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &598589212281246171 stripped
 MeshRenderer:

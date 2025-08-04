@@ -83,12 +83,12 @@ namespace UFO
 
             private Stack<RepeatItem> _repeats = new Stack<RepeatItem>();
 
-            public void StartSequence(int index, int times)
+            public void Start(int index, int times)
             {
                 _repeats.Push(new RepeatItem(index, times));
             }
 
-            public bool EndSequence(ref int index)
+            public bool End(ref int index)
             {
                 // If there are no preceeding starts, or the last start has been exhausted, go to next step in sequence.
                 if (!_repeats.TryPop(out RepeatItem repeat) || repeat.Count == 0)
@@ -105,6 +105,10 @@ namespace UFO
                 return true;
             }
 
+            public void Clear()
+            {
+                _repeats.Clear();
+            }
         }
 
         private RepeatManager _repeatManager = new RepeatManager();
@@ -189,9 +193,19 @@ namespace UFO
                 return;
             }
 
+            if (CurrentMode == ShotMode.Static)
+            {
+                _lastAngle += (int)transform.rotation.eulerAngles.z;
+            }
+
             if (!_gm.SpawnShot(CurrentMode, Parameters, Damage, transform.position, ref _lastAngle))
             {
-                Debug.Log($"{gameObject.name} has stalled!");
+                Debug.Log($"{gameObject.name} has stalled!", gameObject);
+            }
+
+            if (CurrentMode == ShotMode.Static)
+            {
+                _lastAngle -= (int)transform.rotation.eulerAngles.z;
             }
         }
 
@@ -203,13 +217,13 @@ namespace UFO
                 return;
             }
 
-            _repeatManager.StartSequence(index, times);
+            _repeatManager.Start(index, times);
         }
 
         // Signals end of repeat sequence.
         public bool RepeatEnd(ref int index)
         {
-            return _repeatManager.EndSequence(ref index);
+            return _repeatManager.End(ref index);
         }
 
         public void Init()
@@ -227,7 +241,11 @@ namespace UFO
 
         public void Restart()
         {
-            CurrentOffset = _currentIndex = _lastAngle = 0;
+            _repeatManager.Clear();
+
+            CurrentOffset = _currentIndex = _lastAngle = WaitFrames = WaitBeats = 0;
+            _overrideFire = false;
+
             Parameters = _startParams;
             Damage = _startDamage;
         }
