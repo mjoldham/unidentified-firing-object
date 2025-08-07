@@ -208,7 +208,7 @@ namespace UFO
             _bonusCount--;
         }
 
-        private void OnGetBonus(Vector2 position)
+        private void OnItemScore(Vector2 position)
         {
             StartFlash(position, _bonusFlashes[_bonusCount], PowerupFrames, ref _bonusFrames[_bonusCount]);
             StartCoroutine(KeepBonusCount());
@@ -351,7 +351,7 @@ namespace UFO
             PlayerController.OnGetPower += OnGetPower;
             PlayerController.OnGetBomb += OnGetBomb;
             PlayerController.OnGetExtend += OnGetExtend;
-            PlayerController.OnItemScore += OnGetBonus;
+            PlayerController.OnItemScore += OnItemScore;
 
             PlayerController.OnInvincibilityStart += OnInvincibilityStart;
             PlayerController.OnInvincibilityEnd += OnInvincibilityEnd;
@@ -373,7 +373,7 @@ namespace UFO
             PlayerController.OnGetPower -= OnGetPower;
             PlayerController.OnGetBomb -= OnGetBomb;
             PlayerController.OnGetExtend -= OnGetExtend;
-            PlayerController.OnItemScore -= OnGetBonus;
+            PlayerController.OnItemScore -= OnItemScore;
 
             PlayerController.OnInvincibilityStart -= OnInvincibilityStart;
             PlayerController.OnInvincibilityEnd -= OnInvincibilityEnd;

@@ -623,6 +623,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   ShotSealingDistance: 0
+  ShotSealingEnabled: 0
   HitboxParent: {fileID: 2564444344280621522}
   HurtboxParent: {fileID: 7280738695302344207}
   ShieldboxParent: {fileID: 0}

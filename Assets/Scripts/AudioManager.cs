@@ -102,15 +102,15 @@ namespace UFO
             _menuing = StartCoroutine(TransitioningToMenu());
         }
 
-        private IEnumerator TransitioningFromMenu(AudioClip track, double atTime, int atBeat)
+        private IEnumerator TransitioningFromMenu(AudioClip track, double atTime, float skipToTime)
         {
             double duration = 0.5 * (atTime - UnityEngine.AudioSettings.dspTime);
             yield return StartCoroutine(Fading(_musicSource, 0.0f, (float)duration));
             _musicSource.loop = false;
-            Play(track, atTime, atBeat);
+            Play(track, atTime, skipToTime);
         }
 
-        public void Play(AudioClip track, double atTime, int atBeat)
+        public void Play(AudioClip track, double atTime, float skipToTime)
         {
             if (_musicSource.loop)
             {
@@ -119,15 +119,20 @@ namespace UFO
                     StopCoroutine(_menuing);
                 }
 
-                _menuing = StartCoroutine(TransitioningFromMenu(track, atTime, atBeat));
+                _menuing = StartCoroutine(TransitioningFromMenu(track, atTime, skipToTime));
                 return;
             }
 
             _musicSource.Stop();
 
+            if (skipToTime >= track.length)
+            {
+                return;
+            }
+
             _musicSource.clip = track;
             _musicSource.volume = _musicScale * Settings.MusicVolume;
-            _musicSource.time = (float)(atBeat * GameManager.BeatLength);
+            _musicSource.time = skipToTime;
 
             _musicSource.PlayScheduled(atTime);
         }
@@ -369,6 +374,28 @@ namespace UFO
             }
         }
 
+        private IEnumerator StageCompleting()
+        {
+            float delay = (float)(GameManager.BeatsBeforeEnd * GameManager.BeatLength);
+            yield return new WaitForSeconds(delay);
+            PlayMenuLoop();
+        }
+
+        private void OnStageComplete(bool secondLoop)
+        {
+            if (!secondLoop)
+            {
+                return;
+            }
+
+            foreach (AudioSource source in _loopSources.Keys)
+            {
+                source.volume = 0.0f;
+            }
+
+            StartCoroutine(StageCompleting());
+        }
+
         private void OnEnable()
         {
             OnChangeMusic += SetMusicScale;
@@ -390,6 +417,7 @@ namespace UFO
             EnemyController.OnKill += OnKill;
 
             GameManager.OnGameOver += OnGameOver;
+            GameManager.OnStageComplete += OnStageComplete;
             GameManager.OnPause += OnPause;
             GameManager.OnUnpause += OnUnpause;
             GameManager.OnHitHurt += OnHitHurt;
@@ -414,6 +442,7 @@ namespace UFO
             EnemyController.OnKill -= OnKill;
 
             GameManager.OnGameOver -= OnGameOver;
+            GameManager.OnStageComplete -= OnStageComplete;
             GameManager.OnPause -= OnPause;
             GameManager.OnUnpause -= OnUnpause;
             GameManager.OnHitHurt -= OnHitHurt;

@@ -9,9 +9,6 @@ namespace UFO
         public InputAction LeftAction, RightAction, UpAction, DownAction, FireAction, BombAction;
         public InputAction PauseAction, RestartAction, EndAction;
 
-        [Min(1)]
-        public int SpawnBeats = 2;
-
         public float SlowSpeed = 4.0f;
         public float FastSpeed = 8.0f;
 

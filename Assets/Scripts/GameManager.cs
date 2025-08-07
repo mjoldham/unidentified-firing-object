@@ -8,17 +8,17 @@ using System.Collections;
 
 namespace UFO
 {
-    public class GameManager : MonoBehaviour
+    public class GameManager : MonoBehaviour // TODO: make animatormanager for handling pausing/resuming/resetting.
     {
         public static GameManager Instance { get; private set; }
         private AudioManager _audio;
         private PlayerController _player;
 
-        public int StartAtStage, StartAtBeat;
+        public static int StartAtStage, StartAtBeat;
+        public static bool StartAtSecondLoop;
 
         private bool _gameRunning;
 
-        public const int BeatsPerBar = 4;
         public const int NumLanes = 5;
         public const float ScreenHalfWidth = 3.5f;
         public const float ScreenHalfHeight = 3.5f;
@@ -27,7 +27,8 @@ namespace UFO
 
         public static int ItemScoreBase = 100, ExtendScore = 250000;
 
-        public static int StartingExtends { get; private set; }
+        public static bool InSecondLoop;
+        public static int StartingExtends;
 
         public static int HitLayer { get; private set; }
         public static int HurtLayer { get; private set; }
@@ -37,23 +38,29 @@ namespace UFO
         public static int HurtMask { get; private set; }
         public static int ShieldMask { get; private set; }
 
-        public static Action OnGameOver, OnGameEnd, OnBeat, OnPause;
-        public static Action<int> OnGameStart;
+        public static Action OnGameStart, OnGameOver, OnGameEnd, OnBeat, OnPause;
+        public static Action<bool> OnStageStart, OnStageComplete;
         public static Action<float> OnChangeScroll;
         public static Action<double> OnUnpause;
         public static Action<Vector2> OnHitHurt, OnHitShield;
 
         public static bool IsOnBeat { get; private set; }
         public static double BeatLength { get; private set; }
-        public static double BarLength { get; private set; }
+        public static int TrackBeats { get; private set; }
+        public static int BeatsBeforeEnd { get; private set; }
 
         public static int CurrentScore { get; private set; }
         private static int _extendCounter;
 
+        public static int ExtendBonus { get; private set; }
+        public static int ShieldBonus { get; private set; }
+        public static int BombBonus { get; private set; }
+        public static int TotalBonus { get; private set; }
+
         public static void AddScore(int points)
         {
-            _extendCounter -= points;
             CurrentScore += points;
+            _extendCounter -= points;
             if (_extendCounter <= 0)
             {
                 _extendCounter = ExtendScore;
@@ -68,11 +75,11 @@ namespace UFO
 
         public static void AddScore(float damage)
         {
-            AddScore((int)(100.0f * damage));
+            AddScore((InSecondLoop ? 2 : 1) * (int)(100.0f * damage));
         }
 
-        [HideInInspector]
         public static int Hiscore { get; private set; }
+        public static int Loscore { get; private set; }
 
         public static int ItemScoreCount;
 
@@ -314,6 +321,7 @@ namespace UFO
         }
 
         public ShotController BaseShotPrefab;
+        public ShotParams SuicideShotParams;
         public int PlayerShotMaxCount = 32, EnemyShotMaxCount = 256;
         private ShotPool _playerShotPool, _enemyFriendlyPool, _enemyShotPool;
 
@@ -484,11 +492,11 @@ namespace UFO
         private PowerupController[] _powerups = new PowerupController[3];
         private int _nextPowerup;
 
-        private int _currentStage = -1, _currentBar, _currentBeat, _totalBeats;
+        private int _currentStage, _totalBeats;
 
-        private double _nextStageTime, _nextBarTime, _nextBeatTime;
+        private double _stageEndTime, _nextBeatTime, _nextStageTime;
+        private bool _stageComplete;
 
-        private int _currentLoop = 1;
         private bool _isPaused;
         private double _pauseStart;
 
@@ -535,15 +543,27 @@ namespace UFO
                 }
             }
         }
+        
+        private void InitStageParams(StageSettings stage)
+        {
+            BeatLength = 60.0 / stage.BPM;
+            TrackBeats = Mathf.RoundToInt(stage.MusicTrack.length / (float)BeatLength);
+            BeatsBeforeEnd = stage.BeatsBeforeEnd;
+        }
 
+        // TODO: unify entry and updates
         void Start()
         {
             _audio = GetComponent<AudioManager>();
             _player = PlayerController.Instance;
 
-            BackgroundRenderer.sprite = Stages[0].Background;
+            Loscore = 9999999;
+            StageSettings stage = Stages[0];
+            InitStageParams(stage);
+
+            BackgroundRenderer.sprite = stage.Background;
             _bgMaterial = BackgroundRenderer.material;
-            _bgMaterial.SetFloat(_scrollID, _scrollScale * Stages[0].ScrollSpeed);
+            _bgMaterial.SetFloat(_scrollID, _scrollScale * stage.ScrollSpeed);
 
             HitLayer = LayerMask.NameToLayer(nameof(EnemyController.Hitboxes));
             HurtLayer = LayerMask.NameToLayer(nameof(EnemyController.Hurtboxes));
@@ -577,34 +597,29 @@ namespace UFO
             InitSpawns();
         }
 
-        private double CalculateNextStageTime(double startTime, AudioClip currentClip)
+        private static double GetTrackLength(AudioClip clip)
         {
-            return startTime + (double)currentClip.samples / currentClip.frequency;
+            return (double)clip.samples / clip.frequency;
         }
 
-        private void StartNextStage(int atBeat = 0)
+        private void StartNextStage(int stageIndex, int atBeat = 0)
         {
+            _stageComplete = false;
             IsOnBeat = false;
-            if (++_currentStage == Stages.Length)
-            {
-                _currentStage = 0;
-                _currentLoop++;
-            }
 
             _spawnIndex = 0;
             _carryOver = false;
 
-            StageSettings stage = Stages[_currentStage];
-            BeatLength = 60.0 / stage.BPM;
-            BarLength = BeatsPerBar * BeatLength;
+            StageSettings stage = Stages[_currentStage = stageIndex];
+            InitStageParams(stage);
 
-            double startTime = UnityEngine.AudioSettings.dspTime + _player.Settings.SpawnBeats * BeatLength;
             _totalBeats = atBeat;
-            _currentBar = atBeat / BeatsPerBar;
-            _audio.Play(stage.MusicTrack, startTime, _totalBeats);
+            double skipToTime = _totalBeats * BeatLength;
+            _audio.Play(stage.MusicTrack, _nextBeatTime = _nextStageTime, (float)skipToTime);
 
-            _nextStageTime = CalculateNextStageTime(startTime, stage.MusicTrack);
-            _nextBeatTime = _nextBarTime = startTime;
+            double startDelay = PlayerController.SpawnBeats * 60.0 / Stages[(_currentStage + 1) % Stages.Length].BPM;
+            _nextStageTime += GetTrackLength(stage.MusicTrack) - skipToTime + startDelay;
+            _stageEndTime = _nextStageTime - BeatsBeforeEnd * BeatLength;
 
             BackgroundRenderer.sprite = stage.Background;
             _bgMaterial.SetFloat(_scrollID, _scrollScale * stage.ScrollSpeed);
@@ -613,42 +628,53 @@ namespace UFO
             {
                 _player.Spawn(StartingExtends);
             }
+
+            OnStageStart?.Invoke(InSecondLoop);
         }
 
-        private void ClearScreen()
+        private void StageComplete()
         {
-            _playerShotPool.Clear();
-            _enemyFriendlyPool.Clear();
-            _enemyShotPool.Clear();
-
-            _hitFXPool.Clear();
-            _killFXPool.Clear();
-
-            foreach (EnemyPool pool in EnemyPools)
+            if (_stageComplete)
             {
-                pool.Clear();
+                return;
             }
 
-            foreach (PowerupController powerup in _powerups)
+            int oldTotal = TotalBonus;
+
+            ExtendBonus = PlayerController.ExtendCount * 50000;
+            ShieldBonus = _player.IsShielded ? 50000 : 0;
+            BombBonus = PlayerController.BombCount * 20000;
+            TotalBonus = ExtendBonus + ShieldBonus + BombBonus;
+
+            _stageComplete = true;
+            bool wasSecondLoop = InSecondLoop;
+            if (_currentStage + 1 == Stages.Length)
             {
-                powerup.gameObject.SetActive(false);
+                _currentStage = -1;
+                if (InSecondLoop)
+                {
+                    int loscore = CurrentScore - 2 * oldTotal - TotalBonus;
+                    if (loscore < Loscore)
+                    {
+                        Loscore = loscore;
+                    }
+
+                    _gameRunning = false;
+                    ClearScreen();
+                }
+                else
+                {
+                    InSecondLoop = true;
+                }
             }
-        }
 
-        public void RestartStage()
-        {
-            ClearScreen();
-            _currentStage--;
-            CurrentScore = ItemScoreCount = 0;
-            _extendCounter = ExtendScore;
-
-            _player.IsAlive = false;
-            StartNextStage(StartAtBeat);
+            AddScore(TotalBonus);
+            OnStageComplete?.Invoke(wasSecondLoop);
         }
 
         private void TrySpawning(SpawnInfo[] spawns)
         {
-            Debug.Log($"Total: {_totalBeats},\tBar: {_currentBar},\tBeat: {_currentBeat}");
+            Debug.Log($"Beat: {_totalBeats}");
             if (_spawnIndex == spawns.Length)
             {
                 return;
@@ -656,13 +682,8 @@ namespace UFO
 
             for (SpawnInfo spawnInfo = spawns[_spawnIndex]; spawnInfo.Beat <= _totalBeats; spawnInfo = spawns[_spawnIndex])
             {
-                if (spawnInfo.Beat < _totalBeats)
-                {
-                    _spawnIndex++;
-                    continue;
-                }
-
-                if ((spawnInfo.Parameters.Condition == SpawnCondition.NoEnemies && EnemyPools.Any(pool => pool.CheckCount > 0))
+                if ((spawnInfo.Beat < _totalBeats)
+                    || (spawnInfo.Parameters.Condition == SpawnCondition.NoEnemies && EnemyPools.Any(pool => pool.CheckCount > 0))
                     || (spawnInfo.Parameters.Condition == SpawnCondition.CarryOver && !_carryOver))
                 {
                     _carryOver = false;
@@ -703,20 +724,6 @@ namespace UFO
             }
         }
 
-        private void StartNextBar()
-        {
-            if (_currentStage == -1)
-            {
-                return;
-            }
-
-            _currentBar++;
-            _currentBeat = 0;
-            _nextBarTime += BarLength;
-
-            StartNextBeat();
-        }
-
         private void StartNextBeat()
         {
             if (_currentStage == -1)
@@ -725,7 +732,6 @@ namespace UFO
             }
 
             _totalBeats++;
-            _currentBeat++;
             _nextBeatTime += BeatLength;
 
             TrySpawning(Stages[_currentStage].Spawns);
@@ -788,6 +794,17 @@ namespace UFO
             return pool.Spawn(shotParams, damage, position, angle);
         }
 
+        public bool SpawnSuicideShot(Vector2 position)
+        {
+            if (((Vector2)_player.transform.position - position).sqrMagnitude < 1.0f)
+            {
+                return false;
+            }
+
+            int angle = 0;
+            return SpawnShot(ShotMode.Aimed, SuicideShotParams, 0.0f, position, ref angle);
+        }
+
         private void OnBombUse()
         {
             _playerShotPool.Clear();
@@ -818,9 +835,9 @@ namespace UFO
             double lostTime = UnityEngine.AudioSettings.dspTime - _pauseStart;
             _pauseStart = 0.0;
 
-            _nextStageTime += lostTime;
-            _nextBarTime += lostTime;
+            _stageEndTime += lostTime;
             _nextBeatTime += lostTime;
+            _nextStageTime += lostTime;
 
             OnUnpause?.Invoke(lostTime);
         }
@@ -847,17 +864,17 @@ namespace UFO
 
         void FixedUpdate()
         {
-            if (!_gameRunning)
-            {
-                return;
-            }
-
             // Get effects out of the way.
             _hitFXPool.Tick();
             _killFXPool.Tick();
             BombTick();
 
-            if (_player.IsAlive && !_player.IsSpawning && !_player.IsDying)
+            if (!_gameRunning)
+            {
+                return;
+            }
+
+            if (!_stageComplete && _player.IsAlive && !_player.IsSpawning && !_player.IsDying)
             {
                 if (_player.CheckEnd())
                 {
@@ -901,15 +918,17 @@ namespace UFO
 
             // Manages timeline.
             double time = UnityEngine.AudioSettings.dspTime;
+            if (time >= _stageEndTime)
+            {
+                StageComplete();
+            }
+
             if (time >= _nextStageTime)
             {
-                StartNextStage();
+                StartNextStage(_currentStage + 1);
             }
-            else if (time >= _nextBarTime)
-            {
-                StartNextBar();
-            }
-            else if (time >= _nextBeatTime)
+
+            if (time >= _nextBeatTime)
             {
                 StartNextBeat();
             }
@@ -967,15 +986,60 @@ namespace UFO
             _killFXPool.Spawn(position);
         }
 
-        public void StartGame(int startingExtends)
+        private void ResetParams(double startDelay)
+        {
+            _player.IsAlive = false;
+
+            CurrentScore = ItemScoreCount = 0;
+            _extendCounter = ExtendScore;
+            PowerupController.SpawnExtend = false;
+
+            _nextStageTime = UnityEngine.AudioSettings.dspTime + startDelay;
+
+            ClearScreen();
+        }
+
+        private void ClearScreen()
+        {
+            _player.Hide();
+
+            _playerShotPool.Clear();
+            _enemyFriendlyPool.Clear();
+            _enemyShotPool.Clear();
+
+            _hitFXPool.Clear();
+            _killFXPool.Clear();
+
+            foreach (EnemyPool pool in EnemyPools)
+            {
+                pool.Clear();
+            }
+
+            foreach (PowerupController powerup in _powerups)
+            {
+                powerup.gameObject.SetActive(false);
+            }
+        }
+
+        public void RestartStage()
+        {
+            int beat = 0;
+            if (_currentStage == StartAtStage && InSecondLoop == StartAtSecondLoop)
+            {
+                beat = StartAtBeat;
+            }
+
+            ResetParams(PlayerController.SpawnBeats * BeatLength);
+            StartNextStage(_currentStage, beat);
+        }
+
+        public void GameStart()
         {
             _gameRunning = true;
 
-            StartingExtends = startingExtends;
-            CurrentScore = ItemScoreCount = 0;
-            _extendCounter = ExtendScore;
-            _currentStage = StartAtStage - 1;
-            StartNextStage(StartAtBeat);
+            InSecondLoop = StartAtSecondLoop;
+            ResetParams(PlayerController.SpawnBeats * 60.0 / Stages[StartAtStage].BPM);
+            StartNextStage(StartAtStage, StartAtBeat);
         }
 
         private IEnumerator GameOvering()
@@ -1011,7 +1075,7 @@ namespace UFO
         {
             OnHitHurt += SpawnHitFX;
             OnHitShield += SpawnHitFX;
-            OnGameStart += StartGame;
+            OnGameStart += GameStart;
             OnGameOver += GameOver;
             OnChangeScroll += ChangeScrollSpeed;
 
@@ -1024,7 +1088,7 @@ namespace UFO
         {
             OnHitHurt -= SpawnHitFX;
             OnHitShield -= SpawnHitFX;
-            OnGameStart -= StartGame;
+            OnGameStart -= GameStart;
             OnGameOver -= GameOver;
             OnChangeScroll -= ChangeScrollSpeed;
 

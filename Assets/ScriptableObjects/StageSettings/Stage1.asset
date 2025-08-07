@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MusicTrack: {fileID: 8300000, guid: 2bdc4566ea1432d40950ad4e24ec652e, type: 3}
   BPM: 180
-  Background: {fileID: 21300000, guid: b3cada443b92c34498e0699f077dd662, type: 3}
+  BeatsBeforeEnd: 8
+  Background: {fileID: 21300000, guid: 663d8a5da0e5e974986ff8a490b6a7c4, type: 3}
   ScrollSpeed: 1
   StagePatternPrefab: {fileID: 8735252118160439579, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}

@@ -6,6 +6,7 @@ namespace UFO
 {
     public class EnemyController : BaseSpawnable
     {
+        protected GameManager _gm;
         protected PlayerController _player;
         protected Animator _animator;
 
@@ -25,8 +26,7 @@ namespace UFO
         // How the enemy should move along the y-axis in normalised time (0 to 1).
         public AnimationCurve YCurve = AnimationCurve.EaseInOut(0.0f, 0.0f, 1.0f, 1.0f);
 
-        public float ShotSealingDistance = 1.0f; // Set this to zero for relentless enemies!
-        private float _sealingDistSqr;
+        public bool ShotSealingEnabled = true;
 
         public Transform HitboxParent, HurtboxParent, ShieldboxParent;
 
@@ -84,6 +84,7 @@ namespace UFO
 
         public void Init()
         {
+            _gm = GameManager.Instance;
             _player = PlayerController.Instance;
             _animator = GetComponent<Animator>();
 
@@ -138,7 +139,6 @@ namespace UFO
             }
 
             _fullHealth = Health;
-            _sealingDistSqr = ShotSealingDistance * ShotSealingDistance;
             gameObject.SetActive(false);
         }
 
@@ -212,6 +212,20 @@ namespace UFO
             if (Health <= 0.0f)
             {
                 GameManager.AddScore(_fullHealth);
+                if (GameManager.InSecondLoop)
+                {
+                    int i = 0;
+                    for (; i < _emitters.Length; i++)
+                    {
+                        _gm.SpawnSuicideShot(_emitters[i].transform.position);
+                    }
+
+                    if (i == 0)
+                    {
+                        _gm.SpawnSuicideShot(transform.position);
+                    }
+                }
+
                 OnKill?.Invoke(transform.position);
                 gameObject.SetActive(false);
                 return true;
@@ -310,7 +324,7 @@ namespace UFO
             _isOffscreen |= transform.position.y > GameManager.ScreenHalfHeight;
             _isOffscreen |= Mathf.Abs(transform.position.x) > GameManager.ScreenHalfWidth;
             // - within sealing distance.
-            _shotSealed = (_player.transform.position - transform.position).sqrMagnitude < _sealingDistSqr;
+            _shotSealed = ShotSealingEnabled && ((Vector2)(_player.transform.position - transform.position)).sqrMagnitude < 1.0f;
 
             _isFiring = ShotEmitter.Tick(_emitters, _isOffscreen || _shotSealed);
             return true;

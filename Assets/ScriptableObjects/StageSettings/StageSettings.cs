@@ -38,9 +38,9 @@ namespace UFO
     public class StageSettings : ScriptableObject
     {
         public AudioClip MusicTrack;
-        public int BPM = 180;
+        public int BPM = 180, BeatsBeforeEnd = 8;
 
-        public Sprite Background; // TODO: either pack bgs into one texture ourselves or use sprite atlas to avoid hitching.
+        public Sprite Background;
         public float ScrollSpeed;
 
         public Transform StagePatternPrefab;

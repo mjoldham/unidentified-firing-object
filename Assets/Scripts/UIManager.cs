@@ -10,28 +10,29 @@ namespace UFO
 
         [Header("Panels")]
         public GameObject MainMenu;
-        public GameObject Credits;
-        public GameObject Options;
+        public GameObject HowToPlay, Options, Credits;
         public GameObject HUD;
 
         [Header("Options")]
+        public Slider StartSlider;
+        public Text StartPercent;
+        public Toggle SecondLoopToggle;
         public Slider ExtendsSlider;
-        public Slider ScrollSlider, MusicSlider, EffectsSlider;
         public Toggle AutobombToggle;
+        public Slider ScrollSlider, MusicSlider, EffectsSlider;
 
         [Header("HUD")]
         public Text Score;
-        public Text Hiscore;
-        public Text Extends;
+        public Text Hiscore, Loscore;
+        public Text Extends, Bombs;
+        public GameObject StageStart1, StageStart2, Paused, GameOver, StageComplete1, StageComplete2;
+        public GameObject BonusParent;
+        public Text ExtendBonus, ShieldBonus, BombBonus, TotalBonus;
 
-        public Text Bombs;
-        public GameObject Paused, GameOver, StageComplete;
-
-        private PlayerController _player;
+        private Coroutine _currCoroutine;
 
         private void Awake()
         {
-            MainMenu.SetActive(true);
             if (Instance != null && Instance != this)
             {
                 Destroy(this);
@@ -40,16 +41,29 @@ namespace UFO
             Instance = this;
         }
 
-
         private void Start()
         {
-            _player = PlayerController.Instance;
+            ShowPanel(MainMenu);
 
-            ExtendsSlider.value = _player.ExtendCount;
+            StartSlider.value = 0.0f;
+            StartSlider.onValueChanged.AddListener(value =>
+            {
+                StartPercent.text = Mathf.RoundToInt(100 * value).ToString();
+                GameManager.StartAtBeat = Mathf.RoundToInt(value * GameManager.TrackBeats);
+            });
+
+            SecondLoopToggle.isOn = false;
+            SecondLoopToggle.onValueChanged.AddListener(value =>
+            {
+                GameManager.StartAtSecondLoop = value;
+            });
+
+            ExtendsSlider.value = GameManager.StartingExtends = PlayerController.ExtendCount;
             ExtendsSlider.onValueChanged.AddListener(value =>
             {
                 Extends.text = value.ToString();
-                _player.ExtendCount = (int)value;
+                PlayerController.ExtendCount = (int)value;
+                GameManager.StartingExtends = (int)value;
             });
 
             ScrollSlider.value = 1.0f;
@@ -81,35 +95,48 @@ namespace UFO
         {
             Score.text = GameManager.CurrentScore.ToString();
             Hiscore.text = GameManager.Hiscore.ToString();
-            Extends.text = _player.ExtendCount.ToString();
-            Bombs.text = _player.BombCount.ToString();
+            Loscore.text = GameManager.Loscore.ToString();
+            Extends.text = PlayerController.ExtendCount.ToString();
+            Bombs.text = PlayerController.BombCount.ToString();
+
+            ExtendBonus.text = GameManager.ExtendBonus.ToString();
+            ShieldBonus.text = GameManager.ShieldBonus.ToString();
+            BombBonus.text = GameManager.BombBonus.ToString();
+            TotalBonus.text = GameManager.TotalBonus.ToString();
+        }
+
+        private IEnumerator DisplayingTitle(GameObject title, int beatsBefore, int beatsOn)
+        {
+            yield return new WaitForSeconds(beatsBefore * (float)GameManager.BeatLength);
+            title.SetActive(true);
+            yield return new WaitForSeconds(beatsOn * (float)GameManager.BeatLength);
+            title.SetActive(false);
         }
 
         public void StartGame()
         {
-            if (MainMenu != null)
-                MainMenu.SetActive(false);
+            MainMenu.SetActive(false);
+            GameManager.OnGameStart?.Invoke();
+        }
 
-            //HUD.SetActive(true);
-            GameManager.OnGameStart?.Invoke((int)ExtendsSlider.value);
+        private void OnStageStart(bool secondLoop)
+        {
+            if (_currCoroutine != null)
+            {
+                StopCoroutine(_currCoroutine);
+            }
+
+            _currCoroutine = StartCoroutine(DisplayingTitle(secondLoop ? StageStart2 : StageStart1, PlayerController.SpawnBeats, 8));
         }
 
         public void ShowPanel(GameObject panel)
         {
-            //HUD.SetActive(false);
             MainMenu.SetActive(false);
-            Credits.SetActive(false);
+            HowToPlay.SetActive(false);
             Options.SetActive(false);
+            Credits.SetActive(false);
 
             panel.SetActive(true);
-        }
-
-        public void BackToMainMenu()
-        {
-            //HUD.SetActive(false);
-            Credits.SetActive(false);
-            Options.SetActive(false);
-            MainMenu.SetActive(true);
         }
 
         public void Quit()
@@ -135,17 +162,39 @@ namespace UFO
         private void OnGameEnd()
         {
             GameOver.SetActive(false);
-            BackToMainMenu();
+            ShowPanel(MainMenu);
         }
 
-        public void DisplayStage(int index)
+        private IEnumerator EndingStage()
         {
-            // TODO: enable stage title from list.
+            StartCoroutine(DisplayingTitle(BonusParent, 0, GameManager.BeatsBeforeEnd));
+            yield return StartCoroutine(DisplayingTitle(StageComplete2, 0, GameManager.BeatsBeforeEnd));
+            GameManager.OnGameEnd?.Invoke();
         }
 
-        public void OnStageComplete(int index)
+        private IEnumerator GoingToNextLoop()
         {
-            // TODO: display bonuses.
+            int duration = GameManager.BeatsBeforeEnd + PlayerController.SpawnBeats;
+            StartCoroutine(DisplayingTitle(BonusParent, 0, duration));
+            yield return StartCoroutine(DisplayingTitle(StageComplete1, 0, duration));
+            OnStageStart(true);
+        }
+
+        public void OnStageComplete(bool secondLoop)
+        {
+            if (_currCoroutine != null)
+            {
+                StopCoroutine(_currCoroutine);
+            }
+
+            if (secondLoop)
+            {
+                _currCoroutine = StartCoroutine(EndingStage());
+            }
+            else
+            {
+                _currCoroutine = StartCoroutine(GoingToNextLoop());
+            }
         }
 
         private void OnEnable()
@@ -154,6 +203,8 @@ namespace UFO
             GameManager.OnGameEnd += OnGameEnd;
             GameManager.OnPause += OnPause;
             GameManager.OnUnpause += OnUnpause;
+            GameManager.OnStageStart += OnStageStart;
+            GameManager.OnStageComplete += OnStageComplete;
         }
 
         private void OnDisable()
@@ -162,6 +213,8 @@ namespace UFO
             GameManager.OnGameEnd -= OnGameEnd;
             GameManager.OnPause -= OnPause;
             GameManager.OnUnpause -= OnUnpause;
+            GameManager.OnStageStart -= OnStageStart;
+            GameManager.OnStageComplete -= OnStageComplete;
         }
     }
 }

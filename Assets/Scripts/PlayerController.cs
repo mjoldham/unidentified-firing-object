@@ -27,11 +27,7 @@ namespace UFO
 
         public bool IsShielded;
 
-        [Min(0)]
-        public int ExtendCount = 2;
-
-        [Range(0, 5)]
-        public int BombCount = 3;
+        public static int ExtendCount = 2, BombCount = 3, SpawnBeats = 2;
 
         [Range(0, 4)]
         public int PowerCount;
@@ -61,6 +57,12 @@ namespace UFO
             Instance = this;
         }
 
+        public void Hide()
+        {
+            IsAlive = false;
+            transform.position = new Vector2(0.0f, -GameManager.ScreenHalfHeight - 1.0f);
+        }
+
         private void Start()
         {
             _emitters = new ShotEmitter[PowerLevels.childCount][];
@@ -74,7 +76,7 @@ namespace UFO
             }
 
             Hitbox = GetComponentInChildren<Collider2D>();
-            transform.position = new Vector2(0.0f, -GameManager.ScreenHalfHeight - 1.0f);
+            Hide();
         }
 
         private IEnumerator Spawning()
@@ -88,7 +90,7 @@ namespace UFO
             Vector2 start = new Vector2(0.0f, -GameManager.ScreenHalfHeight - 1.0f);
             Vector2 end = new Vector2(0.0f, GameManager.CutoffHeight);
 
-            double duration = Settings.SpawnBeats * GameManager.BeatLength;
+            double duration = SpawnBeats * GameManager.BeatLength;
             double endTime = UnityEngine.AudioSettings.dspTime + duration;
             for (double time = UnityEngine.AudioSettings.dspTime; time < endTime; time = UnityEngine.AudioSettings.dspTime)
             {
@@ -137,9 +139,7 @@ namespace UFO
         private void OnGameOver()
         {
             StopAllCoroutines();
-
             IsAlive = false;
-            transform.position = new Vector2(0.0f, -GameManager.ScreenHalfHeight - 1.0f);
         }
 
         private IEnumerator Dying()
@@ -236,7 +236,6 @@ namespace UFO
             StartCoroutine(ApplyingInvincibility());
             if (IsShielded)
             {
-                // TODO: score points when exceeding item limits.
                 OnItemScore?.Invoke(position);
                 return;
             }
