@@ -226,9 +226,9 @@ namespace UFO
             return _repeatManager.End(ref index);
         }
 
-        public void Init()
+        public void Init(GameManager gm)
         {
-            _gm = GameManager.Instance;
+            _gm = gm;
             _startParams = Parameters;
             _startDamage = Damage;
 

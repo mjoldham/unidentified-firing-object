@@ -5,6 +5,7 @@ using static UFO.ShotEmitter;
 using static UFO.ShotController;
 using System.Linq;
 using System.Collections;
+using UnityEditor;
 
 namespace UFO
 {
@@ -336,15 +337,15 @@ namespace UFO
 
             public int CheckCount { get; private set; }
 
-            public void Init(Transform parent)
+            public void Init(GameManager gm, PlayerController player)
             {
                 _inactiveEnemies = new Queue<EnemyController>();
                 _activeEnemies = new Queue<EnemyController>();
 
                 for (int i = 0; i < MaxCount; i++)
                 {
-                    EnemyController enemy = Instantiate(EnemyPrefab, parent);
-                    enemy.Init();
+                    EnemyController enemy = Instantiate(EnemyPrefab, gm.transform);
+                    enemy.Init(gm, player);
                     _inactiveEnemies.Enqueue(enemy);
                 }
             }
@@ -502,48 +503,6 @@ namespace UFO
 
         private bool _carryOver;
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Destroy(this);
-                return;
-            }
-
-            Instance = this;
-        }
-
-        // TODO: find a way to do this offline so each stage has Spawns ready w/o processing.
-        private void InitSpawns()
-        {
-            foreach (StageSettings stage in Stages)
-            {
-                if (stage.StagePatternPrefab == null)
-                {
-                    continue;
-                }
-
-                BaseSpawnable[] spawns = stage.StagePatternPrefab.GetComponentsInChildren<BaseSpawnable>();
-                if (spawns.Length == 0)
-                {
-                    continue;
-                }
-
-                Array.Sort(spawns, (s1, s2) => s1.transform.position.y.CompareTo(s2.transform.position.y));
-
-                stage.Spawns = new SpawnInfo[spawns.Length];
-                for (int i = 0; i < spawns.Length; i++)
-                {
-                    stage.Spawns[i] = new SpawnInfo(spawns[i]);
-                    if (spawns[i] is EnemyController && !_enemyPoolDict.ContainsKey(stage.Spawns[i].PrefabName))
-                    {
-                        Debug.LogError($"{name} has not been included in the GameManagers list of EnemyPools.");
-                        return;
-                    }
-                }
-            }
-        }
-        
         private void InitStageParams(StageSettings stage)
         {
             BeatLength = 60.0 / stage.BPM;
@@ -551,19 +510,25 @@ namespace UFO
             BeatsBeforeEnd = stage.BeatsBeforeEnd;
         }
 
-        // TODO: unify entry and updates
-        void Start()
+        public IEnumerator Init(AudioManager audio, PlayerController player)
         {
-            _audio = GetComponent<AudioManager>();
-            _player = PlayerController.Instance;
+            if (Instance != null)
+            {
+                Destroy(this);
+                yield break;
+            }
+
+            Instance = this;
+
+            _audio = audio;
+            _player = player;
 
             Loscore = 9999999;
-            StageSettings stage = Stages[0];
-            InitStageParams(stage);
+            InitStageParams(Stages[0]);
 
-            BackgroundRenderer.sprite = stage.Background;
+            BackgroundRenderer.sprite = Stages[0].Background;
             _bgMaterial = BackgroundRenderer.material;
-            _bgMaterial.SetFloat(_scrollID, _scrollScale * stage.ScrollSpeed);
+            _bgMaterial.SetFloat(_scrollID, _scrollScale * Stages[0].ScrollSpeed);
 
             HitLayer = LayerMask.NameToLayer(nameof(EnemyController.Hitboxes));
             HurtLayer = LayerMask.NameToLayer(nameof(EnemyController.Hurtboxes));
@@ -573,28 +538,52 @@ namespace UFO
             HurtMask = LayerMask.GetMask(nameof(EnemyController.Hurtboxes));
             ShieldMask = LayerMask.GetMask(nameof(EnemyController.Shieldboxes));
 
-            BombEffect.gameObject.SetActive(false);
-
             _playerShotPool = new ShotPool(PlayerShotMaxCount, BaseShotPrefab, transform);
             _enemyFriendlyPool = new ShotPool(EnemyShotMaxCount, BaseShotPrefab, transform);
+            yield return null;
             _enemyShotPool = new ShotPool(EnemyShotMaxCount, BaseShotPrefab, transform);
+            yield return null;
 
             _hitFXPool = new EffectPool(PlayerShotMaxCount, HitEffectFrames, HitEffectPrefab, transform);
             _killFXPool = new EffectPool(PlayerShotMaxCount, KillFrames, KillEffectPrefab, transform);
+            yield return null;
+
+#if (UNITY_EDITOR)
+            // Verifies all prefabs have their pools.
+            foreach (StageSettings stage in Stages)
+            {
+                if (stage.Prefabs.Count == 0)
+                {
+                    Debug.LogError($"{stage.name} needs to be initialised in its context menu!", stage);
+                    continue;
+                }
+
+                foreach (string prefab in stage.Prefabs)
+                {
+                    if (prefab == PowerupPrefab.gameObject.name
+                        || EnemyPools.Any(pool => pool.EnemyPrefab.gameObject.name == prefab))
+                    {
+                        continue;
+                    }
+
+                    Debug.LogError($"{prefab} is not in {nameof(EnemyPools)}!", gameObject);
+                }
+            }
+#endif
 
             foreach (EnemyPool pool in EnemyPools)
             {
-                pool.Init(transform);
+                pool.Init(this, player);
                 _enemyPoolDict[pool.EnemyPrefab.gameObject.name] = pool;
             }
+
+            yield return null;
 
             for (int i = 0; i < _powerups.Length; i++)
             {
                 _powerups[i] = Instantiate(PowerupPrefab);
-                _powerups[i].Init();
+                _powerups[i].Init(player);
             }
-
-            InitSpawns();
         }
 
         private static double GetTrackLength(AudioClip clip)
@@ -862,7 +851,7 @@ namespace UFO
             BombEffect.material.SetColor(ColourID, Vector4.Lerp(ShotPlusColour, ShotColour, Mathf.Round(t * step) / step));
         }
 
-        void FixedUpdate()
+        public void Tick()
         {
             // Get effects out of the way.
             _hitFXPool.Tick();

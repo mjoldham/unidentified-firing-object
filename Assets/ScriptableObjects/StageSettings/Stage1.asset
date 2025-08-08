@@ -18,3 +18,2190 @@ MonoBehaviour:
   Background: {fileID: 21300000, guid: 663d8a5da0e5e974986ff8a490b6a7c4, type: 3}
   ScrollSpeed: 1
   StagePatternPrefab: {fileID: 8735252118160439579, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+  Spawns:
+  - Beat: 12
+    Lane: -2
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6813850526114837590, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 13
+    Lane: -2.578125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4125211973472746251, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 14
+    Lane: -1.484375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5621306085288113200, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 15
+    Lane: -1.09375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7898090496778897039, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 17
+    Lane: 0
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7628832520475457699, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 18
+    Lane: -0.578125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1040072437976938494, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 19
+    Lane: 0.515625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8742122582672357573, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 20
+    Lane: 2
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8030689572109448271, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 20
+    Lane: 0.90625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6542324291632417402, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 21
+    Lane: 2.578125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 631250529928706834, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 22
+    Lane: 1.484375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 9223356058737341481, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 23
+    Lane: 1.09375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6658204931617425046, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 25
+    Lane: 0
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1394447074078288127, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 26
+    Lane: 0.578125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8424555557497464738, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 27
+    Lane: -0.515625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 276794149795850393, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 28
+    Lane: -2
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4249088708236083294, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 28
+    Lane: -0.90625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2327830750911470118, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 29
+    Lane: -2.578125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6721571006753804035, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 30
+    Lane: -1.484375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3060907619178840120, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 31
+    Lane: -1.09375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 712628872738435719, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 33
+    Lane: 0
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8333065889012158808, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 34
+    Lane: -0.578125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1447034112070622725, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 35
+    Lane: -2
+    PrefabName: Powerup
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 35
+    Lane: 0.515625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7145439849318093118, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 36
+    Lane: 0.90625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4661490335941485441, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 36
+    Lane: 2
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7627011659907447901, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 37
+    Lane: 2.578125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1038233838224061184, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 38
+    Lane: 1.484375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8743134323847445563, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 39
+    Lane: 1.09375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6542772808072580740, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 44
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 45
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 46
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 47
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 48
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 49
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 50
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 51
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 53
+    Lane: -0.68125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1206944543339636938, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 54
+    Lane: -1.259375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8579347634499872663, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 55
+    Lane: -0.16562498
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 14251058568292524, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 55
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 56
+    Lane: 0.22500002
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2570396704382720531, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 56
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 57
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 58
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 59
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 60
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 61
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 62
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 64
+    Lane: 0.68125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5439025998574964491, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 65
+    Lane: 1.259375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3227770079387435094, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 66
+    Lane: 0.16562498
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6626485816670867309, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 66
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 67
+    Lane: -0.22500002
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8678228476020866514, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 67
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 68
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 68
+    Lane: 2
+    PrefabName: Powerup
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 69
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 70
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 71
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 72
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 73
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 75
+    Lane: -0.68125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6379659813195338566, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 76
+    Lane: -1.259375
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4555672848756038683, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 77
+    Lane: -0.16562498
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5189367389089682208, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 77
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 78
+    Lane: 0.22500002
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7754377538165285279, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 78
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 79
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 80
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 81
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 82
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 83
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 84
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 88
+    Lane: -2.5
+    PrefabName: Sweeper
+    Parameters:
+      CurrentStep: {fileID: 8319028136344143858, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 90
+    Lane: 2.5
+    PrefabName: Sweeper
+    Parameters:
+      CurrentStep: {fileID: 6753978437652417152, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 98
+    Lane: 5
+    PrefabName: RunNGunner
+    Parameters:
+      CurrentStep: {fileID: 3791932691961532977, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 101
+    Lane: 0
+    PrefabName: Knight
+    Parameters:
+      CurrentStep: {fileID: 4359537981123217302, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 107
+    Lane: 0
+    PrefabName: Knight
+    Parameters:
+      CurrentStep: {fileID: 1902945372695006927, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 108
+    Lane: -4.359375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 7017752000737322295, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 109
+    Lane: -3.203125
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 5178095156686090447, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 110
+    Lane: -3.796875
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 3311082704724568167, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 111
+    Lane: -2.609375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 6125445689864230734, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 119
+    Lane: 2.5
+    PrefabName: Sweeper
+    Parameters:
+      CurrentStep: {fileID: 8920262109853498621, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 121
+    Lane: -2.5
+    PrefabName: Sweeper
+    Parameters:
+      CurrentStep: {fileID: 6125723123936391567, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 129
+    Lane: -5
+    PrefabName: RunNGunner
+    Parameters:
+      CurrentStep: {fileID: 4334615214109141310, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 132
+    Lane: 0
+    PrefabName: Knight
+    Parameters:
+      CurrentStep: {fileID: 758883609521521731, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 137
+    Lane: -2.5
+    PrefabName: Powerup
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 138
+    Lane: 0
+    PrefabName: Knight
+    Parameters:
+      CurrentStep: {fileID: 3197756493356879130, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 139
+    Lane: 4.359375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 7976570529046353951, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 140
+    Lane: 3.203125
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 5190999990576975335, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 141
+    Lane: 3.796875
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 2460439620129150287, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 142
+    Lane: 2.609375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 6545872689647217254, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 150
+    Lane: -4.359375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 6440413053549739469, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 151
+    Lane: -3.203125
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 9212301963890468917, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 152
+    Lane: -3.796875
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 1582933779116126365, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 153
+    Lane: -2.609375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 7855708941977440180, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 158
+    Lane: 4.359375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 4582362128799689862, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 159
+    Lane: 3.203125
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 1814819037159569790, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 160
+    Lane: 3.796875
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 8286788781869031894, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 161
+    Lane: 2.609375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 860810084634910463, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 166
+    Lane: -4.359375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 2524771017418673273, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 167
+    Lane: -3.203125
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 410271229748763009, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 168
+    Lane: -3.796875
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 8043021784750031145, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 169
+    Lane: -2.609375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 1687774507399593472, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 174
+    Lane: 4.359375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 6193054520940764818, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 175
+    Lane: 3.203125
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 8307588910083525482, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 176
+    Lane: 3.796875
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 1829976748809065410, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 177
+    Lane: 2.609375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 7032303076803292395, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 185
+    Lane: 3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 186
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 187
+    Lane: 1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 188
+    Lane: 0
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 189
+    Lane: -1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 190
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 191
+    Lane: -3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 192
+    Lane: -3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 193
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 194
+    Lane: -1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 195
+    Lane: 0
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 196
+    Lane: 1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 197
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 198
+    Lane: 3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 199
+    Lane: 3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 199
+    Lane: -2.5
+    PrefabName: Powerup
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 200
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 201
+    Lane: 1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 202
+    Lane: 0
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 203
+    Lane: -1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 204
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 205
+    Lane: -3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 212
+    Lane: -4.359375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 8402050727741822924, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 213
+    Lane: -3.203125
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 5918379453789028916, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 214
+    Lane: -3.796875
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 4038973436627589788, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 215
+    Lane: -2.609375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 4683726823525131701, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 220
+    Lane: -4.359375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 4759953741720116023, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 221
+    Lane: -3.203125
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 7257158179841707727, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 222
+    Lane: -3.796875
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 1052018066016491111, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 223
+    Lane: -2.609375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 8532954122099812686, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 231
+    Lane: -3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 232
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 233
+    Lane: -1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 234
+    Lane: 0
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 235
+    Lane: 1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 236
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 237
+    Lane: 3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 238
+    Lane: 3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 239
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 240
+    Lane: 1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 241
+    Lane: 0
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 242
+    Lane: -1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 243
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 244
+    Lane: -3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 245
+    Lane: -3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 245
+    Lane: 2.5
+    PrefabName: Powerup
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 246
+    Lane: -2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 247
+    Lane: -1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 248
+    Lane: 0
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 249
+    Lane: 1
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 250
+    Lane: 2
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 251
+    Lane: 3
+    PrefabName: BladeDiver
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 258
+    Lane: 4.359375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 7753327541250342522, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 259
+    Lane: 3.203125
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 5557723477659052930, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 260
+    Lane: 3.796875
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 2814220076906623786, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 261
+    Lane: 2.609375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 6916612533520993283, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 266
+    Lane: 4.359375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 2608857202265548433, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 267
+    Lane: 3.203125
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 183767507068007273, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 268
+    Lane: 3.796875
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 7540083109563329473, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 269
+    Lane: 2.609375
+    PrefabName: Shotgunner
+    Parameters:
+      CurrentStep: {fileID: 1175828628596053224, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 274
+    Lane: -1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8391975933727933785, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 274
+    Lane: -2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7639818752177762389, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 275
+    Lane: -1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1424917845293271556, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 275
+    Lane: -3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 987990569764880136, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 276
+    Lane: -2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8830250745532280883, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 276
+    Lane: -0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7276415463826064703, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 277
+    Lane: -1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6418220081601806988, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 277
+    Lane: -0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5143750844519348096, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 278
+    Lane: -2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2810146631027162492, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 278
+    Lane: -1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5440130249082278340, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 279
+    Lane: -1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3228838208313826969, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 279
+    Lane: -3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4706191129694663201, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 280
+    Lane: -0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6625486965566345634, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 280
+    Lane: 1.921875
+    PrefabName: Sweeper
+    Parameters:
+      CurrentStep: {fileID: 7758753398601501656, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 280
+    Lane: -2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3923455034907065626, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 281
+    Lane: -0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8677088646943466269, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 281
+    Lane: -1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1579544098412007333, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 282
+    Lane: -1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7394630411098779410, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 282
+    Lane: -2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8712656638554846858, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 283
+    Lane: -3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2258987940353653207, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 283
+    Lane: -1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 85317373782843471, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 284
+    Lane: -0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8507948167179792244, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 284
+    Lane: -2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7522383451551086316, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 285
+    Lane: -0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6164036646667558347, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 285
+    Lane: -1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5475704833485390931, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 286
+    Lane: -1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6079057344185210231, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 286
+    Lane: -2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7151718049509396332, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 287
+    Lane: -1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3741713864736807466, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 287
+    Lane: -3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 355814270202069041, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 288
+    Lane: -0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4958580405895402769, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 288
+    Lane: -2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8344410645218316042, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 289
+    Lane: -0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7442526002198636462, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 289
+    Lane: -1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5788266992264428981, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 293
+    Lane: 1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3558237698959021887, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 293
+    Lane: 2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3391555074073059891, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 294
+    Lane: 3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5233503566129622382, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 294
+    Lane: 1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6255918558102034530, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 295
+    Lane: 2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4583667950144479829, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 295
+    Lane: 0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2444375686746675033, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 296
+    Lane: 0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 177164104456267238, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 296
+    Lane: 1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2019080322767360234, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 297
+    Lane: 1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1038104250750075810, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 297
+    Lane: 2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7199156335173332762, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 298
+    Lane: 1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7626860047290666239, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 298
+    Lane: 3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 313158600265261127, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 299
+    Lane: 0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2226285342010377156, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 299
+    Lane: 2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8315270413541863292, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 299
+    Lane: -1.921875
+    PrefabName: Sweeper
+    Parameters:
+      CurrentStep: {fileID: 3367442274192415166, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 300
+    Lane: 0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4430444536581583227, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 300
+    Lane: 1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5835685514644659651, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 301
+    Lane: 2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4467215681697522924, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 301
+    Lane: 1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2560347917692435828, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 302
+    Lane: 1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4915736445322195497, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 302
+    Lane: 3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6507321458900577201, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 303
+    Lane: 0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3676452647999634706, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 303
+    Lane: 2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3275225336683078794, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 304
+    Lane: 0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1196868264538148781, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 304
+    Lane: 1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1074868803074610741, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 305
+    Lane: 1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1245818700146378513, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 305
+    Lane: 2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2762727882632584458, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 306
+    Lane: 1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8573185855582799948, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 306
+    Lane: 3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4748822340329591383, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 307
+    Lane: 0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 128147427755263863, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 307
+    Lane: 2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3952580160646667628, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 308
+    Lane: 1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1532105522292600787, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 308
+    Lane: 0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2476423459702863304, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 312
+    Lane: -1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6461996404539341069, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 312
+    Lane: -2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5178506757218782209, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 313
+    Lane: -1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4475880815078815312, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 313
+    Lane: -3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2336764472939856732, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 314
+    Lane: -0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5269444213452519787, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 314
+    Lane: -2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6291683284032441447, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 315
+    Lane: -0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7690337250342652884, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 315
+    Lane: -1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8415486011424358104, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 316
+    Lane: -2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 802893768237924648, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 316
+    Lane: -1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7396299801512914320, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 317
+    Lane: -1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 77957463085753037, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 317
+    Lane: -3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7823994167249030773, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 318
+    Lane: -2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1993193893302780238, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 318
+    Lane: 1.921875
+    PrefabName: Sweeper
+    Parameters:
+      CurrentStep: {fileID: 5077658787413718924, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 318
+    Lane: -0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8514516420992708086, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 319
+    Lane: -1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4048872563797505009, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 319
+    Lane: -0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6174682473615843145, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 320
+    Lane: -1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5423697303758689094, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 320
+    Lane: -2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6139046023492963038, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 321
+    Lane: -1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3239439891572907035, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 321
+    Lane: -3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3639576212478330243, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 322
+    Lane: -0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6613988089331176224, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 322
+    Lane: -2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5025745865976482488, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 323
+    Lane: -0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8669667275249033631, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 323
+    Lane: -1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7360652351995738119, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 324
+    Lane: -1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8756951139552045347, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 324
+    Lane: -2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5664357852648698680, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 325
+    Lane: -1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2177184993902241406, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 325
+    Lane: -3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2966691182454307941, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 326
+    Lane: -2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6779777389630714718, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 326
+    Lane: -0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7569350596932380997, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 327
+    Lane: -1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 9047688707990749665, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 327
+    Lane: -0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5373637884978420730, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 331
+    Lane: 2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6404442781494287828, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 331
+    Lane: 1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5084979372798994648, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 332
+    Lane: 1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2387298478812718981, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 332
+    Lane: 3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4562494255567803017, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 333
+    Lane: 0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6204892822175705278, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 333
+    Lane: 2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5218662817467473330, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 334
+    Lane: 1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7779169298261733133, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 334
+    Lane: 0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8468304732729154049, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 335
+    Lane: 2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 1448071187518591229, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 335
+    Lane: 1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8761763834157104197, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 336
+    Lane: 1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2173008072566731544, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 336
+    Lane: 3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8334068957378977696, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 337
+    Lane: -1.921875
+    PrefabName: Sweeper
+    Parameters:
+      CurrentStep: {fileID: 6434396410499245657, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 337
+    Lane: 0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7572034355694173219, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 337
+    Lane: 2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 330409821477933211, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 338
+    Lane: 1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 2813793842213282340, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 338
+    Lane: 0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5371675382473264796, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 339
+    Lane: 2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5336382273130781451, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 339
+    Lane: 1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6086669065767846547, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 340
+    Lane: 3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3296276462017958998, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 340
+    Lane: 1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3731280504261610958, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 341
+    Lane: 2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6522320081435679597, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 341
+    Lane: 0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4969015948146868981, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 342
+    Lane: 1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8726477317572733394, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 342
+    Lane: 0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7452400484385058890, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 343
+    Lane: 1.3125
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7402253230841264374, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 343
+    Lane: 2.5625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 5883726168051786477, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 344
+    Lane: 1.890625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 74886109283153835, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 344
+    Lane: 3.140625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 3897631676478303664, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 344
+    Lane: 0
+    PrefabName: Knight
+    Parameters:
+      CurrentStep: {fileID: 4184774866613481190, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 345
+    Lane: 0.796875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 8518377215543474320, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 345
+    Lane: 2.046875
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 4695703202448646795, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 346
+    Lane: 0.40625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 6173900305433627183, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 346
+    Lane: 1.65625
+    PrefabName: Popcorn
+    Parameters:
+      CurrentStep: {fileID: 7112096694227849268, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 350
+    Lane: 0
+    PrefabName: Knight
+    Parameters:
+      CurrentStep: {fileID: 2088509797377992639, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 363
+    Lane: 5
+    PrefabName: RunNGunner
+    Parameters:
+      CurrentStep: {fileID: 8685612415521183591, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 1
+  - Beat: 367
+    Lane: -5
+    PrefabName: RunNGunner
+    Parameters:
+      CurrentStep: {fileID: 6173722962572007018, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  - Beat: 371
+    Lane: 5
+    PrefabName: RunNGunner
+    Parameters:
+      CurrentStep: {fileID: 8576422312544999495, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 375
+    Lane: -5
+    PrefabName: RunNGunner
+    Parameters:
+      CurrentStep: {fileID: 6494635472581597514, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 379
+    Lane: 5
+    PrefabName: RunNGunner
+    Parameters:
+      CurrentStep: {fileID: 6017923826343862075, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 2
+      ExemptFromCheck: 0
+  - Beat: 379
+    Lane: -1.5
+    PrefabName: Powerup
+    Parameters:
+      CurrentStep: {fileID: 0}
+      Condition: 0
+      ExemptFromCheck: 1
+  - Beat: 384
+    Lane: 0
+    PrefabName: Destroyer
+    Parameters:
+      CurrentStep: {fileID: 3527664369912690279, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 0
+      ExemptFromCheck: 0
+  - Beat: 420
+    Lane: 0
+    PrefabName: Destroyer
+    Parameters:
+      CurrentStep: {fileID: 2709743634488359869, guid: 054a5fc6ad08f484abaeb55f68def54f, type: 3}
+      Condition: 1
+      ExemptFromCheck: 0
+  Prefabs:
+  - Popcorn
+  - Powerup
+  - BladeDiver
+  - Sweeper
+  - RunNGunner
+  - Knight
+  - Shotgunner
+  - Destroyer

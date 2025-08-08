@@ -46,37 +46,35 @@ namespace UFO
 
         public bool IsInvincible { get => IsSpawning || _isInvincible || IsDying; }
 
-        private void Awake()
-        {
-            if (Instance != null)
-            {
-                Destroy(this);
-                return;
-            }
-
-            Instance = this;
-        }
-
         public void Hide()
         {
             IsAlive = false;
             transform.position = new Vector2(0.0f, -GameManager.ScreenHalfHeight - 1.0f);
         }
 
-        private void Start()
+        public IEnumerator Init(GameManager gm)
         {
+            if (Instance != null)
+            {
+                Destroy(this);
+                yield break;
+            }
+
+            Instance = this;
+
             _emitters = new ShotEmitter[PowerLevels.childCount][];
             for (int i = 0; i < PowerLevels.childCount; i++)
             {
                 _emitters[i] = PowerLevels.GetChild(i).GetComponentsInChildren<ShotEmitter>();
                 foreach (ShotEmitter emitter in _emitters[i])
                 {
-                    emitter.Init();
+                    emitter.Init(gm);
                 }
             }
 
             Hitbox = GetComponentInChildren<Collider2D>();
             Hide();
+            yield return null;
         }
 
         private IEnumerator Spawning()

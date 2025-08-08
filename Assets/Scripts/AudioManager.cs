@@ -44,12 +44,12 @@ namespace UFO
             _oneshotSources.Add(source);
         }
 
-        private void Awake()
+        public IEnumerator Init()
         {
             _musicSource = gameObject.AddComponent<AudioSource>();
             InitOneShotSource(_musicSource, Settings.MusicVolume);
             _oneshotSources.Remove(_musicSource);
-            
+
             _playerFireSource = gameObject.AddComponent<AudioSource>();
             InitLoopingSource(_playerFireSource, Settings.PlayerFire);
 
@@ -57,20 +57,18 @@ namespace UFO
             InitOneShotSource(_hitSource);
 
             _criticalSource = gameObject.AddComponent<AudioSource>();
-            InitOneShotSource (_criticalSource);
-        }
+            InitOneShotSource(_criticalSource);
 
-        private void Start()
-        {
             foreach (AudioSource source in _loopSources.Keys)
             {
                 source.Play();
             }
 
             PlayMenuLoop();
+            yield return null;
         }
 
-        private void LateUpdate()
+        public void Tick()
         {
             _hasHitHurt = _hasHitShield = _hasKilled = false;
         }

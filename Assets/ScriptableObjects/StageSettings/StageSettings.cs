@@ -1,5 +1,8 @@
 using System;
+using UnityEditor;
 using UnityEngine;
+using Unity.Collections;
+using System.Collections.Generic;
 
 namespace UFO
 {
@@ -18,6 +21,7 @@ namespace UFO
         public bool ExemptFromCheck;
     }
 
+    [Serializable]
     public struct SpawnInfo
     {
         public int Beat;
@@ -45,7 +49,36 @@ namespace UFO
 
         public Transform StagePatternPrefab;
 
-        [HideInInspector]
         public SpawnInfo[] Spawns;
+        public List<string> Prefabs = new List<string>();
+
+        [ContextMenu("Initialise")]
+        private void Init()
+        {
+            Prefabs.Clear();
+            if (StagePatternPrefab == null)
+            {
+                return;
+            }
+
+            BaseSpawnable[] spawns = StagePatternPrefab.GetComponentsInChildren<BaseSpawnable>();
+            if (spawns.Length == 0)
+            {
+                return;
+            }
+
+            Array.Sort(spawns, (s1, s2) => s1.transform.position.y.CompareTo(s2.transform.position.y));
+
+            Spawns = new SpawnInfo[spawns.Length];
+            for (int i = 0; i < spawns.Length; i++)
+            {
+                Spawns[i] = new SpawnInfo(spawns[i]);
+                if (!Prefabs.Contains(Spawns[i].PrefabName))
+                {
+                    Prefabs.Add(Spawns[i].PrefabName);
+                }
+                Debug.Log(Spawns[i].PrefabName);
+            }
+        }
     }
 }

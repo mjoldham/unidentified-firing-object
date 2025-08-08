@@ -5,6 +5,8 @@ namespace UFO
 {
     public class PowerupController : BaseSpawnable
     {
+        private PlayerController _player;
+
         public CircleCollider2D ShieldCollider, ExtendCollider, PowerCollider, BombCollider;
         private CircleCollider2D _shieldExtend;
 
@@ -19,8 +21,10 @@ namespace UFO
 
         private float _fallTimer, _tripleTimer, _outerRadiusSqr;
 
-        public void Init()
+        public void Init(PlayerController player)
         {
+            _player = player;
+
             _outerRadiusSqr = (ShieldCollider.ClosestPoint(transform.position) - (Vector2)transform.position).magnitude;
             _outerRadiusSqr += 2.0f * ShieldCollider.radius;
             _outerRadiusSqr *= _outerRadiusSqr;
@@ -32,7 +36,7 @@ namespace UFO
         public override void Spawn(SpawnInfo spawnInfo)
         {
             transform.position = new Vector2(spawnInfo.Lane, GameManager.ScreenHalfHeight + 1.0f);
-            if (SpawnExtend && PlayerController.Instance.IsShielded)
+            if (SpawnExtend && _player.IsShielded)
             {
                 SpawnExtend = false;
                 _spawnedExtend = true;

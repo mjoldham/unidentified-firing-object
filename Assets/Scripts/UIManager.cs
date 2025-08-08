@@ -31,18 +31,15 @@ namespace UFO
 
         private Coroutine _currCoroutine;
 
-        private void Awake()
+        public IEnumerator Init()
         {
             if (Instance != null && Instance != this)
             {
                 Destroy(this);
-                return;
+                yield break;
             }
             Instance = this;
-        }
 
-        private void Start()
-        {
             ShowPanel(MainMenu);
 
             StartSlider.value = 0.0f;
@@ -89,9 +86,11 @@ namespace UFO
             {
                 PlayerController.Autobomb = value;
             });
+
+            yield return null;
         }
 
-        private void Update()
+        public void Tick()
         {
             Score.text = GameManager.CurrentScore.ToString();
             Hiscore.text = GameManager.Hiscore.ToString();

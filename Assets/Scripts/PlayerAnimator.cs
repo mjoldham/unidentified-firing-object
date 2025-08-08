@@ -52,9 +52,9 @@ namespace UFO
 
         private float _firingScale;
 
-        private void Start()
+        public IEnumerator Init(PlayerController player)
         {
-            _player = PlayerController.Instance;
+            _player = player;
             _renderers = _player.GetComponentsInChildren<SpriteRenderer>();
             _trails = _player.GetComponentsInChildren<TrailRenderer>();
 
@@ -90,9 +90,9 @@ namespace UFO
             }
 
             DeathFlash.transform.SetParent(null);
-            DeathFlash.gameObject.SetActive(false);
 
             Shield.gameObject.SetActive(false);
+            yield return null;
         }
 
         public static void SwitchToState(Animator animator, AnimState state)

@@ -82,10 +82,10 @@ namespace UFO
             Gizmos.DrawLine(start, end);
         }
 
-        public void Init()
+        public void Init(GameManager gm, PlayerController player)
         {
-            _gm = GameManager.Instance;
-            _player = PlayerController.Instance;
+            _gm = gm;
+            _player = player;
             _animator = GetComponent<Animator>();
 
             SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>();
@@ -135,7 +135,7 @@ namespace UFO
             _emitters = GetComponentsInChildren<ShotEmitter>();
             foreach (ShotEmitter emitter in _emitters)
             {
-                emitter.Init();
+                emitter.Init(gm);
             }
 
             _fullHealth = Health;
@@ -353,28 +353,20 @@ namespace UFO
             StartMove();
         }
 
-        private void OnPause()
-        {
-            _animator.speed = 0.0f;
-        }
-
         private void OnUnpause(double lostTime)
         {
-            _animator.speed = 1.0f;
             _destTime += lostTime;
         }
 
         private void OnEnable()
         {
             GameManager.OnBeat += OnBeat;
-            GameManager.OnPause += OnPause;
             GameManager.OnUnpause += OnUnpause;
         }
 
         private void OnDisable()
         {
             GameManager.OnBeat -= OnBeat;
-            GameManager.OnPause -= OnPause;
             GameManager.OnUnpause -= OnUnpause;
         }
     }
